@@ -10,9 +10,15 @@
     "pages:build": "npx @cloudflare/next-on-pages",
     "preview": "npm run pages:build && wrangler pages dev",
     "deploy": "npm run pages:build && wrangler pages deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:midrate:local": "wrangler d1 migrations apply hoardname-db --local",
+    "db:midrate:prod": "wrangler d1 migrations apply hoardname-db --remote"
   },
   "dependencies": {
+    "dayjs": "^1.11.13",
+    "drizzle-kit": "^0.30.1",
+    "drizzle-orm": "^0.38.3",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
