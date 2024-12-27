@@ -7,10 +7,12 @@ interface GameListContainerProps {
     boardgames: BoardGame[];
 }
 
-export default function GameListContainer({ boardgames}: GameListContainerProps) {
+export default function GameListContainer({ boardgames }: GameListContainerProps) {
+    console.log(boardgames);
     return (
         <div className="space-y-4">
             {boardgames.map((item) => (
+                
                 <div
                     key={item.id}
                     className="flex border border-gray-100 rounded-2xl w-full bg-white hover:shadow-lg hover:border-blue-100 transition-all duration-200"

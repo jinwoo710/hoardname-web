@@ -1,6 +1,7 @@
 import extractAttribute from "@/app/components/extractAttribute";
 import extractFromXml from "@/app/components/extractFromXml";
 import { NextResponse } from "next/server";
+export const runtime = "edge";
 
 export async function GET(request: Request) {
   try {
@@ -50,11 +51,11 @@ export async function GET(request: Request) {
     console.log("Primary name:", primaryName);
     console.log("Korean name:", koreanName);
 
-    const thumbnail = extractFromXml(xml, "thumbnail")[0];
-    const image = extractFromXml(xml, "image")[0];
-    const minPlayers = extractAttribute(xml, "minplayers", "value")[0];
-    const maxPlayers = extractAttribute(xml, "maxplayers", "value")[0];
-    const weight = extractAttribute(xml, "averageweight", "value")[0];
+    const thumbnail = extractFromXml(xml, "thumbnail")[0] || "";
+    const image = extractFromXml(xml, "image")[0] || "";
+    const minPlayers = extractAttribute(xml, "minplayers", "value")[0] || "0";
+    const maxPlayers = extractAttribute(xml, "maxplayers", "value")[0] || "0";
+    const weight = extractAttribute(xml, "averageweight", "value")[0] || "0";
     const bestWithRegex =
       /<result name="bestwith" value="Best with (\d+)[^"]*"/;
     const recommendedWithRegex =

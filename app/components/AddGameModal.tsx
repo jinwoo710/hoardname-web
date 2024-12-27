@@ -2,7 +2,7 @@
 
 import {  useState } from "react";
 import Image from "next/image";
-import { BggGame, BoardGame, CreateBoardGame } from '@/types/boardgame';
+import { BggGame, BoardGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
 
 
@@ -23,10 +23,26 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
     try {
       setGameId(gameId);
       const response = await fetch(`/api/bgg?id=${gameId}`);
-      const gameData = await response.json() as BggGame;
-      setSelectedGame(gameData);
+      if (!response.ok) {
+        throw new Error('Failed to fetch game data');
+      }
+      const gameData = await response.json() as BggGameResponse;
+
+      const processedGameData: BggGame = {
+        id: gameId,
+        ...gameData,
+        thumbnailUrl: gameData.thumbnailUrl || '',
+        imageUrl: gameData.imageUrl || '',
+        minPlayers: gameData.minPlayers || 0,
+        maxPlayers: gameData.maxPlayers || 0,
+        weight: gameData.weight || 0,
+        bestWith: gameData.bestWith || '',
+        recommendedWith: gameData.recommendedWith || '',
+      };
+      setSelectedGame(processedGameData);
     } catch (error) {
       console.error('Error fetching game data:', error);
+      setSelectedGame(null);
     }
   };
 

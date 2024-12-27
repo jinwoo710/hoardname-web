@@ -15,8 +15,8 @@ export type BoardGame = {
   createdAt?: Date;
 };
 
-export type BggGame = {
-  id: string;
+// BGG API 응답 기본 타입
+export type BggGameResponse = {
   name: string;
   originalName: string;
   thumbnailUrl?: string;
@@ -26,6 +26,17 @@ export type BggGame = {
   weight?: number;
   bestWith?: string;
   recommendedWith?: string;
+};
+
+export type BggGame = BggGameResponse & {
+  id: string;
+  thumbnailUrl: string;
+  imageUrl: string;
+  minPlayers: number;
+  maxPlayers: number;
+  weight: number;
+  bestWith: string;
+  recommendedWith: string;
 };
 
 export type CreateBoardGame = Omit<BoardGame, "id" | "createdAt" | "imported">;
