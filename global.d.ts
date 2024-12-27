@@ -1,6 +1,9 @@
 declare global {
   namespace NodeJS {
-    interface ProcessEnv extends CloudflareEnv {}
+    interface Env {
+      DB: D1Database;
+      // Add other environment variables here
+    }
   }
 }
 
