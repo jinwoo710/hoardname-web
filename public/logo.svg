@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="80" viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Letters with bold, rounded style -->
+  <g fill="currentColor" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="48" letter-spacing="4">
+    <text x="200" y="55" text-anchor="middle" style="font-weight: 900;">
+      HOARDNAME
+    </text>
+  </g>
+</svg>
