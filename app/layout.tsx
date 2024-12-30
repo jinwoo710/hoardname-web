@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/Header";
 import SideBar from "./components/Sidebar";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +16,8 @@ export default function RootLayout({
 }>) {
   return(
     <html lang="ko">
-      <body className="antialiased mx-auto w-full max-w-screen-md lg:max-w-screen-xl text-dark bg-white min-h-screen" suppressHydrationWarning>
- 
+      <body className="antialiased mx-auto w-full max-w-screen-md lg:max-w-screen-xl text-dark bg-white min-h-screen">
+        <Providers>
           <Header />
           <div className="flex flex-col lg:flex-row w-full">
             <aside className="hidden lg:block lg:w-[220px] lg:flex-shrink-0">
@@ -27,6 +28,7 @@ export default function RootLayout({
               {children}
             </main>
           </div>
+        </Providers>
       </body>
     </html>
   );

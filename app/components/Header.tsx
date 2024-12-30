@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import MobileSidebar from './MobileSidebar';
+import { signIn } from "next-auth/react";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -16,7 +17,8 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
 
-            <button
+          <button
+               onClick={() => signIn("google", { callbackUrl: '/game' })}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
