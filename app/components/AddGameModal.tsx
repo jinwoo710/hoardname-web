@@ -1,6 +1,7 @@
 'use client'
 
-import {  useState } from "react";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { BggGame, BoardGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
@@ -15,9 +16,9 @@ interface AddGameModalProps {
 
 
 export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameModalProps) {
+  const { data: session } = useSession();
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
   const [gameId, setGameId] = useState<string>("");
-  
 
   const handleGameSelect = async (gameId: string) => {
     try {
@@ -49,12 +50,12 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!selectedGame) return;
+    if (!selectedGame || !session?.user?.id) return;
 
     const submitData: CreateBoardGame = {
       name: selectedGame.name,
       originalName: selectedGame.originalName,
-      ownerId: '1',
+      ownerId: session.user.id,
       bggId: gameId,
       weight: selectedGame.weight,
       bestWith: selectedGame.bestWith?.toString() || '',

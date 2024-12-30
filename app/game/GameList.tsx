@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
 import GameListContainer from "../components/GameListContainer";
 import { BoardGame } from '@/types/boardgame';
 import AddGameModal from '../components/AddGameModal';
@@ -12,6 +14,7 @@ interface GameListProps {
 
 export default function GameList({ initialBoardgames }: GameListProps) {
     const router = useRouter();
+    const { data: session } = useSession();
     const [boardgames, setBoardgames] = useState<BoardGame[]>(initialBoardgames);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -32,7 +35,13 @@ export default function GameList({ initialBoardgames }: GameListProps) {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">내 보드게임</h1>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                        if (session) {
+                            setIsModalOpen(true);
+                        } else {
+                            toast.error("로그인 후 등록 가능합니다.");
+                        }
+                    }}
                     className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                     보드게임 추가
