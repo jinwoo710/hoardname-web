@@ -21,8 +21,7 @@ export default function GameList({ initialBoardgames }: GameListProps) {
 
     const handleGameAdded = (newGame: BoardGame) => {
         setBoardgames(prev => [newGame, ...prev]);
-        console.log(newGame);
-        console.log(boardgames);
+
         setIsModalOpen(false);
         // 서버 상태를 갱신하기 위해 페이지를 새로고침
         router.refresh();

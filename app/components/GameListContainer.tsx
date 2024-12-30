@@ -8,7 +8,6 @@ interface GameListContainerProps {
 }
 
 export default function GameListContainer({ boardgames }: GameListContainerProps) {
-    console.log(boardgames);
     return (
         <div className="space-y-4">
             {boardgames.map((item) => (
