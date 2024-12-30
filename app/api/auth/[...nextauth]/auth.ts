@@ -1,61 +1,40 @@
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
 export const runtime = "edge";
-import GoogleProvider from "next-auth/providers/google";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { NextAuthOptions, type DefaultSession } from "next-auth";
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      nickname: string | null;
-      openKakaotalkUrl: string | null;
-    } & DefaultSession["user"];
-  }
-}
-
-export const authOptions: NextAuthOptions = {
-  adapter: DrizzleAdapter(db),
+export const {
+  handlers,
+  signIn,
+  signOut,
+  auth,
+  unstable_update: update, // Beta!
+} = NextAuth({
   providers: [
-    GoogleProvider({
+    Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
+  session: {
+    strategy: "jwt", // JSON Web Token 사용
+    maxAge: 60 * 60 * 24, // 세션 만료 시간(sec)
+  },
+  pages: {
+    signIn: "/signin", // Default: '/auth/signin'
   },
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        const dbUser = await db.query.users.findFirst({
-          where: eq(users.id, user.id),
-        });
-
-        if (dbUser) {
-          session.user.id = dbUser.id;
-          session.user.nickname = dbUser.nickname;
-          session.user.openKakaotalkUrl = dbUser.openKakaotalkUrl;
-        }
+    signIn: async ({ account, profile }) => {
+      if (account?.provider === "google") {
+        // <사용자 확인 후 회원가입 또는 로그인...>
+        return !!profile?.email_verified;
       }
+      return true;
+    },
+    jwt: async ({ token, user }) => {
+      return token;
+    },
+    session: async ({ session, token }) => {
       return session;
     },
-    async signIn({ account }) {
-      if (account?.type === "oauth" && account?.provider === "google") {
-        console.log(account);
-        return true;
-      }
-      return false;
-    },
   },
-};
+});

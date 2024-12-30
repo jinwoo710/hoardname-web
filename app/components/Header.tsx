@@ -7,6 +7,8 @@ import { signIn } from "next-auth/react";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const signInWithGoogle = async () =>
+    await signIn("google", { callbackUrl: "/game" });
 
   return (
     <header className="bg-white border-b border-gray-200">
@@ -18,7 +20,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
 
           <button
-               onClick={() => signIn("google", { callbackUrl: '/game' })}
+               onClick={() => signInWithGoogle()}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">

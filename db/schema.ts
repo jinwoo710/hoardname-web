@@ -2,8 +2,8 @@ import {
   integer,
   sqliteTable,
   text,
-  real,
   primaryKey,
+  real,
 } from "drizzle-orm/sqlite-core";
 import dayjs from "dayjs";
 
@@ -17,6 +17,12 @@ export const users = sqliteTable("user", {
   email: text("email").unique(),
   emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
   image: text("image"),
+  createdAt: integer("createdAt", { mode: "timestamp_ms" }).$defaultFn(
+    () => new Date()
+  ),
+  updatedAt: integer("updatedAt", { mode: "timestamp_ms" }).$defaultFn(
+    () => new Date()
+  ),
 });
 
 export const accounts = sqliteTable(

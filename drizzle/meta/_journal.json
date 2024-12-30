@@ -15,6 +15,13 @@
       "when": 1735202123886,
       "tag": "0001_slow_vampiro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1735532427612,
+      "tag": "0002_oval_mach_iv",
+      "breakpoints": true
     }
   ]
 }
