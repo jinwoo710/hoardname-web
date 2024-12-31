@@ -48,9 +48,6 @@ export async function GET(request: Request) {
         (name) => name.type === "alternate" && /[가-힣]/.test(name.value)
       )?.value || "";
 
-    console.log("Primary name:", primaryName);
-    console.log("Korean name:", koreanName);
-
     const thumbnail = extractFromXml(xml, "thumbnail")[0] || "";
     const image = extractFromXml(xml, "image")[0] || "";
     const minPlayers = extractAttribute(xml, "minplayers", "value")[0] || "0";

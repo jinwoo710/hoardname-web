@@ -8,6 +8,12 @@ interface GameListContainerProps {
 }
 
 export default function GameListContainer({ boardgames }: GameListContainerProps) {
+    const formatRecommendedWith = (recommendedWith: number[] | null) => {
+        if (!recommendedWith || recommendedWith.length === 0) return null;
+        const [min, max] = recommendedWith;
+        return `${min}-${max}`;
+    };
+
     return (
         <div className="space-y-4">
             {boardgames.map((item) => (
@@ -78,10 +84,10 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
                                         <span className="text-green-700">최적 {item.bestWith}인</span>
                                     </div>
                                 )}
-                                {item.recommendedWith && (
+                                {item.recommendedWith && item.recommendedWith.length > 0 && (
                                     <div className="flex items-center bg-yellow-50 rounded-lg px-3 py-1.5">
                                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2"></span>
-                                        <span className="text-yellow-700">추천 {item.recommendedWith}인</span>
+                                        <span className="text-yellow-700">추천 {formatRecommendedWith(item.recommendedWith)}인</span>
                                     </div>
                                 )}
                             </div>

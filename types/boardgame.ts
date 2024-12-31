@@ -1,4 +1,3 @@
-// BGG API 응답 기본 타입
 export type BggGameResponse = {
   name: string;
   originalName: string;
@@ -8,7 +7,7 @@ export type BggGameResponse = {
   maxPlayers?: number;
   weight?: number;
   bestWith?: string;
-  recommendedWith?: string;
+  recommendedWith?: number[];
 };
 
 export type BggGame = BggGameResponse & {
@@ -19,7 +18,7 @@ export type BggGame = BggGameResponse & {
   maxPlayers: number;
   weight: number;
   bestWith: string;
-  recommendedWith: string;
+  recommendedWith: number[];
 };
 
 export interface BoardGame {
@@ -28,7 +27,7 @@ export interface BoardGame {
   originalName: string | null;
   weight: number | null;
   bestWith: string | null;
-  recommendedWith: string | null;
+  recommendedWith: number[] | null;
   minPlayers: number | null;
   maxPlayers: number | null;
   thumbnailUrl: string | null;
@@ -45,12 +44,28 @@ export interface CreateBoardGame {
   originalName?: string;
   weight?: number;
   bestWith?: string;
-  recommendedWith?: string;
+  recommendedWith?: number[];
   minPlayers?: number;
   maxPlayers?: number;
   thumbnailUrl?: string;
   imageUrl?: string;
+  bggId?: string;
+  ownerId: string;
   imported?: boolean;
+}
+
+export interface UpdateBoardGame {
+  id: number;
+  name?: string;
+  originalName?: string;
+  weight?: number;
+  bestWith?: string;
+  recommendedWith?: number[];
+  minPlayers?: number;
+  maxPlayers?: number;
+  thumbnailUrl?: string;
+  imageUrl?: string;
   bggId?: string;
   ownerId?: string;
+  imported?: boolean;
 }

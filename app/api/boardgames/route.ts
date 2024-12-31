@@ -30,16 +30,16 @@ export async function POST(request: Request) {
       .insert(boardgames)
       .values({
         name: data.name,
-        originalName: data.originalName,
+        originalName: data.originalName || data.name,
         ownerId: data.ownerId,
-        bggId: data.bggId,
-        weight: data.weight,
-        bestWith: data.bestWith,
-        recommendedWith: data.recommendedWith,
-        minPlayers: data.minPlayers,
-        maxPlayers: data.maxPlayers,
-        thumbnailUrl: data.thumbnailUrl,
-        imageUrl: data.imageUrl,
+        bggId: data.bggId || null,
+        weight: data.weight || null,
+        bestWith: data.bestWith || null,
+        recommendedWith: data.recommendedWith || null,
+        minPlayers: data.minPlayers || null,
+        maxPlayers: data.maxPlayers || null,
+        thumbnailUrl: data.thumbnailUrl || null,
+        imageUrl: data.imageUrl || null,
         imported: true,
       })
       .returning();

@@ -145,10 +145,17 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
                   <div className="flex flex-col justify-between">
                     <div className="flex flex-col">
                       <span>{selectedGame.name} </span>
+                       <span className="text-sm text-gray-500">{selectedGame.originalName} </span>
                       <div className="flex space-x-2">
                         <div className="flex flex-col">
-                          <div className="text-sm text-gray-500">난이도</div>
-                          <div className="text-base">{selectedGame.weight ? selectedGame.weight.toFixed(1) : '정보 없음'}</div>
+                            <span className={`text-sm
+                                                ${selectedGame.weight > 4.0 ? 'text-red-500' : 
+                                                  selectedGame.weight > 3.0 ? 'text-orange-500' :
+                                                  selectedGame.weight > 2.0 ? 'text-green-500' :
+                                                  selectedGame.weight > 1.0 ? 'text-blue-500' : 'text-purple-500'}
+                                            `}>
+                                                난이도 {selectedGame.weight.toFixed(1)}
+                                            </span>
                         </div>
                       </div>
                     </div>

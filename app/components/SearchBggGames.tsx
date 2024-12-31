@@ -18,21 +18,22 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
     const [isVisible, setIsVisible] = useState(false);
     const [games, setGames] = useState<Game[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const searchTimeoutRef = useRef<number | undefined>(undefined);
 
     const searchGames = useCallback(async (query: string) => {
+        setIsLoading(true);
+        setIsVisible(true);
         try {
             const response = await fetch(`/api/bgg/search?name=${query}`);
             const result = await response.json() as { data: Game[]};
             setGames(result.data);
-            setIsVisible(true);
         } catch (error) {
             console.error('Failed to fetch games:', error);
             setGames([]);
-            setIsVisible(false);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [setGames, setIsLoading, setIsVisible]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -42,10 +43,19 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
             setGames([]);
             setIsVisible(false);
             setIsLoading(false);
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
             return;
         }
-        setIsLoading(true);
-        searchGames(value);
+
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = window.setTimeout(() => {
+            searchGames(value);
+        }, 300);
     };
 
     const handleSelectGame = async (e: React.MouseEvent<HTMLLIElement>) => {
