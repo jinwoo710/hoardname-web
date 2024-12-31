@@ -67,7 +67,7 @@ export default function Header() {
           )}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
           >
             <svg
               className="w-6 h-6"
