@@ -89,7 +89,7 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
 
                         <div className="flex items-center justify-end text-sm text-gray-500 mt-3">
                             <span className="font-medium">제공:</span>
-                            <span className="ml-2">TODO</span>
+                            <span className="ml-2">{item.ownerNickname}</span>
                         </div>
                     </div>
                 </div>

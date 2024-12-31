@@ -29,7 +29,7 @@ export const {
     jwt: async ({ token }) => {
       return token;
     },
-    session: async ({ session }) => {
+    async session({ session }) {
       return session;
     },
   },

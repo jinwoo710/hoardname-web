@@ -33,7 +33,7 @@ export default function GameList({ initialBoardgames }: GameListProps) {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">내 보드게임</h1>
+                <h1 className="text-2xl font-bold text-gray-800">보드게임 목록</h1>
                 <button
                     onClick={() => {
                         if (session) {

@@ -1,6 +1,11 @@
 import { db } from "@/db";
 import { boardgames } from "@/db/schema";
-import type { BoardGame, CreateBoardGame } from "@/types/boardgame";
+import type {
+  BoardGame,
+  CreateBoardGame,
+  UpdateBoardGame,
+} from "@/types/boardgame";
+import { eq } from "drizzle-orm";
 
 export const runtime = "edge";
 
@@ -35,6 +40,7 @@ export async function POST(request: Request) {
         maxPlayers: data.maxPlayers,
         thumbnailUrl: data.thumbnailUrl,
         imageUrl: data.imageUrl,
+        imported: true,
       })
       .returning();
 
@@ -44,6 +50,61 @@ export async function POST(request: Request) {
     console.error("Error creating boardgame:", error);
     return Response.json(
       { error: "Failed to create boardgame" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  const data = (await request.json()) as UpdateBoardGame;
+  const { id, imported } = data;
+
+  try {
+    const result = await db
+      .update(boardgames)
+      .set({ imported })
+      .where(eq(boardgames.id, id))
+      .returning();
+
+    if (!result.length) {
+      return Response.json({ error: "Boardgame not found" }, { status: 404 });
+    }
+
+    const updatedBoardGame = result[0] as BoardGame;
+    return Response.json({ boardgame: updatedBoardGame });
+  } catch (error) {
+    console.error("Error updating boardgame:", error);
+    return Response.json(
+      { error: "Failed to update boardgame" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return Response.json({ error: "Game ID is required" }, { status: 400 });
+  }
+
+  try {
+    const result = await db
+      .delete(boardgames)
+      .where(eq(boardgames.id, parseInt(id)))
+      .returning();
+
+    if (!result.length) {
+      return Response.json({ error: "Boardgame not found" }, { status: 404 });
+    }
+
+    const deletedBoardGame = result[0] as BoardGame;
+    return Response.json({ boardgame: deletedBoardGame });
+  } catch (error) {
+    console.error("Error deleting boardgame:", error);
+    return Response.json(
+      { error: "Failed to delete boardgame" },
       { status: 500 }
     );
   }
