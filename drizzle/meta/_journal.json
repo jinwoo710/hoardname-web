@@ -29,6 +29,20 @@
       "when": 1735603289667,
       "tag": "0003_short_lilith",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1735623385167,
+      "tag": "0004_stale_vector",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1735627251762,
+      "tag": "0005_quiet_microbe",
+      "breakpoints": true
     }
   ]
 }

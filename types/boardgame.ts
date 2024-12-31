@@ -21,6 +21,25 @@ export type BggGame = BggGameResponse & {
   recommendedWith: number[];
 };
 
+export type ShopItem = {
+  id: number;
+  ownerId: string;
+  ownerNickname: string;
+  name: string;
+  originalName: string;
+  thumbnailUrl?: string;
+  price: number;
+  openKakaoUrl: string;
+};
+
+export interface CreateShopItem {
+  name: string;
+  originalName: string;
+  thumbnailUrl?: string;
+  price: number;
+  ownerId: string;
+}
+
 export interface BoardGame {
   id: number;
   name: string;

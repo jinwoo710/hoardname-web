@@ -112,3 +112,16 @@ export const boardgames = sqliteTable("boardgames", {
     mode: "timestamp",
   }).$defaultFn(() => dayjs().toDate()),
 });
+
+export const shop = sqliteTable("shop", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  originalName: text("originalName").notNull(),
+  ownerId: text("ownerId"),
+  bggId: text("bggId"),
+  thumbnailUrl: text("thumbnailUrl"),
+  createdAt: integer("createdAt", {
+    mode: "timestamp",
+  }).$defaultFn(() => dayjs().toDate()),
+  price: integer("price").notNull(),
+});

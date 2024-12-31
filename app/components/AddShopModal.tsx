@@ -3,19 +3,17 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { BggGame, BoardGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
+import { BggGame, CreateShopItem, BggGameResponse, ShopItem } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
+import toast from 'react-hot-toast';
 
-
-interface AddGameModalProps {
+interface AddShopModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onGameAdded?: (game: BoardGame) => void;
+  onGameAdded?: (game: ShopItem) => void;
 }
 
-
-
-export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameModalProps) {
+export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopModalProps) {
   const { data: session } = useSession();
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
   const [gameId, setGameId] = useState<string>("");
@@ -52,22 +50,17 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
 
     if (!selectedGame || !session?.user?.id) return;
 
-    const submitData: CreateBoardGame = {
-      name: selectedGame.name,
-      originalName: selectedGame.originalName,
-      ownerId: session.user.id,
-      bggId: gameId,
-      weight: selectedGame.weight,
-      bestWith: selectedGame.bestWith?.toString() || '',
-      recommendedWith: selectedGame.recommendedWith || '',
-      minPlayers: selectedGame.minPlayers,
-      maxPlayers: selectedGame.maxPlayers,
-      thumbnailUrl: selectedGame.thumbnailUrl,
-      imageUrl: selectedGame.imageUrl,
+    const price = 1000;
+    const submitData: CreateShopItem = {
+      name: selectedGame?.name || '',
+      originalName: selectedGame?.originalName || selectedGame?.name || '',
+      thumbnailUrl: selectedGame?.thumbnailUrl,
+      price: Number(price),
+      ownerId: session?.user?.id || '',
     };
 
     try {
-      const response = await fetch('/api/boardgames', {
+      const response = await fetch('/api/shop', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,16 +69,17 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add boardgame');
+        throw new Error('Failed to add shop item');
       }
 
-      const result = await response.json() as { boardgame: BoardGame };
+      const result = await response.json() as { result: ShopItem };
       if (onGameAdded) {
-        onGameAdded(result.boardgame);
+        onGameAdded(result.result);
       }
       onClose();
     } catch (error) {
-      console.error('Error saving game:', error);
+      console.error('Error saving shop item:', error);
+      toast.error('상품을 추가하는 중 오류가 발생했습니다.');
     }
   };
 
@@ -99,11 +93,11 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl md:w-[480px] sm:w-full h-auto md:h-auto max-h-[90vh] overflow-y-auto" suppressHydrationWarning>
+      <div className="bg-white rounded-xl w-full max-w-2xl md:w-[480px] sm:w-full h-auto md:h-auto max-h-[90vh] overflow-y-auto">
         <div>
           <div className="relative h-16 border-b border-gray-200">
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-lg font-semibold text-gray-800">보드게임 추가</span>
+              <span className="text-lg font-semibold text-gray-800">중고 게임 추가</span>
             </div>
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
               <button

@@ -13,6 +13,11 @@ export const {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent", // 사용자에게 항상 동의 화면을 표시하도록 강제!
+        },
+      },
     }),
   ],
   session: {
@@ -21,7 +26,6 @@ export const {
   callbacks: {
     signIn: async ({ account, profile }) => {
       if (account?.provider === "google") {
-        // <사용자 확인 후 회원가입 또는 로그인...>
         return !!profile?.email_verified;
       }
       return true;
