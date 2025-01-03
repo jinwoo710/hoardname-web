@@ -65,7 +65,7 @@ export default function ShopList({ initialShopItems }: ShopListProps) {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800">중고 장터 목록</h1>
                 <button
                     onClick={handleAddClick}
@@ -74,6 +74,12 @@ export default function ShopList({ initialShopItems }: ShopListProps) {
                     중고 게임 추가
                 </button>
             </div>
+             <ul className='text-sm text-gray-500 list-disc pl-5 mb-4'>
+                <li>해당 게시판은 호드네임 인원들 간의 중고 거래를 돕기 위한 게시판입니다</li>
+                <li>전문 업자, 되팔이등의 행위 발각시 사용이 불가능합니다.</li>
+                <li>거래간 문제 발생 시, 호드네임에서는 책임을 지지 않습니다</li>
+                <li>중고 게임 등록은 닉네임과 카카오톡 오픈채팅 링크 설정을 해주셔야 등록이 가능합니다.</li>
+            </ul>
 
             <ShopListContainer boardgames={boardgames} />
 
