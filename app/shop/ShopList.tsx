@@ -114,10 +114,10 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
              <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
                     <ul className='text-sm text-gray-600 space-y-1.5'>
                         <li>해당 게시판은 호드네임 인원들 간의 중고 거래를 돕기 위한 게시판입니다</li>
+                        <li>중고 게임 등록은 <span className='font-bold text-blue-900'>닉네임</span>과 <span className='font-bold text-blue-900'>카카오톡 오픈채팅 링크</span> 설정을 해주셔야 등록이 가능합니다.</li>
                         <li>전문 업자, 되팔이등의 행위 발각시 사용이 불가능합니다.</li>
                         <li>거래간 문제 발생 시, 호드네임에서는 책임을 지지 않습니다</li>
-                        <li>중고 게임 등록은 <span className='font-bold text-blue-900'>닉네임</span>과 <span className='font-bold text-blue-900'>카카오톡 오픈채팅 링크</span> 설정을 해주셔야 등록이 가능합니다.</li>
-                    </ul>
+                </ul>
                 </div>
   <div className="mb-6">
                 <input

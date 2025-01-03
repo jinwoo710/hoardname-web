@@ -55,15 +55,17 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                                 
                               
                             </div>
+                            
                             <div className="flex flex-row md:flex-col justify-between md:items-end gap-4 mt-2 md:mt-0">
                                 <div className="text-xl font-bold shrink-0">
                                     {typeof item.price === 'number' ? item.price.toLocaleString() : '0'}원
                                 </div>
                                 <button
                                     onClick={() => window.open(item.openKakaoUrl, '_blank')}
-                                    className="px-4 py-2 bg-yellow-400 text-black rounded-xl hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-yellow-400 font-medium"
+                                    disabled={!item.openKakaoUrl}
+                                    className="px-4 py-2 bg-yellow-400 text-black rounded-xl disabled:bg-gray-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-yellow-400 font-medium"
                                 >
-                                    카톡
+                                    카톡하기
                                 </button>
                             </div>
                         </div>

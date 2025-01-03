@@ -28,6 +28,12 @@ export default function UserProfileClient({ user, initialBoardgames }: UserProfi
     setIsSubmitting(true);
     setError('');
 
+    if (openKakaotalkUrl.length > 0 && !openKakaotalkUrl.startsWith('https://open.kakao.com/o/')) {
+      setIsSubmitting(false);
+      toast.error('올바른 카카오톡 오픈채팅 링크가 아닙니다.');
+      return;
+    }
+
     try {
       const response = await fetch('/api/auth/profile', {
         method: 'POST',
@@ -216,9 +222,7 @@ export default function UserProfileClient({ user, initialBoardgames }: UserProfi
                   <div>
                     <h3 className="font-medium">{game.name}</h3>
                     <p className="hidden md:block text-sm text-gray-500">{game.originalName}</p>
-                    {game.bestWith && (
-                      <p className="text-sm text-gray-500">최적 인원: {game.bestWith}명</p>
-                    )}
+     
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -230,7 +234,7 @@ export default function UserProfileClient({ user, initialBoardgames }: UserProfi
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    <span className="text-[12px] font-bold mx-auto">{game.imported ? 'IN' : 'OUT'}</span>
+                    <span className="text-[12px] font-bold mx-auto">{game.imported ? '아지트' : '외부'}</span>
                   </button>
                   <button
                     onClick={() => handleDeleteGame(game.id.toString())}

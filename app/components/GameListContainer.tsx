@@ -75,7 +75,7 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
                                         )}
                                     </div>
                                 </div>
-                                <span className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium ${item.imported
+                                <span className={`shrink-0 px-4 py-1 rounded-full  font-bold ${item.imported
                                     ? 'bg-blue-50 text-blue-600 ring-1 ring-blue-500/20'
                                     : 'bg-red-50 text-red-600 ring-1 ring-red-500/20'
                                     }`}>
