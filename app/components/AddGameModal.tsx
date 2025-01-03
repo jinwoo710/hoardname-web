@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { BggGame, BoardGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
+import toast from 'react-hot-toast'; 
 
 
 interface AddGameModalProps {
@@ -76,7 +77,9 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add boardgame');
+        const errorData = await response.json() as { error: string };
+        toast.error(errorData.error || '게임 추가에 실패했습니다.');
+        return;
       }
 
       const result = await response.json() as { boardgame: BoardGame };
@@ -84,8 +87,9 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
         onGameAdded(result.boardgame);
       }
       handleClose();
-    } catch (error) {
-      console.error('Error saving game:', error);
+      toast.success('게임이 추가되었습니다.');
+    } catch  {
+      toast.error('이미 등록된 게임입니다.');
     }
   };
 

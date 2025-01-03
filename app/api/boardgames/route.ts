@@ -79,9 +79,24 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const data = (await request.json()) as CreateBoardGame;
-
   try {
+    const data = (await request.json()) as CreateBoardGame;
+
+    const existingGame = await db
+      .select()
+      .from(boardgames)
+      .where(
+        sql`${boardgames.bggId} = ${data.bggId} AND ${boardgames.ownerId} = ${data.ownerId}`
+      )
+      .limit(1);
+
+    if (existingGame.length > 0) {
+      return Response.json(
+        { error: "이미 등록된 게임입니다." },
+        { status: 400 }
+      );
+    }
+
     const result = await db
       .insert(boardgames)
       .values({
