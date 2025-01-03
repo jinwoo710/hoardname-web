@@ -1,10 +1,12 @@
+'use client';
+
 import { ReactNode, useEffect, useRef } from "react";
 
 interface InfiniteScrollProps {
-  children:ReactNode;
+  children: ReactNode;
   hasMore: boolean;
   loading: boolean;
-  onLoadMore: () => void; 
+  onLoadMore: () => void;
   className?: string;
 }
 
@@ -13,21 +15,23 @@ export default function InfiniteScroll({
   hasMore,
   loading,
   onLoadMore,
-  className,
+  className = '',
 }: InfiniteScrollProps) {
-
-  const target = useRef<HTMLDivElement>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !loading) {
-        onLoadMore();
-      }
-    }, { threshold: 0.1 });
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-    const currentTarget = target.current;
+    const currentTarget = observerTarget.current;
     if (currentTarget) {
-    observer.observe(currentTarget);
+      observer.observe(currentTarget);
     }
 
     return () => {
@@ -36,17 +40,16 @@ export default function InfiniteScroll({
       }
     };
   }, [hasMore, loading, onLoadMore]);
+
   return (
-     <div className={className}>
+    <div className={className}>
       {children}
-      
       {loading && (
         <div className="text-center py-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto" />
         </div>
       )}
-      
-      <div ref={target} className="h-4" />
+      <div ref={observerTarget} className="h-4" />
     </div>
-  )
+  );
 }

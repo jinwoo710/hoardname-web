@@ -1,35 +1,54 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import GameListContainer from "../components/GameListContainer";
 import { BoardGame } from '@/types/boardgame';
 import AddGameModal from '../components/AddGameModal';
+import { useInfinityScroll } from '../hooks/useInfinityScroll';
+import InfiniteScroll from '../components/InfiniteScroll';
 
 interface GameListProps {
     initialBoardgames: BoardGame[];
 }
-export interface UserCheckResponse {
-  hasNickname: boolean;
-  nickname: string | null;
-}
 
 export default function GameList({ initialBoardgames }: GameListProps) {
-    const router = useRouter();
     const { data: session } = useSession();
-    const [boardgames, setBoardgames] = useState<BoardGame[]>(initialBoardgames);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    useEffect(() => {
-        setBoardgames(initialBoardgames);
-    }, [initialBoardgames]);
+    const {
+        items: boardgames,
+        loading,
+        hasMore,
+        loadMore,
+        handleSearch,
+        reset
+    } = useInfinityScroll({
+        initialData: initialBoardgames,
+        fetchData: async (page: number, searchTerm: string) => {
+            const response = await fetch(
+                `/api/boardgames?page=${page}&limit=10${searchTerm ? `&search=${searchTerm}` : ''}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            if (!response.ok) throw new Error('Failed to fetch games');
+            const data = await response.json() as { items: BoardGame[], hasMore: boolean, total: number };
+            return {
+                items: data.items,
+                hasMore: data.hasMore,
+                total: data.total
+            };
+        },
+    });
 
-    const handleGameAdded = (newGame: BoardGame) => {
-        setBoardgames(prev => [newGame, ...prev]);
+    const handleGameAdded = async () => {
         setIsModalOpen(false);
-        router.refresh();
+        await reset(); // 새 게임이 추가되면 목록을 리셋
     };
 
     const handleAddClick = async () => {
@@ -50,7 +69,7 @@ export default function GameList({ initialBoardgames }: GameListProps) {
                 throw new Error('사용자 정보를 확인하는데 실패했습니다.');
             }
 
-            const data = (await response.json()) as UserCheckResponse;
+            const data = await response.json() as { hasNickname: boolean };
             if (!data.hasNickname) {
                 toast.error("회원 정보 -> 닉네임 등록 후 사용가능합니다");
                 return;
@@ -66,7 +85,10 @@ export default function GameList({ initialBoardgames }: GameListProps) {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">보드게임 목록</h1>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-800">보드게임 목록</h1>
+                    <p className="text-gray-500 mt-1">다양한 보드게임을 찾아보세요</p>
+                </div>
                 <button
                     onClick={handleAddClick}
                     className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -75,7 +97,23 @@ export default function GameList({ initialBoardgames }: GameListProps) {
                 </button>
             </div>
 
-            <GameListContainer boardgames={boardgames} />
+            <div className="mb-6">
+                <input
+                    type="text"
+                    placeholder="게임 이름으로 검색..."
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <InfiniteScroll
+                loading={loading}
+                hasMore={hasMore}
+                onLoadMore={loadMore}
+                className="space-y-4"
+            >
+                <GameListContainer boardgames={boardgames} />
+            </InfiniteScroll>
 
             <AddGameModal
                 isOpen={isModalOpen}

@@ -5,14 +5,74 @@ import type {
   CreateBoardGame,
   UpdateBoardGame,
 } from "@/types/boardgame";
-import { eq } from "drizzle-orm";
+import { eq, like, or, desc, sql } from "drizzle-orm";
+import { users } from "@/db/schema";
 
 export const runtime = "edge";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "10");
+  const search = searchParams.get("search") || "";
+
+  const offset = (page - 1) * limit;
+
   try {
-    const results = await db.select().from(boardgames);
-    return Response.json({ data: results as BoardGame[] });
+    let whereClause = undefined;
+    if (search) {
+      whereClause = or(
+        like(boardgames.name, `%${search}%`),
+        like(boardgames.originalName, `%${search}%`)
+      );
+    }
+
+    // 전체 개수 조회
+    const totalResult = await db
+      .select({ count: sql`count(*)` })
+      .from(boardgames)
+      .where(whereClause || undefined);
+
+    const total = Number(totalResult[0].count);
+
+    // 현재 페이지 데이터 조회
+    const items = await db
+      .select({
+        id: boardgames.id,
+        name: boardgames.name,
+        originalName: boardgames.originalName,
+        ownerId: boardgames.ownerId,
+        ownerNickname: users.nickname,
+        imported: boardgames.imported,
+        bggId: boardgames.bggId,
+        weight: boardgames.weight,
+        bestWith: boardgames.bestWith,
+        recommendedWith: boardgames.recommendedWith,
+        minPlayers: boardgames.minPlayers,
+        maxPlayers: boardgames.maxPlayers,
+        thumbnailUrl: boardgames.thumbnailUrl,
+        imageUrl: boardgames.imageUrl,
+        createdAt: boardgames.createdAt,
+      })
+      .from(boardgames)
+      .leftJoin(users, () => eq(users.id, boardgames.ownerId))
+      .where(whereClause || undefined)
+      .orderBy(desc(boardgames.imported), desc(boardgames.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    console.log("현재 페이지 데이터 조회", items);
+
+    // 다음 페이지가 있는지 확인
+    const remainingItems = total - (offset + limit);
+    const hasMore = remainingItems > 0;
+    console.log("다음 페이지가 있는지 확인", hasMore);
+
+    return Response.json({
+      items,
+      hasMore,
+      total,
+    });
   } catch (error) {
     console.error("Error fetching boardgames:", error);
     return Response.json(
@@ -99,8 +159,7 @@ export async function DELETE(request: Request) {
       return Response.json({ error: "Boardgame not found" }, { status: 404 });
     }
 
-    const deletedBoardGame = result[0] as BoardGame;
-    return Response.json({ boardgame: deletedBoardGame });
+    return Response.json({ success: true });
   } catch (error) {
     console.error("Error deleting boardgame:", error);
     return Response.json(
