@@ -61,12 +61,8 @@ export async function GET(request: Request) {
       .limit(limit)
       .offset(offset);
 
-    console.log("현재 페이지 데이터 조회", items);
-
-    // 다음 페이지가 있는지 확인
     const remainingItems = total - (offset + limit);
     const hasMore = remainingItems > 0;
-    console.log("다음 페이지가 있는지 확인", hasMore);
 
     return Response.json({
       items,
@@ -94,7 +90,7 @@ export async function POST(request: Request) {
         ownerId: data.ownerId,
         bggId: data.bggId || null,
         weight: data.weight || null,
-        bestWith: data.bestWith ? JSON.stringify(data.bestWith) : null,
+        bestWith: data.bestWith || null,
         recommendedWith: data.recommendedWith
           ? JSON.stringify(data.recommendedWith)
           : null,

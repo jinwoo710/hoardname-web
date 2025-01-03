@@ -7,7 +7,7 @@ export type BggGameResponse = {
   maxPlayers?: number;
   weight?: number;
   bestWith?: string;
-  recommendedWith?: number[];
+  recommendedWith?: string;
 };
 
 export type BggGame = BggGameResponse & {
@@ -18,7 +18,7 @@ export type BggGame = BggGameResponse & {
   maxPlayers: number;
   weight: number;
   bestWith: string;
-  recommendedWith: number[];
+  recommendedWith: string;
 };
 
 export type ShopItem = {
@@ -46,7 +46,7 @@ export interface BoardGame {
   originalName: string | null;
   weight: number | null;
   bestWith: string | null;
-  recommendedWith: number[] | null;
+  recommendedWith: string | null;
   minPlayers: number | null;
   maxPlayers: number | null;
   thumbnailUrl: string | null;
@@ -63,7 +63,7 @@ export interface CreateBoardGame {
   originalName?: string;
   weight?: number;
   bestWith?: string;
-  recommendedWith?: number[];
+  recommendedWith?: string;
   minPlayers?: number;
   maxPlayers?: number;
   thumbnailUrl?: string;
@@ -79,7 +79,7 @@ export interface UpdateBoardGame {
   originalName?: string;
   weight?: number;
   bestWith?: string;
-  recommendedWith?: number[];
+  recommendedWith?: string;
   minPlayers?: number;
   maxPlayers?: number;
   thumbnailUrl?: string;

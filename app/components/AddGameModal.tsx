@@ -38,7 +38,7 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
         maxPlayers: gameData.maxPlayers || 0,
         weight: gameData.weight || 0,
         bestWith: gameData.bestWith || '',
-        recommendedWith: gameData.recommendedWith || [],
+        recommendedWith: gameData.recommendedWith || '',
       };
       setSelectedGame(processedGameData);
     } catch (error) {

@@ -35,7 +35,7 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
         maxPlayers: gameData.maxPlayers || 0,
         weight: gameData.weight || 0,
         bestWith: gameData.bestWith || '',
-        recommendedWith: gameData.recommendedWith || [],
+        recommendedWith: gameData.recommendedWith || '',
       };
       setSelectedGame(processedGameData);
     } catch (error) {
