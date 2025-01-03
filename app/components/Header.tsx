@@ -24,13 +24,7 @@ export default function Header() {
             <div>Loading...</div>
           ) : session ? (
             <div className="flex items-center gap-4">
-              {session.user?.image && (
-                <img
-                  src={session.user.image}
-                  alt={session.user.name || ""}
-                  className="w-8 h-8 rounded-full"
-                />
-              )}
+      
               <span>{session.user?.name}</span>
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}

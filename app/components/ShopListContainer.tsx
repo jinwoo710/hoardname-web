@@ -23,7 +23,7 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                     key={item.id}
                     className="flex border border-gray-100 rounded-2xl w-full bg-white hover:shadow-lg hover:border-blue-100 transition-all duration-200"
                 >
-                    <div className="w-[140px] md:w-[120px] md:h-[120px] h-[140px] flex-shrink-0 p-4 my-auto">
+                    <div className="w-[140px] md:w-[120px] md:h-[120px] h-[140px] flex-shrink-0 p-4 pr-0 lg:pr-4 my-auto">
                         {item.thumbnailUrl ? (
                             <Image 
                                 width={100} 
@@ -65,7 +65,7 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                                     disabled={!item.openKakaoUrl}
                                     className="px-4 py-2 bg-yellow-400 text-black rounded-xl disabled:bg-gray-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-yellow-400 font-medium"
                                 >
-                                    카톡하기
+                                    카톡
                                 </button>
                             </div>
                         </div>

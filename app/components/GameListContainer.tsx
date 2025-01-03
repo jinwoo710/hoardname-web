@@ -30,11 +30,11 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
                         key={`${item.id}-${index}`}
                         className="flex border border-gray-100 rounded-2xl w-full bg-white hover:shadow-lg hover:border-blue-100 transition-all duration-200"
                     >
-                        <div className="w-[160px] h-[160px] flex-shrink-0 p-4 my-auto">
+                        <div className="w-[120px] lg:w-[160px] h-[120px] lg:h-[160px] flex-shrink-0 p-4 pr-0 lg:pr-4 my-auto">
                             {item.thumbnailUrl ? (
                                 <Image
                                     width={140}
-                                    height={140}
+                                    height={0}
                                     src={item.thumbnailUrl}
                                     alt="thumbnail"
                                     className="object-contain w-full h-full"
@@ -48,7 +48,7 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
                         <div className="flex-grow p-5 flex flex-col">
                             <div className="flex items-start justify-between mb-3">
                                 <div>
-                                    <h3 className="font-bold text-xl text-gray-800 mb-1 line-clamp-1">
+                                    <h3 className="font-bold lg:text-xl text-gray-800 mb-1 line-clamp-1">
                                         {item.name}
                                     </h3>
                                     <div className="flex flex-wrap gap-3 text-sm text-gray-500">

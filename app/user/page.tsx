@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import UserProfileClient from "./UserProfileClient";
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { users, boardgames } from "@/db/schema";
 import { BoardGame } from "@/types/boardgame";
 export const runtime = "edge";
@@ -41,8 +41,8 @@ export default async function UserProfile() {
       createdAt: boardgames.createdAt,
     })
     .from(boardgames)
-    .where(eq(boardgames.ownerId, dbUser.id))
-    .all();
+     .orderBy(desc(boardgames.imported), desc(boardgames.createdAt))
+      .limit(20)
 
   return (
     <UserProfileClient
