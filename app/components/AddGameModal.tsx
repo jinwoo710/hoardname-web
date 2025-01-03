@@ -83,7 +83,7 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
       if (onGameAdded) {
         onGameAdded(result.boardgame);
       }
-      onClose();
+      handleClose();
     } catch (error) {
       console.error('Error saving game:', error);
     }

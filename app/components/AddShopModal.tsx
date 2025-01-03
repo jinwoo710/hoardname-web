@@ -16,11 +16,10 @@ interface AddShopModalProps {
 export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopModalProps) {
   const { data: session } = useSession();
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
-  const [gameId, setGameId] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
 
   const handleGameSelect = async (gameId: string) => {
     try {
-      setGameId(gameId);
       const response = await fetch(`/api/bgg?id=${gameId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch game data');
@@ -45,12 +44,31 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
     }
   };
 
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    if (value === '') {
+      setPrice('');
+      return;
+    }
+    const numberValue = Number(value);
+    setPrice(numberValue.toString());
+  };
+
+  const formatPrice = (value: string) => {
+    if (!value) return '';
+    return Number(value).toLocaleString();
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedGame || !session?.user?.id) return;
 
-    const price = 1000;
+    if (!price) {
+      toast.error('가격을 입력해주세요.');
+      return;
+    }
+
     const submitData: CreateShopItem = {
       name: selectedGame?.name || '',
       originalName: selectedGame?.originalName || selectedGame?.name || '',
@@ -76,7 +94,7 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
       if (onGameAdded) {
         onGameAdded(result.result);
       }
-      onClose();
+      handleClose();
     } catch (error) {
       console.error('Error saving shop item:', error);
       toast.error('상품을 추가하는 중 오류가 발생했습니다.');
@@ -85,7 +103,6 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
 
   const handleClose = () => {
     setSelectedGame(null);
-    setGameId("");
     onClose();
   };
 
@@ -168,12 +185,24 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
               )}
          
             </div>
-
+            <input 
+              name="price" 
+              value={formatPrice(price)}
+              onChange={handlePriceChange}
+              placeholder="가격을 입력해주세요." 
+        className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
+            />
+             <input 
+              name="memo" 
+              placeholder="메모를 입력해주세요." 
+        className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
+            />
             <div className="flex items-center">
+              
               <button
                 type="submit"
                 disabled={!selectedGame }
-                className="mt-10 px-4 h-14 py-2 w-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 rounded-xl focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="mt-4 px-4 h-14 py-2 w-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 rounded-xl focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 추가하기
               </button>

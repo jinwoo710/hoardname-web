@@ -94,8 +94,10 @@ export async function POST(request: Request) {
         ownerId: data.ownerId,
         bggId: data.bggId || null,
         weight: data.weight || null,
-        bestWith: data.bestWith || null,
-        recommendedWith: data.recommendedWith || null,
+        bestWith: data.bestWith ? JSON.stringify(data.bestWith) : null,
+        recommendedWith: data.recommendedWith
+          ? JSON.stringify(data.recommendedWith)
+          : null,
         minPlayers: data.minPlayers || null,
         maxPlayers: data.maxPlayers || null,
         thumbnailUrl: data.thumbnailUrl || null,

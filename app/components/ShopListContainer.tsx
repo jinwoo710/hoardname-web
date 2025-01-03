@@ -53,7 +53,7 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                             </div>
                             <div className="flex flex-row md:flex-col justify-between md:items-end gap-4 mt-2 md:mt-0">
                                 <div className="text-xl font-bold shrink-0">
-                                    {item.price.toLocaleString()}원
+                                    {typeof item.price === 'number' ? item.price.toLocaleString() : '0'}원
                                 </div>
                                 <button
                                     onClick={() => window.open(item.openKakaoUrl, '_blank')}
