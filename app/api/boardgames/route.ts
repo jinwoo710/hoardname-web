@@ -13,7 +13,7 @@ export const runtime = "edge";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "10");
+  const limit = parseInt(searchParams.get("limit") || "20");
   const search = searchParams.get("search") || "";
 
   const offset = (page - 1) * limit;
@@ -27,7 +27,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // 전체 개수 조회
     const totalResult = await db
       .select({ count: sql`count(*)` })
       .from(boardgames)
@@ -35,7 +34,6 @@ export async function GET(request: Request) {
 
     const total = Number(totalResult[0].count);
 
-    // 현재 페이지 데이터 조회
     const items = await db
       .select({
         id: boardgames.id,

@@ -33,7 +33,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
+    const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
     const offset = (page - 1) * limit;
 
@@ -78,10 +78,13 @@ export async function GET(request: Request) {
     return NextResponse.json({
       items,
       hasMore,
-      total
+      total,
     });
   } catch (error) {
     console.error("Error fetching shop items:", error);
-    return NextResponse.json({ error: "Failed to fetch shop items" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch shop items" },
+      { status: 500 }
+    );
   }
 }

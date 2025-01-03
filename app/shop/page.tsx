@@ -6,7 +6,7 @@ import { ShopItem } from "@/types/boardgame";
 
 export const runtime = "edge";
 
-const LIMIT = 10;
+const LIMIT = 20;
 
 export default async function Shop() {
   const results = await db

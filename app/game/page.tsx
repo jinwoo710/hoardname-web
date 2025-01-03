@@ -8,7 +8,6 @@ export const runtime = "edge";
 const LIMIT = 20;
 
 export default async function Game() {
-  // 서버 컴포넌트에서 데이터 불러오기
   const results = await db
     .select({
       id: boardgames.id,

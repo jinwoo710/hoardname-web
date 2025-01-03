@@ -7,7 +7,7 @@ export const {
   signIn,
   signOut,
   auth,
-  unstable_update: update, // Beta!
+  unstable_update: update,
 } = NextAuth({
   providers: [
     Google({
@@ -15,13 +15,13 @@ export const {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          prompt: "consent", // 사용자에게 항상 동의 화면을 표시하도록 강제!
+          prompt: "consent", 
         },
       },
     }),
   ],
   session: {
-    strategy: "jwt", // JSON Web Token 사용
+    strategy: "jwt", 
   },
   callbacks: {
     signIn: async ({ account, profile }) => {
