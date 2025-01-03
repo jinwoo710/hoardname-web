@@ -30,6 +30,7 @@ export type ShopItem = {
   thumbnailUrl?: string;
   price: number;
   openKakaoUrl: string;
+  memo: string;
 };
 
 export interface CreateShopItem {
@@ -38,6 +39,7 @@ export interface CreateShopItem {
   thumbnailUrl?: string;
   price: number;
   ownerId: string;
+  memo: string;
 }
 
 export interface BoardGame {

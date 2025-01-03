@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { shop, users } from "@/db/schema";
 import { CreateShopItem } from "@/types/boardgame";
-import { eq } from "drizzle-orm";
+import { eq, desc, sql, like, or } from "drizzle-orm";
 
 export const runtime = "edge";
 
@@ -16,6 +16,7 @@ export async function POST(request: Request) {
       thumbnailUrl: data.thumbnailUrl,
       price: data.price,
       ownerId: data.ownerId,
+      memo: data.memo || null,
     });
 
     return NextResponse.json({ result });
@@ -28,28 +29,59 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+    const offset = (page - 1) * limit;
+
+    let whereClause = undefined;
+    if (search) {
+      whereClause = or(
+        like(shop.name, `%${search}%`),
+        like(shop.originalName, `%${search}%`)
+      );
+    }
+
+    const totalResult = await db
+      .select({ count: sql`count(*)` })
+      .from(shop)
+      .where(whereClause || undefined);
+
+    const total = Number(totalResult[0].count);
+
     const items = await db
       .select({
         id: shop.id,
         name: shop.name,
         originalName: shop.originalName,
-        thumbnailUrl: shop.thumbnailUrl,
-        price: shop.price,
         ownerId: shop.ownerId,
         ownerNickname: users.nickname,
         openKakaoUrl: users.openKakaotalkUrl,
+        price: shop.price,
+        thumbnailUrl: shop.thumbnailUrl,
+        createdAt: shop.createdAt,
+        memo: shop.memo,
       })
       .from(shop)
-      .leftJoin(users, eq(shop.ownerId, users.id));
+      .leftJoin(users, eq(shop.ownerId, users.id))
+      .where(whereClause || undefined)
+      .orderBy(desc(shop.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-    return NextResponse.json(items);
+    const remainingItems = total - (offset + limit);
+    const hasMore = remainingItems > 0;
+
+    return NextResponse.json({
+      items,
+      hasMore,
+      total
+    });
   } catch (error) {
-    console.error("Error in GET /api/shop:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Error fetching shop items:", error);
+    return NextResponse.json({ error: "Failed to fetch shop items" }, { status: 500 });
   }
 }

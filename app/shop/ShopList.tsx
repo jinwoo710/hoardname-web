@@ -1,35 +1,65 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import {  ShopItem } from '@/types/boardgame';
 import ShopListContainer from '../components/ShopListContainer';
 import AddShopModal from '../components/AddShopModal';
+import { useInfinityScroll } from '../hooks/useInfinityScroll';
+import InfiniteScroll from '../components/InfiniteScroll';
 
 interface ShopListProps {
     initialShopItems: ShopItem[];
+    limit: number;
 }
 export interface UserCheckResponse {
   hasNickname: boolean;
-  nickname: string | null;
+    nickname: string | null;
+    openKakaotalkUrl: string | null;
 }
 
-export default function ShopList({ initialShopItems }: ShopListProps) {
-    const router = useRouter();
+export default function ShopList({ initialShopItems, limit }: ShopListProps) {
+
     const { data: session } = useSession();
-    const [boardgames, setBoardgames] = useState<ShopItem[]>(initialShopItems);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    useEffect(() => {
-        setBoardgames(initialShopItems);
-    }, [initialShopItems]);
+    const {
+        items: shopItems,
+        loading,
+        hasMore,
+        loadMore,
+        reset,
+        handleSearch
+    } = useInfinityScroll({
+        initialData: initialShopItems,
+        fetchData: async (page: number, searchTerm: string) => {
+            const searchParams = new URLSearchParams();
+            searchParams.set("page", page.toString());
+            searchParams.set("limit", limit.toString());
+            if (searchTerm) searchParams.set("search", searchTerm);
 
-    const handleGameAdded = (newGame: ShopItem) => {
-        setBoardgames(prev => [newGame, ...prev]);
-        setIsModalOpen(false);
-        router.refresh();
+            const response = await fetch(
+                `/api/shop?${searchParams.toString()}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            if (!response.ok) throw new Error('Failed to fetch shop items');
+            const data = await response.json() as { items: ShopItem[], hasMore: boolean, total: number };
+            return {
+                items: data.items,
+                hasMore: data.hasMore,
+                total: data.total
+            };
+        },
+    });
+
+    const handleGameAdded = async () => {
+        await reset();
     };
 
     const handleAddClick = async () => {
@@ -56,6 +86,13 @@ export default function ShopList({ initialShopItems }: ShopListProps) {
                 return;
             }
 
+            if(!data.openKakaotalkUrl) {
+                toast.error("회원 정보 -> 카카오톡 오픈채팅 링크 등록 후 사용가능합니다");
+                return;
+            }
+
+            
+
             setIsModalOpen(true);
         } catch (error) {
             console.error('Error:', error);
@@ -79,11 +116,25 @@ export default function ShopList({ initialShopItems }: ShopListProps) {
                         <li>해당 게시판은 호드네임 인원들 간의 중고 거래를 돕기 위한 게시판입니다</li>
                         <li>전문 업자, 되팔이등의 행위 발각시 사용이 불가능합니다.</li>
                         <li>거래간 문제 발생 시, 호드네임에서는 책임을 지지 않습니다</li>
-                        <li>중고 게임 등록은 닉네임과 카카오톡 오픈채팅 링크 설정을 해주셔야 등록이 가능합니다.</li>
+                        <li>중고 게임 등록은 <span className='font-bold text-blue-900'>닉네임</span>과 <span className='font-bold text-blue-900'>카카오톡 오픈채팅 링크</span> 설정을 해주셔야 등록이 가능합니다.</li>
                     </ul>
                 </div>
-
-            <ShopListContainer boardgames={boardgames} />
+  <div className="mb-6">
+                <input
+                    type="text"
+                    placeholder="게임 이름으로 검색..."
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+            <InfiniteScroll
+                hasMore={hasMore}
+                loading={loading}
+                onLoadMore={loadMore}
+                className="space-y-4"
+            >
+                <ShopListContainer boardgames={shopItems} />
+            </InfiniteScroll>
 
             <AddShopModal
                 isOpen={isModalOpen}

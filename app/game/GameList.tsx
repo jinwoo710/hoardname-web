@@ -11,9 +11,10 @@ import InfiniteScroll from '../components/InfiniteScroll';
 
 interface GameListProps {
     initialBoardgames: BoardGame[];
+    limit: number
 }
 
-export default function GameList({ initialBoardgames }: GameListProps) {
+export default function GameList({ initialBoardgames, limit }: GameListProps) {
     const { data: session } = useSession();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,7 +29,7 @@ export default function GameList({ initialBoardgames }: GameListProps) {
         initialData: initialBoardgames,
         fetchData: async (page: number, searchTerm: string) => {
             const response = await fetch(
-                `/api/boardgames?page=${page}&limit=10${searchTerm ? `&search=${searchTerm}` : ''}`,
+                `/api/boardgames?page=${page}&limit=${limit}${searchTerm ? `&search=${searchTerm}` : ''}`,
                 {
                     method: 'GET',
                     headers: {
@@ -47,8 +48,7 @@ export default function GameList({ initialBoardgames }: GameListProps) {
     });
 
     const handleGameAdded = async () => {
-        setIsModalOpen(false);
-        await reset(); // 새 게임이 추가되면 목록을 리셋
+        await reset(); 
     };
 
     const handleAddClick = async () => {

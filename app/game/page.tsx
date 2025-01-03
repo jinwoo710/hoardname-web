@@ -5,6 +5,8 @@ import { BoardGame } from "@/types/boardgame";
 import { eq, desc } from "drizzle-orm";
 export const runtime = "edge";
 
+const LIMIT = 20;
+
 export default async function Game() {
   // 서버 컴포넌트에서 데이터 불러오기
   const results = await db
@@ -28,11 +30,11 @@ export default async function Game() {
     .from(boardgames)
     .leftJoin(users, () => eq(users.id, boardgames.ownerId))
     .orderBy(desc(boardgames.imported), desc(boardgames.createdAt))
-    .limit(10);
+    .limit(LIMIT);
 
   const initialBoardgames = results as BoardGame[];
 
   return (
-    <GameList initialBoardgames={initialBoardgames} />
+    <GameList initialBoardgames={initialBoardgames} limit={LIMIT} />
   );
 }

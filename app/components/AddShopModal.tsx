@@ -17,6 +17,7 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
   const { data: session } = useSession();
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
   const [price, setPrice] = useState<string>("");
+  const [memo, setMemo] = useState<string>("");
 
   const handleGameSelect = async (gameId: string) => {
     try {
@@ -68,6 +69,10 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
       toast.error('가격을 입력해주세요.');
       return;
     }
+    if(Number(price) > 500000) {
+      toast.error('가격은 500,000원 이하로 설정해주세요.');
+      return;
+    }
 
     const submitData: CreateShopItem = {
       name: selectedGame?.name || '',
@@ -75,6 +80,7 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
       thumbnailUrl: selectedGame?.thumbnailUrl,
       price: Number(price),
       ownerId: session?.user?.id || '',
+      memo: memo
     };
 
     try {
@@ -103,6 +109,8 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
 
   const handleClose = () => {
     setSelectedGame(null);
+    setPrice('');
+    setMemo('');
     onClose();
   };
 
@@ -189,19 +197,21 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
               name="price" 
               value={formatPrice(price)}
               onChange={handlePriceChange}
-              placeholder="가격을 입력해주세요." 
-        className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
+              placeholder="가격을 입력해주세요. (상한선 50만원)" 
+              className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
             />
-             <input 
+            <input 
               name="memo" 
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
               placeholder="메모를 입력해주세요." 
-        className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
+              className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
             />
             <div className="flex items-center">
               
               <button
                 type="submit"
-                disabled={!selectedGame }
+                disabled={!selectedGame || price.length ===0 }
                 className="mt-4 px-4 h-14 py-2 w-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 rounded-xl focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 추가하기

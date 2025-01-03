@@ -41,15 +41,19 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                     <div className="flex-grow p-5 flex flex-col">
                         <div className="flex flex-col md:flex-row md:items-start justify-between">
                             <div>
-                                <h3 className="font-bold text-xl text-gray-800 mb-1 line-clamp-1">
+                                <h3 className="font-bold text-xl text-gray-800  line-clamp-1">
                                     {item.name}
                                 </h3>
-                                <p className="text-gray-500 text-sm">
-                                    {item.originalName}
-                                </p>
+                                  {item.memo && (
+                                    <div className="text-sm text-gray-500 mt-1">
+                                        메모: {item.memo}
+                                    </div>
+                                )}
                                 <div className="text-sm  mt-2">
                                     판매자: {item.ownerNickname}
                                 </div>
+                                
+                              
                             </div>
                             <div className="flex flex-row md:flex-col justify-between md:items-end gap-4 mt-2 md:mt-0">
                                 <div className="text-xl font-bold shrink-0">

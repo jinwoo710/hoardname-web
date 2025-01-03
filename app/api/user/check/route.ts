@@ -24,6 +24,7 @@ export async function GET() {
     return Response.json({
       hasNickname: !!user.nickname,
       nickname: user.nickname,
+      openKakaotalkUrl: user.openKakaotalkUrl,
     });
   } catch (error) {
     console.error("Error checking user:", error);

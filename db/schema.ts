@@ -124,4 +124,5 @@ export const shop = sqliteTable("shop", {
     mode: "timestamp",
   }).$defaultFn(() => dayjs().toDate()),
   price: integer("price").notNull(),
+  memo: text("memo"),
 });
