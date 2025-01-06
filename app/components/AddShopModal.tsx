@@ -3,27 +3,24 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { BggGame, BoardGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
+import { BggGame, CreateShopItem, BggGameResponse, ShopItem } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
-import toast from 'react-hot-toast'; 
+import toast from 'react-hot-toast';
 
-
-interface AddGameModalProps {
+interface AddShopModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onGameAdded?: (game: BoardGame) => void;
+  onGameAdded?: (game: ShopItem) => void;
 }
 
-
-
-export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameModalProps) {
+export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopModalProps) {
   const { data: session } = useSession();
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
-  const [gameId, setGameId] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+  const [memo, setMemo] = useState<string>("");
 
   const handleGameSelect = async (gameId: string) => {
     try {
-      setGameId(gameId);
       const response = await fetch(`/api/bgg?id=${gameId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch game data');
@@ -48,27 +45,46 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
     }
   };
 
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    if (value === '') {
+      setPrice('');
+      return;
+    }
+    const numberValue = Number(value);
+    setPrice(numberValue.toString());
+  };
+
+  const formatPrice = (value: string) => {
+    if (!value) return '';
+    return Number(value).toLocaleString();
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedGame || !session?.user?.id) return;
 
-    const submitData: CreateBoardGame = {
-      name: selectedGame.name,
-      originalName: selectedGame.originalName,
-      ownerId: session.user.id,
-      bggId: gameId,
-      weight: selectedGame.weight,
-      bestWith: selectedGame.bestWith?.toString() || '',
-      recommendedWith: selectedGame.recommendedWith || '',
-      minPlayers: selectedGame.minPlayers,
-      maxPlayers: selectedGame.maxPlayers,
-      thumbnailUrl: selectedGame.thumbnailUrl,
-      imageUrl: selectedGame.imageUrl,
+    if (!price) {
+      toast.error('가격을 입력해주세요.');
+      return;
+    }
+    if(Number(price) > 500000) {
+      toast.error('가격은 500,000원 이하로 설정해주세요.');
+      return;
+    }
+
+    const submitData: CreateShopItem = {
+      name: selectedGame?.name || '',
+      originalName: selectedGame?.originalName || selectedGame?.name || '',
+      thumbnailUrl: selectedGame?.thumbnailUrl,
+      price: Number(price),
+      ownerId: session?.user?.id || '',
+      memo: memo
     };
 
     try {
-      const response = await fetch('/api/boardgames', {
+      const response = await fetch('/api/shop', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,25 +93,24 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
       });
 
       if (!response.ok) {
-        const errorData = await response.json() as { error: string };
-        toast.error(errorData.error || '게임 추가에 실패했습니다.');
-        return;
+        throw new Error('Failed to add shop item');
       }
 
-      const result = await response.json() as { boardgame: BoardGame };
+      const result = await response.json() as { result: ShopItem };
       if (onGameAdded) {
-        onGameAdded(result.boardgame);
+        onGameAdded(result.result);
       }
       handleClose();
-      toast.success('게임이 추가되었습니다.');
-    } catch  {
-      toast.error('이미 등록된 게임입니다.');
+    } catch (error) {
+      console.error('Error saving shop item:', error);
+      toast.error('상품을 추가하는 중 오류가 발생했습니다.');
     }
   };
 
   const handleClose = () => {
     setSelectedGame(null);
-    setGameId("");
+    setPrice('');
+    setMemo('');
     onClose();
   };
 
@@ -103,11 +118,11 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl md:w-[480px] sm:w-full h-auto md:h-auto max-h-[90vh] overflow-y-auto" suppressHydrationWarning>
+      <div className="bg-white rounded-xl w-full max-w-2xl md:w-[480px] sm:w-full h-auto md:h-auto max-h-[90vh] overflow-y-auto">
         <div>
           <div className="relative h-16 border-b border-gray-200">
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-lg font-semibold text-gray-800">보드게임 추가</span>
+              <span className="text-lg font-semibold text-gray-800">중고 게임 추가</span>
             </div>
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
               <button
@@ -178,12 +193,26 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
               )}
          
             </div>
-
+            <input 
+              name="price" 
+              value={formatPrice(price)}
+              onChange={handlePriceChange}
+              placeholder="가격을 입력해주세요. (상한선 50만원)" 
+              className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
+            />
+            <input 
+              name="memo" 
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="메모를 입력해주세요." 
+              className="flex items-center border mt-2 rounded-xl px-[18px] py-4 bg-white cursor-text outline-none w-full"
+            />
             <div className="flex items-center">
+              
               <button
                 type="submit"
-                disabled={!selectedGame }
-                className="mt-10 px-4 h-14 py-2 w-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 rounded-xl focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={!selectedGame || price.length ===0 }
+                className="mt-4 px-4 h-14 py-2 w-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 rounded-xl focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 추가하기
               </button>

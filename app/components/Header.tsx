@@ -3,9 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import MobileSidebar from './MobileSidebar';
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
+
+  const signInWithGoogle = async () =>
+    await signIn("google", { callbackUrl: "/game" });
 
   return (
     <header className="bg-white border-b border-gray-200">
@@ -15,8 +20,22 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-4">
-
+          {status === "loading" ? (
+            <div>Loading...</div>
+          ) : session ? (
+            <div className="flex items-center gap-4">
+      
+              <span>{session.user?.name}</span>
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="text-sm text-gray-700 hover:text-gray-900"
+              >
+                로그아웃
+              </button>
+            </div>
+          ) : (
             <button
+              onClick={signInWithGoogle}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -39,24 +58,25 @@ export default function Header() {
               </svg>
               Google 로그인
             </button>
-           <button
-                onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
+          )}
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
         </div>
       </div>
       <MobileSidebar 

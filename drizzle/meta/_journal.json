@@ -15,6 +15,48 @@
       "when": 1735202123886,
       "tag": "0001_slow_vampiro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1735532427612,
+      "tag": "0002_oval_mach_iv",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1735603289667,
+      "tag": "0003_short_lilith",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1735623385167,
+      "tag": "0004_stale_vector",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1735627251762,
+      "tag": "0005_quiet_microbe",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1735891093943,
+      "tag": "0006_overrated_ghost_rider",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1736123083801,
+      "tag": "0007_sturdy_siren",
+      "breakpoints": true
     }
   ]
 }

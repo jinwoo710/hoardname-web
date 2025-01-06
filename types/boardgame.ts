@@ -1,21 +1,3 @@
-export type BoardGame = {
-  id: number;
-  name: string;
-  originalName: string;
-  ownerId?: string;
-  imported?: boolean;
-  bggId?: string;
-  weight?: number;
-  bestWith?: string;
-  recommendedWith?: string;
-  minPlayers?: number;
-  maxPlayers?: number;
-  thumbnailUrl?: string;
-  imageUrl?: string;
-  createdAt?: Date;
-};
-
-// BGG API 응답 기본 타입
 export type BggGameResponse = {
   name: string;
   originalName: string;
@@ -39,4 +21,73 @@ export type BggGame = BggGameResponse & {
   recommendedWith: string;
 };
 
-export type CreateBoardGame = Omit<BoardGame, "id" | "createdAt" | "imported">;
+export type ShopItem = {
+  id: number;
+  ownerId: string;
+  ownerNickname?: string;
+  name: string;
+  originalName: string;
+  thumbnailUrl?: string;
+  price: number;
+  openKakaoUrl?: string;
+  memo: string;
+  isDeleted: boolean;
+};
+
+export interface CreateShopItem {
+  name: string;
+  originalName: string;
+  thumbnailUrl?: string;
+  price: number;
+  ownerId: string;
+  memo: string;
+}
+
+export interface BoardGame {
+  id: number;
+  name: string;
+  originalName: string | null;
+  weight: number | null;
+  bestWith: string | null;
+  recommendedWith: string | null;
+  minPlayers: number | null;
+  maxPlayers: number | null;
+  thumbnailUrl: string | null;
+  imageUrl: string | null;
+  imported: boolean | null;
+  bggId: string | null;
+  createdAt: Date | null;
+  ownerId?: string;
+  ownerNickname?: string;
+}
+
+export interface CreateBoardGame {
+  name: string;
+  originalName?: string;
+  weight?: number;
+  bestWith?: string;
+  recommendedWith?: string;
+  minPlayers?: number;
+  maxPlayers?: number;
+  thumbnailUrl?: string;
+  imageUrl?: string;
+  bggId?: string;
+  ownerId: string;
+  imported?: boolean;
+}
+
+export interface UpdateBoardGame {
+  id: number;
+  name?: string;
+  originalName?: string;
+  weight?: number;
+  bestWith?: string;
+  recommendedWith?: string;
+  minPlayers?: number;
+  maxPlayers?: number;
+  thumbnailUrl?: string;
+  imageUrl?: string;
+  bggId?: string;
+  ownerId?: string;
+  imported?: boolean;
+}

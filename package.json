@@ -16,12 +16,15 @@
     "db:midrate:prod": "wrangler d1 migrations apply hoardname-db --remote"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.7.4",
     "dayjs": "^1.11.13",
     "drizzle-kit": "^0.30.1",
     "drizzle-orm": "^0.38.3",
     "next": "15.1.0",
+    "next-auth": "^5.0.0-beta.25",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.7",
