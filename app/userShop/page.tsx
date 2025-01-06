@@ -49,6 +49,8 @@ export default async function UserShopPage() {
   return (
     <UserShop
       initialShopItems={results as ShopItem[]}
+      userId={dbUser.id}
+      limit={LIMIT}
     />
   );
 }

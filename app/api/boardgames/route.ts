@@ -5,7 +5,7 @@ import type {
   CreateBoardGame,
   UpdateBoardGame,
 } from "@/types/boardgame";
-import { eq, like, or, desc, sql } from "drizzle-orm";
+import { eq, like, or, desc, sql, and } from "drizzle-orm";
 import { users } from "@/db/schema";
 
 export const runtime = "edge";
@@ -15,6 +15,7 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "20");
   const search = searchParams.get("search") || "";
+  const ownerId = searchParams.get("ownerId");
 
   const offset = (page - 1) * limit;
 
@@ -26,7 +27,12 @@ export async function GET(request: Request) {
         like(boardgames.originalName, `%${search}%`)
       );
     }
-
+    if (ownerId) {
+      const ownerCondition = eq(boardgames.ownerId, ownerId);
+      whereClause = whereClause
+        ? and(whereClause, ownerCondition)
+        : ownerCondition;
+    }
     const totalResult = await db
       .select({ count: sql`count(*)` })
       .from(boardgames)

@@ -29,7 +29,8 @@ export default async function Game() {
     .from(boardgames)
     .leftJoin(users, () => eq(users.id, boardgames.ownerId))
     .orderBy(desc(boardgames.imported), desc(boardgames.createdAt))
-    .limit(LIMIT);
+    .limit(LIMIT)
+    .offset(0);
 
   const initialBoardgames = results as BoardGame[];
 

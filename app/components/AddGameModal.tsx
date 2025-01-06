@@ -24,7 +24,7 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
   const handleGameSelect = async (gameId: string) => {
     try {
       setGameId(gameId);
-      const response = await fetch(`/api/bgg?id=${gameId}`);
+      const response = await fetch(`../api/bgg?id=${gameId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch game data');
       }
