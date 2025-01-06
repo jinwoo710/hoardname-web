@@ -21,6 +21,7 @@ export default async function Shop() {
       thumbnailUrl: shop.thumbnailUrl,
       createdAt: shop.createdAt,
       memo: shop.memo,
+      isDeleted: shop.isDeleted
     })
     .from(shop)
     .leftJoin(users, eq(shop.ownerId, users.id))

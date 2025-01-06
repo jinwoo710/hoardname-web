@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { shop, users } from "@/db/schema";
-import { CreateShopItem } from "@/types/boardgame";
+import { CreateShopItem, ShopItem } from "@/types/boardgame";
 import { eq, desc, sql, like, or } from "drizzle-orm";
 
 export const runtime = "edge";
@@ -17,6 +17,7 @@ export async function POST(request: Request) {
       price: data.price,
       ownerId: data.ownerId,
       memo: data.memo || null,
+      isDeleted: false,
     });
 
     return NextResponse.json({ result });
@@ -64,6 +65,7 @@ export async function GET(request: Request) {
         thumbnailUrl: shop.thumbnailUrl,
         createdAt: shop.createdAt,
         memo: shop.memo,
+        isDeleted: shop.isDeleted,
       })
       .from(shop)
       .leftJoin(users, eq(shop.ownerId, users.id))
@@ -84,6 +86,34 @@ export async function GET(request: Request) {
     console.error("Error fetching shop items:", error);
     return NextResponse.json(
       { error: "Failed to fetch shop items" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  const data = (await request.json()) as ShopItem;
+  const { id, isDeleted } = data;
+
+  try {
+    const result = await db
+      .update(shop)
+      .set({ isDeleted })
+      .where(eq(shop.id, id))
+      .returning();
+
+    if (!result.length) {
+      return Response.json({ error: "shopItem not found" }, { status: 404 });
+    }
+
+    
+
+    const updatedShopItem = result[0] as ShopItem;
+    return Response.json({ shopItem: updatedShopItem });
+  } catch (error) {
+    console.error("Error updating shopItem:", error);
+    return Response.json(
+      { error: "Failed to update shopItem" },
       { status: 500 }
     );
   }

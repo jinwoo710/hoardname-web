@@ -24,13 +24,14 @@ export type BggGame = BggGameResponse & {
 export type ShopItem = {
   id: number;
   ownerId: string;
-  ownerNickname: string;
+  ownerNickname?: string;
   name: string;
   originalName: string;
   thumbnailUrl?: string;
   price: number;
-  openKakaoUrl: string;
+  openKakaoUrl?: string;
   memo: string;
+  isDeleted: boolean;
 };
 
 export interface CreateShopItem {
