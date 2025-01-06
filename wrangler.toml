@@ -88,6 +88,6 @@ pages_build_output_dir = ".vercel/output/static"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "hoardname-db"
-database_id = "28f3dfc0-cf18-4457-9c9c-8a1736c49f41"
+database_name = "hoardname_db"
+database_id = "c7c9c1b4-582d-4c53-a511-c982efbd5331"
 migrations_dir = 'drizzle'

@@ -12,8 +12,8 @@
     "deploy": "npm run pages:build && wrangler pages deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "db:generate": "drizzle-kit generate",
-    "db:midrate:local": "wrangler d1 migrations apply hoardname-db --local",
-    "db:midrate:prod": "wrangler d1 migrations apply hoardname-db --remote"
+    "db:midrate:local": "wrangler d1 migrations apply hoardname_db --local",
+    "db:midrate:prod": "wrangler d1 migrations apply hoardname_db --remote"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",
