@@ -44,19 +44,7 @@ export default function NoticePage() {
           </p>
         </div>
         <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300">
-          <h3 className="text-lg font-semibold mb-2">아지트 이용요금</h3>
-          <p className="text-gray-700 mb-4">
-            1일 무제한: 6,000원 
-            <br />
-            1달 무제한(월정액) : 22,000원 
-            <br />
-            <strong>* 아지트를 이용하기 위해서는 참여시간대에 월정액 회원이 최소 1명 포함되어있어야합니다</strong>
-            <br />
-          
-          </p>
-        </div>
-        <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300">
-          <h3 className="text-lg font-semibold mb-2">모임참여 가능 날짜 투표</h3>
+             <h3 className="text-lg font-semibold mb-2">모임참여 가능 날짜 투표</h3>
           <p className="text-gray-700 mb-4">
             1. 채팅방 상단 고정된 &apos;N월 N주차 투표&apos; 클릭
             <br />
@@ -81,8 +69,23 @@ export default function NoticePage() {
             * 추후 변동사항 발생시 기존 참석자에게 태그로 알려주기
             <br />
             <br />
-            4. 주의사항
+            </p>
+         
+        </div>
+        <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300">
+        <h3 className="text-lg font-semibold mb-2">아지트 이용요금</h3>
+          <p className="text-gray-700 mb-4">
+            1일 무제한: 6,000원 
             <br />
+            1달 무제한(월정액) : 22,000원 
+            <br />
+            <strong>* 아지트를 이용하기 위해서는 참여시간대에 월정액 회원이 최소 1명 포함되어있어야합니다</strong>
+            <br />
+            <br />
+            <br />
+             <br />
+           <h3 className="text-lg font-semibold mb-2">주의 사항</h3>
+
             1. 자신이 참여하기로 한 시간은 반드시 지켜주세요.
             <br />
             2. 당일~2일 전쯤 벙 참여자는 반드시 일정을 취합해주세요.

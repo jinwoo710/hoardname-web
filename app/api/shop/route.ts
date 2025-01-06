@@ -56,11 +56,12 @@ export async function GET(request: Request) {
     }
 
     if (isDeleted) {
-      const isDeletedCondition = eq(shop.isDeleted, isDeleted === "false");
+      const isDeletedCondition = eq(shop.isDeleted, false);
       whereClause = whereClause
         ? and(whereClause, isDeletedCondition)
         : isDeletedCondition;
     }
+
     const totalResult = await db
       .select({ count: sql`count(*)` })
       .from(shop)
