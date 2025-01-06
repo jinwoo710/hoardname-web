@@ -99,7 +99,7 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
 
 
 
-  const handleToggleImported = async (gameId: string, currentState: boolean) => {
+  const handleToggleImported = async (gameId: string, gameName: string, currentState: boolean) => {
     try {
       const response = await fetch('/api/shop', {
         method: 'PATCH',
@@ -113,9 +113,10 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
       });
 
       if (!response.ok) throw new Error('게임 상태 변경에 실패했습니다.');
-      
+      toast.success(`${gameName} 상태 변경 완료`);
       await reset();
-  } catch (error) {
+    } catch (error) {
+      toast.error(`${gameName} 상태 변경 실패`);
     console.error('게임 상태 변경 실패:', error);
   }
 };
@@ -178,7 +179,7 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => handleToggleImported(game.id.toString(), game.isDeleted ?? false)}
+                    onClick={() => handleToggleImported(game.id.toString(), game.name, game.isDeleted ?? false)}
                     className={`w-[60px] h-[40px] flex justify-center items-center py-1 ml-2 rounded shrink-0 ${
                       game.isDeleted 
                         ? 'bg-red-100 text-red-800' 

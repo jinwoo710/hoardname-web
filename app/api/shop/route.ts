@@ -37,6 +37,7 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
     const ownerId = searchParams.get("ownerId");
+    const isDeleted = searchParams.get("isDeleted");
     const offset = (page - 1) * limit;
 
     let whereClause = undefined;
@@ -54,6 +55,12 @@ export async function GET(request: Request) {
         : ownerCondition;
     }
 
+    if (isDeleted) {
+      const isDeletedCondition = eq(shop.isDeleted, isDeleted === "false");
+      whereClause = whereClause
+        ? and(whereClause, isDeletedCondition)
+        : isDeletedCondition;
+    }
     const totalResult = await db
       .select({ count: sql`count(*)` })
       .from(shop)

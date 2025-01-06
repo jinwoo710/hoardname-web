@@ -24,7 +24,8 @@ export default async function Shop() {
         isDeleted: shop.isDeleted,
       })
       .from(shop)
-      .leftJoin(users, eq(shop.ownerId, users.id))
+    .leftJoin(users, eq(shop.ownerId, users.id))
+    .where(eq(shop.isDeleted, false))
       .orderBy(desc(shop.createdAt))
     .limit(LIMIT)
     .offset(0) as ShopItem[]

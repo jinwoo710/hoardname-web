@@ -34,6 +34,7 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
             const searchParams = new URLSearchParams();
             searchParams.set("page", page.toString());
             searchParams.set("limit", limit.toString());
+            searchParams.set("isDeleted", "false");
             if (searchTerm) searchParams.set("search", searchTerm);
 
             const response = await fetch(
