@@ -45,12 +45,10 @@ export function useInfinityScroll<T>({
     (term: string) => {
       setLoading(true);
 
-      // Clear the previous timeout if it exists
       if (searchTimeout.current) {
         clearTimeout(searchTimeout.current);
       }
 
-      // Set a new timeout
       searchTimeout.current = setTimeout(async () => {
         try {
           setSearchTerm(term);
@@ -65,7 +63,7 @@ export function useInfinityScroll<T>({
         } finally {
           setLoading(false);
         }
-      }, 300); // 300ms 디바운스
+      }, 300); 
     },
     [fetchAndSetData]
   );
