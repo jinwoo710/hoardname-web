@@ -4,11 +4,11 @@ import { BoardGame } from "@/types/boardgame";
 
 interface UserGameListContainerProps {
   boardgames: BoardGame[];
-  handleToggleImported: (id: string, name: string, imported: boolean) => void;
+  handleToggleInStorage: (id: string, name: string, inStorage: boolean) => void;
   handleDeleteGame: (id: string) => void;
 }
 
-export default function UserGameListContainer({ boardgames, handleToggleImported, handleDeleteGame }: UserGameListContainerProps) {
+export default function UserGameListContainer({ boardgames, handleToggleInStorage: handleToggleImported, handleDeleteGame }: UserGameListContainerProps) {
 
     return (
         <div className="space-y-4">
@@ -32,14 +32,14 @@ export default function UserGameListContainer({ boardgames, handleToggleImported
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => handleToggleImported(game.id.toString(), game.name, game.imported ?? false)}
+                    onClick={() => handleToggleImported(game.id.toString(), game.name, game.inStorage ?? false)}
                     className={`w-[40px] h-[40px] md:w-[60px] flex justify-center items-center py-1 rounded ${
-                      game.imported 
+                      game.inStorage 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    <span className="text-[12px] font-bold mx-auto">{game.imported ? '아지트' : '외부'}</span>
+                    <span className="text-[12px] font-bold mx-auto">{game.inStorage ? '아지트' : '외부'}</span>
                   </button>
                   <button
                     onClick={() => handleDeleteGame(game.id.toString())}

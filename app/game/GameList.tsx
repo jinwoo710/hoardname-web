@@ -2,8 +2,9 @@
 
 import GameListContainer from "../components/GameListContainer";
 import { BoardGame } from '@/types/boardgame';
-import { useInfinityScroll } from '../hooks/useInfinityScroll';
+import { useInfinityScroll,  } from '../hooks/useInfinityScroll';
 import InfiniteScroll from '../components/InfiniteScroll';
+import { useState } from "react";
 
 interface GameListProps {
     initialBoardgames: BoardGame[];
@@ -18,11 +19,19 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
         hasMore,
         loadMore,
         handleSearch,
+        updateFilters
     } = useInfinityScroll({
         initialData: initialBoardgames,
-        fetchData: async (page: number, searchTerm: string) => {
+        fetchData: async (page: number, searchTerm: string, filters?: Record<string, string>) => {
+            const searchParams = new URLSearchParams();
+            searchParams.set("page", page.toString());
+            searchParams.set("limit", limit.toString());
+            if (searchTerm) searchParams.set("search", searchTerm);
+            if (filters?.weightSort) searchParams.set("weightSort", filters.weightSort);
+            if (filters?.bestWith) searchParams.set("bestWith", filters.bestWith);
+
             const response = await fetch(
-                `/api/boardgames?page=${page}&limit=${limit}${searchTerm ? `&search=${searchTerm}` : ''}`,
+                `/api/boardgames?${searchParams.toString()}`,
                 {
                     method: 'GET',
                     headers: {
@@ -32,14 +41,31 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
             );
             if (!response.ok) throw new Error('Failed to fetch games');
             const data = await response.json() as { items: BoardGame[], hasMore: boolean, total: number };
-            return {
-                items: data.items,
-                hasMore: data.hasMore,
-                total: data.total
-            };
+            return data;
         },
     });
 
+    const [weightSort, setWeightSort] = useState<string>("");
+    const [bestWith, setBestWith] = useState<string>("");
+
+    const handleFilterChange = (type: "weightSort" | "bestWith", value: string) => {
+        if (type === "weightSort") {
+            setWeightSort(value);
+        } else {
+            setBestWith(value);
+        }
+        
+        const newFilters: Record<string, string> = {};
+        if (type === "weightSort") {
+            if (value) newFilters.weightSort = value;
+            if (bestWith) newFilters.bestWith = bestWith;
+        } else {
+            if (weightSort) newFilters.weightSort = weightSort;
+            if (value) newFilters.bestWith = value;
+        }
+        
+        updateFilters(newFilters);
+    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -56,13 +82,41 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
                 </ul>
                 </div>
 
-            <div className="mb-6">
+            <div className="flex gap-4 mb-4">
+               
+            </div>
+
+            <div className="mb-6 flex lg:space-x-2 lg:flex-row flex-col-reverse">
                 <input
                     type="text"
                     placeholder="게임 이름으로 검색..."
                     onChange={(e) => handleSearch(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <div className="flex space-x-2 mb-2 lg:mb-0">
+                 <select 
+                    className="border border-gray-200  rounded-xl px-5 py-2 w-full lg:w-auto"
+                    value={weightSort}
+                    onChange={(e) => handleFilterChange("weightSort", e.target.value)}
+                >
+                    <option value="">난이도 정렬</option>
+                    <option value="asc">쉬운순</option>
+                    <option value="desc">어려운순</option>
+                </select>
+
+                <select 
+                    className="border border-gray-200  rounded-xl px-5 py-2 w-full lg:w-auto"
+                    value={bestWith}
+                    onChange={(e) => handleFilterChange("bestWith", e.target.value)}
+                >
+                    <option value="">최적 인원수</option>
+                    <option value="1">1인</option>
+                    <option value="2">2인</option>
+                    <option value="3">3인</option>
+                    <option value="4">4인</option>
+                    <option value="5">5인 이상</option>
+                </select>
+               </div>
             </div>
 
             <InfiniteScroll

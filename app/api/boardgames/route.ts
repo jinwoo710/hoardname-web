@@ -5,7 +5,7 @@ import type {
   CreateBoardGame,
   UpdateBoardGame,
 } from "@/types/boardgame";
-import { eq, like, or, desc, sql, and } from "drizzle-orm";
+import { eq, like, or, desc, sql, and, asc } from "drizzle-orm";
 import { users } from "@/db/schema";
 
 export const runtime = "edge";
@@ -16,6 +16,8 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get("limit") || "20");
   const search = searchParams.get("search") || "";
   const ownerId = searchParams.get("ownerId");
+  const weightSort = searchParams.get("weightSort");
+  const bestWith = searchParams.get("bestWith");
 
   const offset = (page - 1) * limit;
 
@@ -33,6 +35,37 @@ export async function GET(request: Request) {
         ? and(whereClause, ownerCondition)
         : ownerCondition;
     }
+
+    if (bestWith) {
+      const bestWithCondition =
+        bestWith === "5"
+          ? or(
+              eq(boardgames.bestWith, "5"),
+              eq(boardgames.bestWith, "6"),
+              eq(boardgames.bestWith, "7"),
+              eq(boardgames.bestWith, "8"),
+              eq(boardgames.bestWith, "9"),
+              eq(boardgames.bestWith, "10"),
+              eq(boardgames.bestWith, "12"),
+              eq(boardgames.bestWith, "13"),
+              eq(boardgames.bestWith, "14"),
+              eq(boardgames.bestWith, "15")
+            )
+          : eq(boardgames.bestWith, bestWith);
+      whereClause = whereClause
+        ? and(whereClause, bestWithCondition)
+        : bestWithCondition;
+    }
+
+    let orderByClause = [asc(boardgames.inStorage), desc(boardgames.createdAt)];
+    if (weightSort) {
+      if (weightSort === "asc") {
+        orderByClause = [asc(boardgames.weight), ...orderByClause];
+      } else if (weightSort === "desc") {
+        orderByClause = [desc(boardgames.weight), ...orderByClause];
+      }
+    }
+
     const totalResult = await db
       .select({ count: sql`count(*)` })
       .from(boardgames)
@@ -47,7 +80,7 @@ export async function GET(request: Request) {
         originalName: boardgames.originalName,
         ownerId: boardgames.ownerId,
         ownerNickname: users.nickname,
-        imported: boardgames.imported,
+        inStorage: boardgames.inStorage,
         bggId: boardgames.bggId,
         weight: boardgames.weight,
         bestWith: boardgames.bestWith,
@@ -61,7 +94,7 @@ export async function GET(request: Request) {
       .from(boardgames)
       .leftJoin(users, () => eq(users.id, boardgames.ownerId))
       .where(whereClause || undefined)
-      .orderBy(desc(boardgames.imported), desc(boardgames.createdAt))
+      .orderBy(...orderByClause)
       .limit(limit)
       .offset(offset);
 
@@ -117,7 +150,7 @@ export async function POST(request: Request) {
         maxPlayers: data.maxPlayers || null,
         thumbnailUrl: data.thumbnailUrl || null,
         imageUrl: data.imageUrl || null,
-        imported: true,
+        inStorage: true,
       })
       .returning();
 
@@ -134,12 +167,12 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   const data = (await request.json()) as UpdateBoardGame;
-  const { id, imported } = data;
+  const { id, inStorage } = data;
 
   try {
     const result = await db
       .update(boardgames)
-      .set({ imported })
+      .set({ inStorage })
       .where(eq(boardgames.id, id))
       .returning();
 

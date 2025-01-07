@@ -8,7 +8,7 @@ interface FetchResponse<T> {
 
 interface UseInfinityScrollOptions<T> {
   initialData: T[];
-  fetchData: (page: number, searchTerm: string) => Promise<FetchResponse<T>>;
+  fetchData: (page: number, searchTerm: string, filters?: Record<string, string>) => Promise<FetchResponse<T>>;
 }
 
 export function useInfinityScroll<T>({
@@ -20,12 +20,13 @@ export function useInfinityScroll<T>({
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
   const fetchAndSetData = useCallback(
     async (page: number, searchTerm: string) => {
       try {
-        const data = await fetchData(page, searchTerm);
+        const data = await fetchData(page, searchTerm, filters);
         setItems(data.items);
         setHasMore(data.hasMore);
       } catch (err) {
@@ -36,7 +37,7 @@ export function useInfinityScroll<T>({
         );
       }
     },
-    [fetchData]
+    [fetchData, filters]
   );
 
   const reset = useCallback(async () => {
@@ -54,7 +55,7 @@ export function useInfinityScroll<T>({
 
     try {
       const nextPage = page + 1;
-      const data = await fetchData(nextPage, searchTerm);
+      const data = await fetchData(nextPage, searchTerm, filters);
 
       if (data.items.length === 0) {
         setHasMore(false);
@@ -72,7 +73,7 @@ export function useInfinityScroll<T>({
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, page, searchTerm, fetchData]);
+  }, [loading, hasMore, page, searchTerm, fetchData, filters]);
 
   const handleSearch = useCallback(
     async (term: string) => {
@@ -87,6 +88,25 @@ export function useInfinityScroll<T>({
     [fetchAndSetData]
   );
 
+  const updateFilters = useCallback(async (newFilters: Record<string, string>) => {
+    setFilters(newFilters);
+    setPage(1);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchData(1, searchTerm, newFilters);
+      setItems(data.items);
+      setHasMore(data.hasMore);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "데이터를 불러오는데 실패했습니다"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchData, searchTerm]);
+
   return {
     items,
     hasMore,
@@ -96,5 +116,6 @@ export function useInfinityScroll<T>({
     handleSearch,
     searchTerm,
     reset,
+    updateFilters,
   };
 }

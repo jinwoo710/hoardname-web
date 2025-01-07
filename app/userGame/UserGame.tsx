@@ -80,7 +80,7 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
     };
 
 
-  const handleToggleImported = async (gameId: string, gameName: string, currentImported: boolean) => {
+  const handleToggleInStroage = async (gameId: string, gameName: string, currentInStorage: boolean) => {
     try {
       const response = await fetch('/api/boardgames', {
         method: 'PATCH',
@@ -89,7 +89,7 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
         },
         body: JSON.stringify({
           id: parseInt(gameId, 10),
-          imported: !currentImported,
+          inStorage: !currentInStorage,
         }),
       });
 
@@ -161,7 +161,7 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
             >
               <UserGameListContainer
                 boardgames={boardgames}
-                handleToggleImported={handleToggleImported}
+                handleToggleInStorage={handleToggleInStroage}
                 handleDeleteGame={handleDeleteGame}
               />
             </InfiniteScroll>

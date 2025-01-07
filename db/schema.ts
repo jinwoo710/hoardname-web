@@ -99,7 +99,7 @@ export const boardgames = sqliteTable("boardgames", {
   name: text("name").notNull(),
   originalName: text("originalName").notNull(),
   ownerId: text("ownerId"),
-  imported: integer("imported", { mode: "boolean" }).notNull().default(false),
+  inStorage: integer("inStorage", { mode: "boolean" }).notNull().default(true),
   bggId: text("bggId"),
   weight: real("weight"),
   bestWith: text("bestWith"),
