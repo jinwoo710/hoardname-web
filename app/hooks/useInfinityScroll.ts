@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 interface FetchResponse<T> {
   items: T[];
@@ -22,6 +22,7 @@ export function useInfinityScroll<T>({
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
+  const searchTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const fetchAndSetData = useCallback(
     async (page: number, searchTerm: string) => {
@@ -40,12 +41,34 @@ export function useInfinityScroll<T>({
     [fetchData, filters]
   );
 
-  const reset = useCallback(async () => {
-    setPage(1);
-    setLoading(true);
-    await fetchAndSetData(1, searchTerm);
-    setLoading(false);
-  }, [fetchAndSetData, searchTerm]);
+  const handleSearch = useCallback(
+    (term: string) => {
+      setLoading(true);
+
+      // Clear the previous timeout if it exists
+      if (searchTimeout.current) {
+        clearTimeout(searchTimeout.current);
+      }
+
+      // Set a new timeout
+      searchTimeout.current = setTimeout(async () => {
+        try {
+          setSearchTerm(term);
+          await fetchAndSetData(1, term);
+          setPage(1);
+        } catch (err) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "데이터를 불러오는데 실패했습니다"
+          );
+        } finally {
+          setLoading(false);
+        }
+      }, 300); // 300ms 디바운스
+    },
+    [fetchAndSetData]
+  );
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -75,18 +98,12 @@ export function useInfinityScroll<T>({
     }
   }, [loading, hasMore, page, searchTerm, fetchData, filters]);
 
-  const handleSearch = useCallback(
-    async (term: string) => {
-      setSearchTerm(term);
-      setPage(1);
-      setLoading(true);
-      setError(null);
-
-      await fetchAndSetData(1, term);
-      setLoading(false);
-    },
-    [fetchAndSetData]
-  );
+  const reset = useCallback(async () => {
+    setPage(1);
+    setLoading(true);
+    await fetchAndSetData(1, searchTerm);
+    setLoading(false);
+  }, [fetchAndSetData, searchTerm]);
 
   const updateFilters = useCallback(async (newFilters: Record<string, string>) => {
     setFilters(newFilters);
