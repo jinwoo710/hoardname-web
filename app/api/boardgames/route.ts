@@ -57,7 +57,10 @@ export async function GET(request: Request) {
         : bestWithCondition;
     }
 
-    let orderByClause = [asc(boardgames.inStorage), desc(boardgames.createdAt)];
+    let orderByClause = [
+      desc(boardgames.inStorage),
+      desc(boardgames.createdAt),
+    ];
     if (weightSort) {
       if (weightSort === "asc") {
         orderByClause = [asc(boardgames.weight), ...orderByClause];

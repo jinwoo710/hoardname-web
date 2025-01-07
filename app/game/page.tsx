@@ -2,7 +2,7 @@ import GameList from "./GameList";
 import { db } from "@/db";
 import { boardgames, users } from "@/db/schema";
 import { BoardGame } from "@/types/boardgame";
-import { eq, desc,asc } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 export const runtime = "edge";
 
 const LIMIT = 20;
@@ -28,7 +28,7 @@ export default async function Game() {
     })
     .from(boardgames)
     .leftJoin(users, () => eq(users.id, boardgames.ownerId))
-    .orderBy(asc(boardgames.inStorage), desc(boardgames.createdAt))
+    .orderBy(desc(boardgames.inStorage), desc(boardgames.createdAt))
     .limit(LIMIT)
     .offset(0);
 
