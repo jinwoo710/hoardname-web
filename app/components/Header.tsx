@@ -21,7 +21,7 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           {status === "loading" ? (
-            <div>Loading...</div>
+            <div className="hidden lg:flex h-[42px] justify-center items-center font-bold">Loading...</div>
           ) : session ? (
             <div className="hidden lg:flex items-center gap-4">
       

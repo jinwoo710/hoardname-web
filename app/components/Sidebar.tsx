@@ -43,6 +43,7 @@ export default function SideBar({ onClose }: SideBarProps) {
            
                 </>
             )}
+            <SideBarItem imageUrl="/email.svg" title="버그/문의" href="/email" onClose={onClose}/>
         </div>
     )
 }
