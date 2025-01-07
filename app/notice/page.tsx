@@ -4,7 +4,7 @@ export default function NoticePage() {
       <h1 className="text-3xl font-bold mb-4">공지사항</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300">
-          <h3 className="text-lg font-semibold mb-2">회칙</h3>
+          <strong className="text-lg font-semibold mb-2">회칙</strong>
           <p className="text-gray-700 mb-4">
             <strong>1. 호드네임의 의미</strong>
             <br />
@@ -44,7 +44,7 @@ export default function NoticePage() {
           </p>
         </div>
         <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300">
-             <h3 className="text-lg font-semibold mb-2">모임참여 가능 날짜 투표</h3>
+             <strong className="text-lg font-semibold mb-2">모임참여 가능 날짜 투표</strong>
           <p className="text-gray-700 mb-4">
             1. 채팅방 상단 고정된 &apos;N월 N주차 투표&apos; 클릭
             <br />
@@ -73,7 +73,7 @@ export default function NoticePage() {
          
         </div>
         <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300">
-        <h3 className="text-lg font-semibold mb-2">아지트 이용요금</h3>
+        <strong className="text-lg font-semibold mb-2">아지트 이용요금</strong>
           <p className="text-gray-700 mb-4">
             1일 무제한: 6,000원 
             <br />
@@ -84,8 +84,8 @@ export default function NoticePage() {
             <br />
             <br />
              <br />
-           <h3 className="text-lg font-semibold mb-2">주의 사항</h3>
-
+            <strong className="text-lg font-semibold mb-2">주의 사항</strong>
+            <br/>
             1. 자신이 참여하기로 한 시간은 반드시 지켜주세요.
             <br />
             2. 당일~2일 전쯤 벙 참여자는 반드시 일정을 취합해주세요.

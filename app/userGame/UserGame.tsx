@@ -138,16 +138,24 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
                     <ul className='text-sm text-gray-600 space-y-1.5'>
                         <li>게임 등록은 <span className='font-bold text-blue-900'>닉네임</span> 설정 후 이용 할 수 있습니다.</li>
-                        <li>게임을 외부로 가져갈 시, <span className='font-bold text-green-800'>아지트</span>를 클릭하여 게임 상태를 변경해주세요.</li>
+          <li>게임을 외부로 가져갈 시, <span className='font-bold text-green-800'>아지트</span>를 클릭하여 게임 상태를 변경해주세요.</li>
+          <li>검색 가능한 게임 목록은 BoardGameGeek 기준입니다. 검색한 보드게임이 없을 경우 문의하기에 남겨주세요.</li>
                 </ul>
                 </div>
             <div className="relative w-full mb-2">
-              <input
-                type="text"
-                placeholder="게임 이름 검색..."
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-md"
-              />
+        <div className="relative flex-1">
+                    <input
+                        type="text"
+                        placeholder="게임 이름으로 검색..."
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {loading && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                        </div>
+                    )}
+                </div>
         
             </div>
 

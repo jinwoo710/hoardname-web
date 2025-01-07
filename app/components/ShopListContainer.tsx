@@ -10,7 +10,7 @@ interface ShopListContainerProps {
 export default function ShopListContainer({ boardgames }: ShopListContainerProps) {
     if (boardgames.length === 0) {
         return (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center pt-[50px] lg:pt-[200px] text-lg text-gray-500">
                 등록된 중고 게임이 없습니다.
             </div>
         );

@@ -13,7 +13,7 @@ export default function UserGameListContainer({ boardgames, handleToggleInStorag
     return (
         <div className="space-y-4">
             {boardgames.length === 0 ? (
-                <div className="text-center pt-[200px] text-lg text-gray-500">등록된 보드게임이 없습니다</div>
+                <div className="text-center pt-[50px] lg:pt-[200px] text-lg text-gray-500">등록된 보드게임이 없습니다</div>
             ) : (
                boardgames.map((game) => (
               <div
