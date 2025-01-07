@@ -12,8 +12,10 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
         if (!recommendedWith) return null;
         try {
             const parsed = JSON.parse(recommendedWith);
+        
             if (!Array.isArray(parsed) || parsed.length === 0) return null;
-            return parsed.join('-');
+            if (parsed.length === 1) return parsed[0];
+            return parsed[0]+'-'+parsed[parsed.length-1];
         } catch {
             return null;
         }
@@ -60,7 +62,7 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
                                                     : `${item.minPlayers}-${item.maxPlayers}인`}
                                             </span>
                                         </div>
-                                        {item.weight && (
+                                        {item.weight !== null ? (
                                             <div className="flex items-center">
                                                 <span className="inline-block w-1 h-1 bg-gray-300 rounded-full mx-2"></span>
                                                 <span className={`
@@ -72,31 +74,32 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
                                                     난이도 {item.weight.toFixed(1)}
                                                 </span>
                                             </div>
-                                        )}
+                                        ) : <div className="flex items-center">
+                                                <span className="inline-block w-1 h-1 bg-gray-300 rounded-full mx-2"></span>난이도 없음</div>}
                                     </div>
                                 </div>
-                                <span className={`shrink-0 px-4 py-1 rounded-full  font-bold ${item.imported
+                                <span className={`shrink-0 px-4 ml-1 py-1 rounded-full  font-bold ${item.inStorage
                                     ? 'bg-blue-50 text-blue-600 ring-1 ring-blue-500/20'
                                     : 'bg-red-50 text-red-600 ring-1 ring-red-500/20'
                                     }`}>
-                                    {item.imported ? '아지트' : '외부'}
+                                    {item.inStorage ? '아지트' : '외부'}
                                 </span>
                             </div>
 
                             <div className="flex-grow">
                                 <div className="flex flex-wrap gap-2 text-sm">
-                                    {item.bestWith && (
+                                  
                                         <div className="flex items-center bg-green-50 rounded-lg px-3 py-1.5">
                                             <span className="w-1.5 h-1.5 rounded-full bg-green-400 mr-2"></span>
-                                            <span className="text-green-700">최적 {item.bestWith}인</span>
+                                            <span className="text-green-700">최적 {item.bestWith ? item.bestWith+'인' : '없음'}</span>
                                         </div>
-                                    )}
-                                    {item.recommendedWith && (
+                                    
+                                   
                                         <div className="flex items-center bg-yellow-50 rounded-lg px-3 py-1.5">
                                             <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2"></span>
-                                            <span className="text-yellow-700">추천 {formatRecommendedWith(item.recommendedWith)}인</span>
+                                            <span className="text-yellow-700">추천 { formatRecommendedWith(item.recommendedWith) !== null ? formatRecommendedWith(item.recommendedWith) +'인' : '없음'}</span>
                                         </div>
-                                    )}
+                                 
                                 </div>
                             </div>
 

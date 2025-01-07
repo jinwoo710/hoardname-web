@@ -54,7 +54,7 @@ export interface BoardGame {
   maxPlayers: number | null;
   thumbnailUrl: string | null;
   imageUrl: string | null;
-  imported: boolean | null;
+  inStorage: boolean | null;
   bggId: string | null;
   createdAt: Date | null;
   ownerId?: string;
@@ -73,7 +73,7 @@ export interface CreateBoardGame {
   imageUrl?: string;
   bggId?: string;
   ownerId: string;
-  imported?: boolean;
+  inStorage?: boolean;
 }
 
 export interface UpdateBoardGame {
@@ -89,5 +89,5 @@ export interface UpdateBoardGame {
   imageUrl?: string;
   bggId?: string;
   ownerId?: string;
-  imported?: boolean;
+  inStorage?: boolean;
 }

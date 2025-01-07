@@ -2,21 +2,104 @@
 
 import { useState} from 'react';
 import { ShopItem } from '@/types/boardgame';
+import InfiniteScroll from '../components/InfiniteScroll';
+import AddShopModal from '../components/AddShopModal';
+import { useSession } from 'next-auth/react';
+import { UserCheckResponse } from '../shop/ShopList';
+import toast from 'react-hot-toast';
+import { useInfinityScroll } from '../hooks/useInfinityScroll';
+import Image from 'next/image'
 
 interface UserShopProps {
   initialShopItems: ShopItem[];
+  userId: string;
+  limit:number;
 }
 
-export default function UserShop({ initialShopItems }: UserShopProps) {
+export default function UserShop({ initialShopItems, userId, limit }: UserShopProps) {
 
-  const [boardgames, setBoardgames] = useState<ShopItem[]>(initialShopItems);
-  const [filteredGames, setFilteredGames] = useState<ShopItem[]>(initialShopItems);
-  const [searchTerm, setSearchTerm] = useState('');
+   const { data: session } = useSession();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const {
+        items: shopItems,
+        loading,
+        hasMore,
+        loadMore,
+        reset,
+        handleSearch
+    } = useInfinityScroll({
+        initialData: initialShopItems,
+        fetchData: async (page: number, searchTerm: string) => {
+            const searchParams = new URLSearchParams();
+            searchParams.set("page", page.toString());
+            searchParams.set("limit", limit.toString());
+            if (searchTerm) searchParams.set("search", searchTerm);
+
+            const response = await fetch(
+                `/api/shop?${searchParams.toString()}&ownerId=${userId}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            if (!response.ok) throw new Error('Failed to fetch shop items');
+            const data = await response.json() as { items: ShopItem[], hasMore: boolean, total: number };
+            return {
+                items: data.items,
+                hasMore: data.hasMore,
+                total: data.total
+            };
+        },
+    });
+
+    const handleGameAdded = async () => {
+        await reset();
+    };
+
+    const handleAddClick = async () => {
+        if (!session) {
+            toast.error("로그인 후 등록 가능합니다.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/user/check`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('사용자 정보를 확인하는데 실패했습니다.');
+            }
+
+            const data = (await response.json()) as UserCheckResponse;
+            if (!data.hasNickname) {
+                toast.error("회원 정보 - 닉네임 등록 후 사용가능합니다");
+                return;
+            }
+
+            if(!data.openKakaotalkUrl) {
+                toast.error("회원 정보 - 카카오톡 오픈채팅 링크 등록 후 사용가능합니다");
+                return;
+            }
+
+            
+
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error("사용자 정보를 확인하는데 실패했습니다");
+        }
+    };
 
 
 
-
-  const handleToggleImported = async (gameId: string, currentState: boolean) => {
+  const handleToggleImported = async (gameId: string, gameName: string, currentState: boolean) => {
     try {
       const response = await fetch('/api/shop', {
         method: 'PATCH',
@@ -30,77 +113,62 @@ export default function UserShop({ initialShopItems }: UserShopProps) {
       });
 
       if (!response.ok) throw new Error('게임 상태 변경에 실패했습니다.');
-      
-       const { shopItem } = await response.json() as { shopItem: ShopItem };
-    setBoardgames(prevGames => 
-      prevGames.map(game => 
-        game.id === shopItem.id ? shopItem : game // 업데이트된 shopItem으로 교체
-      )
-    );
-    setFilteredGames(prevGames => 
-      prevGames.map(game => 
-        game.id === shopItem.id ? shopItem : game // 업데이트된 shopItem으로 교체
-      )
-    );
-  } catch (error) {
+      toast.success(`${gameName} 상태 변경 완료`);
+      await reset();
+    } catch (error) {
+      toast.error(`${gameName} 상태 변경 실패`);
     console.error('게임 상태 변경 실패:', error);
   }
 };
 
 
-  const handleSearch = (term: string) => {
-    const filtered = term
-      ? boardgames.filter(game =>
-          game.name.toLowerCase().includes(term.toLowerCase()) ||
-          (game.originalName && game.originalName.toLowerCase().includes(term.toLowerCase()))
-        )
-      : boardgames;
-    setFilteredGames(filtered);
-    setSearchTerm(term);
-  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">내 보드게임 목록</h2>
-          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4 mt-4 md:mt-0 w-full md:w-auto">
-            <div className="relative w-full md:w-64">
+ <div className="container mx-auto px-4 py-8">
+           <div className="flex justify-between items-center mb-2">
+                    <h1 className="text-2xl font-bold text-gray-800">내 중고 장터 목록</h1>
+            <button
+                    onClick={handleAddClick}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                    중고 게임 추가
+                </button>
+            </div>
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
+                    <ul className='text-sm text-gray-600 space-y-1.5'>
+                        <li>중고 게임 등록은 <span className='font-bold text-blue-900'>닉네임</span>과 <span className='font-bold text-blue-900'>카카오톡 오픈채팅 링크</span> 설정 후 이용 할 수 있습니다.</li>
+          <li>게임이 판매되면, <span className='font-bold text-green-800'>판매 중</span>을 클릭하여 상태를 변경해주세요.</li>
+                </ul>
+                </div>
+          <div className="relative w-full mb-2">
               <input
                 type="text"
                 placeholder="게임 이름 검색..."
-                value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-md"
               />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
+        
             </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {filteredGames.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">
-              {searchTerm ? '검색 결과가 없습니다' : '판매중인 보드게임이 없습니다'}
-            </p>
+     <div className="space-y-4">
+      
+       <InfiniteScroll
+                hasMore={hasMore}
+                loading={loading}
+                onLoadMore={loadMore}
+                className="space-y-4"
+            >
+               <div className="space-y-4">
+          {shopItems.length === 0 ? (
+         <div className="text-center pt-[200px] text-lg text-gray-500">등록된 중고 게임이 없습니다</div>
           ) : (
-            filteredGames.map((game) => (
+            shopItems.map((game) => (
               <div
                 key={game.id.toString()}
                 className="flex items-center justify-between p-4 border rounded-lg"
               >
                 <div className="flex items-center space-x-4">
                   {game.thumbnailUrl && (
-                    <img src={game.thumbnailUrl} alt={game.name} className="w-16 h-16 object-cover rounded" />
+                    <Image width={64} height={64} src={game.thumbnailUrl} alt={game.name} className="object-cover rounded" />
                   )}
                   <div>
                     <h3 className="font-medium">{game.name}</h3>
@@ -111,14 +179,14 @@ export default function UserShop({ initialShopItems }: UserShopProps) {
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => handleToggleImported(game.id.toString(), game.isDeleted ?? false)}
-                    className={`w-[40px] h-[40px] md:w-[60px] flex justify-center items-center py-1 rounded ${
+                    onClick={() => handleToggleImported(game.id.toString(), game.name, game.isDeleted ?? false)}
+                    className={`w-[60px] h-[40px] flex justify-center items-center py-1 ml-2 rounded shrink-0 ${
                       game.isDeleted 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-red-100 text-red-800' 
+                        :  'bg-green-100 text-green-800' 
                     }`}
                   >
-                    <span className="text-[12px] font-bold mx-auto">{game.isDeleted ? '판매 완료' : '판매 중'}</span>
+                    <span className="text-[12px] font-bold mx-auto shrink-0">{game.isDeleted ? '판매 완료' : '판매 중'}</span>
                   </button>
 
                 </div>
@@ -126,6 +194,15 @@ export default function UserShop({ initialShopItems }: UserShopProps) {
             ))
           )}
         </div>
+            </InfiniteScroll>
+
+            <AddShopModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onGameAdded={handleGameAdded}
+      />
+      </div>
+       
     
     </div>
   );

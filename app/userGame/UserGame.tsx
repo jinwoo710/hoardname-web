@@ -3,21 +3,84 @@
 import { useState} from 'react';
 import { BoardGame } from '@/types/boardgame';
 import toast from 'react-hot-toast';
+import AddGameModal from '../components/AddGameModal';
+import InfiniteScroll from '../components/InfiniteScroll';
+import { useInfinityScroll } from '../hooks/useInfinityScroll';
+import UserGameListContainer from '../components/UserGameListContainer';
+
 
 interface UserGameProps {
   initialBoardgames: BoardGame[];
+  userId: string;
+  limit: number;
 }
 
-export default function UserGame({ initialBoardgames }: UserGameProps) {
+export default function UserGame({ initialBoardgames, userId, limit }: UserGameProps) {
 
-  const [boardgames, setBoardgames] = useState<BoardGame[]>(initialBoardgames);
-  const [filteredGames, setFilteredGames] = useState<BoardGame[]>(initialBoardgames);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+      const {
+        items: boardgames,
+        loading,
+        hasMore,
+        loadMore,
+        handleSearch,
+        reset
+    } = useInfinityScroll({
+        initialData: initialBoardgames,
+        fetchData: async (page: number, searchTerm: string) => {
+            const response = await fetch(
+                `/api/boardgames?page=${page}&limit=${limit}${searchTerm ? `&search=${searchTerm}` : ''}&ownerId=${userId}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            if (!response.ok) throw new Error('Failed to fetch games');
+            const data = await response.json() as { items: BoardGame[], hasMore: boolean, total: number };
+            return {
+                items: data.items,
+                hasMore: data.hasMore,
+                total: data.total
+            };
+        },
+    });
+  
+    const handleGameAdded = async () => {
+      await reset(); 
+    };
+   const handleAddClick = async () => {
 
 
+        try {
+            const response = await fetch(`/api/user/check`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('사용자 정보를 확인하는데 실패했습니다.');
+            }
+
+            const data = await response.json() as { hasNickname: boolean };
+            if (!data.hasNickname) {
+                toast.error("회원 정보 - 닉네임 등록 후 사용가능합니다");
+                return;
+            }
+
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error("사용자 정보를 확인하는데 실패했습니다");
+        }
+    };
 
 
-  const handleToggleImported = async (gameId: string, currentImported: boolean) => {
+  const handleToggleInStroage = async (gameId: string, gameName: string, currentInStorage: boolean) => {
     try {
       const response = await fetch('/api/boardgames', {
         method: 'PATCH',
@@ -26,23 +89,15 @@ export default function UserGame({ initialBoardgames }: UserGameProps) {
         },
         body: JSON.stringify({
           id: parseInt(gameId, 10),
-          imported: !currentImported,
+          inStorage: !currentInStorage,
         }),
       });
 
       if (!response.ok) throw new Error('게임 상태 변경에 실패했습니다.');
       
-      const { boardgame } = await response.json() as { boardgame: BoardGame };
-      setBoardgames(prevGames => 
-        prevGames.map(game => 
-          game.id === boardgame.id ? boardgame : game
-        )
-      );
-      setFilteredGames(prevGames => 
-        prevGames.map(game => 
-          game.id === boardgame.id ? boardgame : game
-        )
-      );
+      await reset();
+      toast.success(`${gameName} 상태 변경 완료`);
+
     } catch (error) {
       console.error('게임 상태 변경 실패:', error);
     }
@@ -59,11 +114,8 @@ export default function UserGame({ initialBoardgames }: UserGameProps) {
       if (!response.ok) {
         throw new Error('게임 삭제에 실패했습니다.');
       }
-      
-      const numericId = parseInt(gameId, 10);
-      const updatedGames = boardgames.filter(game => game.id !== numericId);
-      setBoardgames(updatedGames);
-      setFilteredGames(filteredGames.filter(game => game.id !== numericId));
+      await reset();
+
       toast.success('삭제되었습니다.');
     } catch (error) {
       console.error('게임 삭제 실패:', error);
@@ -71,91 +123,57 @@ export default function UserGame({ initialBoardgames }: UserGameProps) {
     }
   };
 
-  const handleSearch = (term: string) => {
-    const filtered = term
-      ? boardgames.filter(game =>
-          game.name.toLowerCase().includes(term.toLowerCase()) ||
-          (game.originalName && game.originalName.toLowerCase().includes(term.toLowerCase()))
-        )
-      : boardgames;
-    setFilteredGames(filtered);
-    setSearchTerm(term);
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-
-    
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">내 보드게임 목록</h2>
-          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4 mt-4 md:mt-0 w-full md:w-auto">
-            <div className="relative w-full md:w-64">
+           <div className="flex justify-between items-center mb-2">
+                    <h1 className="text-2xl font-bold text-gray-800">내 보드게임 목록</h1>
+            <button
+                    onClick={handleAddClick}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                    보드게임 추가
+                </button>
+            </div>
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
+                    <ul className='text-sm text-gray-600 space-y-1.5'>
+                        <li>게임 등록은 <span className='font-bold text-blue-900'>닉네임</span> 설정 후 이용 할 수 있습니다.</li>
+                        <li>게임을 외부로 가져갈 시, <span className='font-bold text-green-800'>아지트</span>를 클릭하여 게임 상태를 변경해주세요.</li>
+                </ul>
+                </div>
+            <div className="relative w-full mb-2">
               <input
                 type="text"
                 placeholder="게임 이름 검색..."
-                value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-md"
               />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
+        
             </div>
-          </div>
-        </div>
 
         <div className="space-y-4">
-          {filteredGames.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">
-              {searchTerm ? '검색 결과가 없습니다' : '보유한 보드게임이 없습니다'}
-            </p>
-          ) : (
-            filteredGames.map((game) => (
-              <div
-                key={game.id.toString()}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div className="flex items-center space-x-4">
-                  {game.thumbnailUrl && (
-                    <img src={game.thumbnailUrl} alt={game.name} className="w-16 h-16 object-cover rounded" />
-                  )}
-                  <div>
-                    <h3 className="font-medium">{game.name}</h3>
-                    <p className="hidden md:block text-sm text-gray-500">{game.originalName}</p>
-     
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleToggleImported(game.id.toString(), game.imported ?? false)}
-                    className={`w-[40px] h-[40px] md:w-[60px] flex justify-center items-center py-1 rounded ${
-                      game.imported 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    <span className="text-[12px] font-bold mx-auto">{game.imported ? '아지트' : '외부'}</span>
-                  </button>
-                  <button
-                    onClick={() => handleDeleteGame(game.id.toString())}
-                    className="w-[40px] h-[40px] px-3 py-1 rounded bg-red-100 text-red-800"
-                  >
-                    <svg className="w-4 h-4 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+      
+            <InfiniteScroll
+                loading={loading}
+                hasMore={hasMore}
+                onLoadMore={loadMore}
+                className="space-y-4"
+            >
+              <UserGameListContainer
+                boardgames={boardgames}
+                handleToggleInStorage={handleToggleInStroage}
+                handleDeleteGame={handleDeleteGame}
+              />
+            </InfiniteScroll>
+        
+          
       </div>
+       <AddGameModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onGameAdded={handleGameAdded}
+            />
     </div>
+     
   );
 }

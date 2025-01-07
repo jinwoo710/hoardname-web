@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { shop, users } from "@/db/schema";
 import { CreateShopItem, ShopItem } from "@/types/boardgame";
-import { eq, desc, sql, like, or } from "drizzle-orm";
+import { eq, desc, sql, like, or, and } from "drizzle-orm";
 
 export const runtime = "edge";
 
@@ -36,6 +36,8 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
+    const ownerId = searchParams.get("ownerId");
+    const isDeleted = searchParams.get("isDeleted");
     const offset = (page - 1) * limit;
 
     let whereClause = undefined;
@@ -44,6 +46,20 @@ export async function GET(request: Request) {
         like(shop.name, `%${search}%`),
         like(shop.originalName, `%${search}%`)
       );
+    }
+
+    if (ownerId) {
+      const ownerCondition = eq(shop.ownerId, ownerId);
+      whereClause = whereClause
+        ? and(whereClause, ownerCondition)
+        : ownerCondition;
+    }
+
+    if (isDeleted) {
+      const isDeletedCondition = eq(shop.isDeleted, false);
+      whereClause = whereClause
+        ? and(whereClause, isDeletedCondition)
+        : isDeletedCondition;
     }
 
     const totalResult = await db
@@ -105,8 +121,6 @@ export async function PATCH(request: Request) {
     if (!result.length) {
       return Response.json({ error: "shopItem not found" }, { status: 404 });
     }
-
-    
 
     const updatedShopItem = result[0] as ShopItem;
     return Response.json({ shopItem: updatedShopItem });
