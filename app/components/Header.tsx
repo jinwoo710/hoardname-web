@@ -23,7 +23,7 @@ export default function Header() {
           {status === "loading" ? (
             <div>Loading...</div>
           ) : session ? (
-            <div className="flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-4">
       
               <span>{session.user?.name}</span>
               <button
@@ -36,7 +36,7 @@ export default function Header() {
           ) : (
             <button
               onClick={signInWithGoogle}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              className="hidden lg:flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -80,7 +80,7 @@ export default function Header() {
         </div>
       </div>
       <MobileSidebar 
-        isOpen={isMobileMenuOpen} 
+        isMobileMenuOpen={isMobileMenuOpen} 
         onClose={() => setIsMobileMenuOpen(false)} 
       />
     </header>

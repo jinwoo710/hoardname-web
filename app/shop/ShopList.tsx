@@ -75,12 +75,19 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
                 </ul>
                 </div>
   <div className="mb-6">
-                <input
-                    type="text"
-                    placeholder="게임 이름으로 검색..."
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+        <div className="relative flex-1">
+                    <input
+                        type="text"
+                        placeholder="게임 이름으로 검색..."
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {loading && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                        </div>
+                    )}
+                </div>
             </div>
             <InfiniteScroll
                 hasMore={hasMore}
