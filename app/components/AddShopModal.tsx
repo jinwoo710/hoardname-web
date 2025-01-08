@@ -168,10 +168,10 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
                       <div className="flex space-x-2">
                         <div className="flex flex-col">
                             <span className={`text-sm
-                                                ${selectedGame.weight > 4.0 ? 'text-red-500' : 
-                                                  selectedGame.weight > 3.0 ? 'text-orange-500' :
-                                                  selectedGame.weight > 2.0 ? 'text-green-500' :
-                                                  selectedGame.weight > 1.0 ? 'text-blue-500' : 'text-purple-500'}
+                                               ${selectedGame.weight >= 4.0 ? 'text-red-500' : 
+                                                  selectedGame.weight >= 3.0 ? 'text-orange-500' :
+                                                  selectedGame.weight >= 2.0 ? 'text-green-500' :
+                                                  selectedGame.weight >= 1.0 ? 'text-blue-500' : 'text-purple-500'}
                                             `}>
                                                 난이도 {selectedGame.weight.toFixed(1)}
                                             </span>

@@ -43,7 +43,14 @@ export default function SideBar({ onClose }: SideBarProps) {
            
                 </>
             )}
-            <SideBarItem imageUrl="/email.svg" title="버그/문의" href="/email" onClose={onClose}/>
+            <SideBarItem imageUrl="/email.svg" title="버그/문의" href="/email" onClose={onClose} />
+            <Link 
+            href={"/patchNotes"} 
+            className="hover:bg-[#f8f8f8] w-full rounded-xl h-[48px] px-4 text-gray-400 flex items-center"
+            onClick={onClose}
+        >
+            <span className="ml-[28px]">패치 노트</span>
+        </Link>
         </div>
     )
 }

@@ -30,7 +30,7 @@ export default function MobileSidebar({
   const signInWithGoogle = () => signIn("google");
 
   return (
-    <>
+    <div className="block lg:hidden">
       <div
         className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
           isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -109,6 +109,6 @@ export default function MobileSidebar({
           )}
         </div>
       </aside>
-    </>
+    </div>
   );
 }
