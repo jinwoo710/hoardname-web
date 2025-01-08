@@ -48,7 +48,7 @@ export default async function UserGamePage() {
       .from(boardgames)
       .leftJoin(users, () => eq(users.id, boardgames.ownerId))
       .where(eq(boardgames.ownerId, dbUser.id))
-      .orderBy(asc(boardgames.inStorage), desc(boardgames.createdAt))
+      .orderBy(desc(boardgames.inStorage), desc(boardgames.createdAt))
       .limit(LIMIT)
       .offset(0);
   
