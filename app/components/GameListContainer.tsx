@@ -66,10 +66,10 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
                                             <div className="flex items-center">
                                                 <span className="inline-block w-1 h-1 bg-gray-300 rounded-full mx-2"></span>
                                                 <span className={`
-                                                ${item.weight > 4.0 ? 'text-red-500' :
-                                                        item.weight > 3.0 ? 'text-orange-500' :
-                                                            item.weight > 2.0 ? 'text-green-500' :
-                                                                item.weight > 1.0 ? 'text-blue-500' : 'text-purple-500'}
+                                                ${item.weight >= 4.0 ? 'text-red-500' :
+                                                        item.weight >= 3.0 ? 'text-orange-500' :
+                                                            item.weight >= 2.0 ? 'text-green-500' :
+                                                                item.weight >= 1.0 ? 'text-blue-500' : 'text-purple-500'}
                                             `}>
                                                     난이도 {item.weight.toFixed(1)}
                                                 </span>
