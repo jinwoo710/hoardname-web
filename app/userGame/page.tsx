@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import UserGame from "./UserGame";
 import { db } from "@/db";
-import { desc, eq ,asc} from "drizzle-orm";
+import { desc, eq} from "drizzle-orm";
 import { users, boardgames } from "@/db/schema";
 import { BoardGame } from "@/types/boardgame";
 export const runtime = "edge";
