@@ -23,7 +23,7 @@ export default function UserProfileClient({ user }: UserProfileClientProps) {
     setIsSubmitting(true);
     setError('');
 
-    if (openKakaotalkUrl.length > 0 && !openKakaotalkUrl.startsWith('https://open.kakao.com/o/')) {
+    if (openKakaotalkUrl.length > 0 && !openKakaotalkUrl.startsWith('https://open.kakao.com/')) {
       setIsSubmitting(false);
       toast.error('올바른 카카오톡 오픈채팅 링크가 아닙니다.');
       return;
@@ -93,7 +93,7 @@ export default function UserProfileClient({ user }: UserProfileClientProps) {
               value={openKakaotalkUrl}
               onChange={(e) => setOpenKakaotalkUrl(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="https://open.kakao.com/o/"
+              placeholder="https://open.kakao.com/"
             />
           </div>
           {error && (
