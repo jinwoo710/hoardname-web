@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { shop, users } from "@/db/schema";
 import { CreateShopItem, ShopItem } from "@/types/boardgame";
-import { eq, desc, sql, like, or, and } from "drizzle-orm";
+import { eq, desc, sql, like, or, and, asc } from "drizzle-orm";
 
 export const runtime = "edge";
 
@@ -38,6 +38,7 @@ export async function GET(request: Request) {
     const search = searchParams.get("search") || "";
     const ownerId = searchParams.get("ownerId");
     const isDeleted = searchParams.get("isDeleted");
+    const priceSort = searchParams.get("priceSort");
     const offset = (page - 1) * limit;
 
     let whereClause = undefined;
@@ -60,6 +61,16 @@ export async function GET(request: Request) {
       whereClause = whereClause
         ? and(whereClause, isDeletedCondition)
         : isDeletedCondition;
+    }
+
+    let orderByClause = [desc(shop.createdAt)];
+
+    if (priceSort) {
+      if (priceSort === "asc") {
+        orderByClause = [asc(shop.price), ...orderByClause];
+      } else if (priceSort === "desc") {
+        orderByClause = [desc(shop.price), ...orderByClause];
+      }
     }
 
     const totalResult = await db
@@ -86,7 +97,7 @@ export async function GET(request: Request) {
       .from(shop)
       .leftJoin(users, eq(shop.ownerId, users.id))
       .where(whereClause || undefined)
-      .orderBy(desc(shop.createdAt))
+      .orderBy(...orderByClause)
       .limit(limit)
       .offset(offset);
 

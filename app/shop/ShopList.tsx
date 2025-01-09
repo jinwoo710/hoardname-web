@@ -20,22 +20,24 @@ export interface UserCheckResponse {
 export default function ShopList({ initialShopItems, limit }: ShopListProps) {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+const [priceSort, setPriceSort] = useState<string>("");
     const {
         items: shopItems,
         loading,
         hasMore,
         loadMore,
         reset,
+        updateFilters,
         handleSearch
     } = useInfinityScroll({
         initialData: initialShopItems,
-        fetchData: async (page: number, searchTerm: string) => {
+        fetchData: async (page: number, searchTerm: string, filters?: Record<string, string>) => {
             const searchParams = new URLSearchParams();
             searchParams.set("page", page.toString());
             searchParams.set("limit", limit.toString());
             searchParams.set("isDeleted", "false"); 
             if (searchTerm) searchParams.set("search", searchTerm);
+            if (filters?.priceSort) searchParams.set("priceSort", filters.priceSort);
 
             const response = await fetch(
                 `/api/shop?${searchParams.toString()}`,
@@ -56,6 +58,15 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
         },
     });
 
+     const handleFilterChange = ( value: string) => {
+        setPriceSort(value)
+        
+        const newFilters: Record<string, string> = {};
+            if (value) newFilters.priceSort = value;
+        
+        updateFilters(newFilters);
+    };
+
     const handleGameAdded = async () => {
         await reset();
     };
@@ -75,13 +86,23 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
                 </ul>
                 </div>
   <div className="mb-6">
-        <div className="relative flex-1">
+        <div className="relative flex space-x-2">
+            
                     <input
                         type="text"
                         placeholder="게임 이름으로 검색..."
                         onChange={(e) => handleSearch(e.target.value)}
                         className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
+                       <select 
+                    className="border border-gray-200  rounded-xl px-5 py-2 w-fit lg:w-auto"
+                    value={priceSort}
+                    onChange={(e) => handleFilterChange( e.target.value)}
+                >
+                    <option value="">가격 정렬</option>
+                    <option value="asc">낮은 가격순</option>
+                    <option value="desc">높은 가격순</option>
+                </select>
                     {loading && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2">
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>

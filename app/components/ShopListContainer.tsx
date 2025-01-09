@@ -16,6 +16,14 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
         );
     }
 
+    const handleCheckSharing = (price: number | null) => {
+        if (price === null || price === 0) {
+            return '나눔';
+        }
+        
+        return `${price.toLocaleString()}원`;
+    }
+
     return (
         <div className="space-y-4">
             {boardgames.map((item) => (
@@ -56,14 +64,14 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                               
                             </div>
                             
-                            <div className="flex flex-row md:flex-col justify-between md:items-end gap-4 mt-2 md:mt-0">
-                                <div className="text-xl font-bold shrink-0">
-                                    {typeof item.price === 'number' ? item.price.toLocaleString() : '0'}원
+                            <div className="flex flex-row md:flex-col justify-between md:items-end gap-4 mt-2 md:mt-0 lg:pl-9 lg:h-full lg:py-4 lg:justify-center">
+                                <div className="text-xl font-bold shrink-0 whitespace-nowrap">
+                                    {handleCheckSharing(item.price)}
                                 </div>
                                 <button
                                     onClick={() => window.open(item.openKakaoUrl, '_blank')}
                                     disabled={!item.openKakaoUrl}
-                                    className="px-4 py-2 bg-yellow-400 text-black rounded-xl disabled:bg-gray-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-yellow-400 font-medium"
+                                    className="px-4 py-2 whitespace-nowrap bg-yellow-400 text-black rounded-xl disabled:bg-gray-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-yellow-400 font-medium"
                                 >
                                     카톡
                                 </button>
