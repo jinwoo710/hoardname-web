@@ -203,12 +203,13 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
         </div>
             </InfiniteScroll>
 
-            <AddShopModal
+           
+      </div>
+       <AddShopModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onGameAdded={handleGameAdded}
       />
-      </div>
        
     
     </div>

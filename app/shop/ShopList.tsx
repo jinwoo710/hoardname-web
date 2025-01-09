@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import {  ShopItem } from '@/types/boardgame';
 import ShopListContainer from '../components/ShopListContainer';
-import AddShopModal from '../components/AddShopModal';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import InfiniteScroll from '../components/InfiniteScroll';
 
@@ -18,15 +17,12 @@ export interface UserCheckResponse {
 }
 
 export default function ShopList({ initialShopItems, limit }: ShopListProps) {
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
 const [priceSort, setPriceSort] = useState<string>("");
     const {
         items: shopItems,
         loading,
         hasMore,
         loadMore,
-        reset,
         updateFilters,
         handleSearch
     } = useInfinityScroll({
@@ -66,11 +62,6 @@ const [priceSort, setPriceSort] = useState<string>("");
         
         updateFilters(newFilters);
     };
-
-    const handleGameAdded = async () => {
-        await reset();
-    };
-
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -118,12 +109,6 @@ const [priceSort, setPriceSort] = useState<string>("");
             >
                 <ShopListContainer boardgames={shopItems} />
             </InfiniteScroll>
-
-            <AddShopModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onGameAdded={handleGameAdded}
-            />
         </div>
     );
 }
