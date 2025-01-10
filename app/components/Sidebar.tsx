@@ -31,7 +31,7 @@ export default function SideBar({ onClose }: SideBarProps) {
     const { data: session } = useSession();
 
     return (
-        <div className="w-full shrink-0 flex flex-col items-center p-4 space-y-2 ">
+        <div className="w-full shrink-0 flex flex-col items-center p-4 space-y-2 sticky top-[60px] lg:h-[calc(100vh-60px)] overflow-y-auto">
                 <SideBarItem imageUrl="/notice.svg" title="공지사항" href="/notice" onClose={onClose}/>
             <SideBarItem imageUrl="/search.svg" title="게임 리스트" href="/game" onClose={onClose}/>
             <SideBarItem imageUrl="/delivery.svg" title="중고 장터" href="/shop" onClose={onClose}/>

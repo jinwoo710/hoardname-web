@@ -63,9 +63,7 @@ export default function MobileSidebar({
             </svg>
           </button>
         </div>
-        <div className="overflow-y-auto h-[calc(100%-128px)]">
           <SideBar onClose={onClose} />
-        </div>
         <div className="absolute bottom-0 left-0 right-0 border-t p-4">
           {status === "loading" ? (
             <div className="text-center text-gray-500">Loading...</div>
