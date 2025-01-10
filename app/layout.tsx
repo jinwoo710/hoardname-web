@@ -25,7 +25,8 @@ export default function RootLayout({
             <aside className="hidden lg:block lg:w-[220px] lg:flex-shrink-0">
               <SideBar />
             </aside>
-            <main className="flex-grow">
+            
+            <main className="pt-[72px] flex-grow">
               {children}
             </main>
           </div>

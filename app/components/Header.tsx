@@ -4,13 +4,19 @@ import Link from "next/link";
 import { useState } from "react";
 import MobileSidebar from './MobileSidebar';
 import { signIn, signOut, useSession } from "next-auth/react";
+import { isKakaoWebView, closeKakaoWebView } from "../utils/kakaoWebView";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: session, status } = useSession();
 
-  const signInWithGoogle = async () =>
+  const signInWithGoogle = async () => {
+    if (isKakaoWebView()) {
+      closeKakaoWebView();
+      return;
+    }
     await signIn("google", { callbackUrl: "/game" });
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
