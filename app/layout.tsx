@@ -26,7 +26,7 @@ export default function RootLayout({
               <SideBar />
             </aside>
             
-            <main className="pt-[72px] flex-grow">
+            <main className="flex-grow">
               {children}
             </main>
           </div>
