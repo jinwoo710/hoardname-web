@@ -37,7 +37,6 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
     const ownerId = searchParams.get("ownerId");
-    const isDeleted = searchParams.get("isDeleted");
     const priceSort = searchParams.get("priceSort");
     const offset = (page - 1) * limit;
 
