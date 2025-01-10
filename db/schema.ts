@@ -125,5 +125,6 @@ export const shop = sqliteTable("shop", {
   }).$defaultFn(() => dayjs().toDate()),
   price: integer("price").notNull(),
   memo: text("memo"),
-  isDeleted: integer("deleted", { mode: "boolean" }).notNull().default(true),
+  isDeleted: integer("deleted", { mode: "boolean" }).notNull().default(false),
+  isOnSale: integer("onSale", { mode: "boolean" }).notNull().default(true),
 });

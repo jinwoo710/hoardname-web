@@ -73,7 +73,6 @@ const [priceSort, setPriceSort] = useState<string>("");
                         <li>중고 장터 등록은 <span className='font-bold text-blue-900'>로그인</span> 후 <span className='font-bold text-blue-900'>My 장터</span> 페이지에서 가능합니다.</li>
                         <li>전문 업자, 되팔이등의 행위 발각시 사용이 불가능합니다.</li>
                     <li>거래간 문제 발생 시, 호드네임에서 책임을 지지 않습니다</li>
-                    <li>판매 완료 처리된 상품은 해당 페이지에서 확인이 불가능합니다.</li>
                 </ul>
                 </div>
   <div className="mb-6">

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import UserShop from "./UserShop";
 import { db } from "@/db";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm";
 import { users, shop } from "@/db/schema";
 import { ShopItem } from "@/types/boardgame";
 export const runtime = "edge";
@@ -38,11 +38,15 @@ export default async function UserShopPage() {
       thumbnailUrl: shop.thumbnailUrl,
       createdAt: shop.createdAt,
       memo: shop.memo,
-      isDeleted: shop.isDeleted
+      isDeleted: shop.isDeleted,
+      isOnSale: shop.isOnSale
     })
    .from(shop)
     .leftJoin(users, eq(shop.ownerId, users.id))
-    .where(eq(shop.ownerId, dbUser.id))
+    .where(and(
+        eq(shop.ownerId, dbUser.id),
+        eq(shop.isDeleted, false)
+      ))
     .orderBy(desc(shop.createdAt))
     .limit(LIMIT) as ShopItem[];
 
