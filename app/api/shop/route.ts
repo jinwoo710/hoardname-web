@@ -56,12 +56,9 @@ export async function GET(request: Request) {
         : ownerCondition;
     }
 
-    if (isDeleted) {
-      const isDeletedCondition = eq(shop.isDeleted, false);
-      whereClause = whereClause
-        ? and(whereClause, isDeletedCondition)
-        : isDeletedCondition;
-    }
+    whereClause = whereClause
+      ? and(whereClause, eq(shop.isDeleted, false))
+      : eq(shop.isDeleted, false);
 
     let orderByClause = [desc(shop.createdAt)];
 
@@ -93,6 +90,7 @@ export async function GET(request: Request) {
         createdAt: shop.createdAt,
         memo: shop.memo,
         isDeleted: shop.isDeleted,
+        isOnSale: shop.isOnSale,
       })
       .from(shop)
       .leftJoin(users, eq(shop.ownerId, users.id))
@@ -120,12 +118,12 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   const data = (await request.json()) as ShopItem;
-  const { id, isDeleted } = data;
+  const { id, isDeleted, isOnSale } = data;
 
   try {
     const result = await db
       .update(shop)
-      .set({ isDeleted })
+      .set({ isDeleted, isOnSale })
       .where(eq(shop.id, id))
       .returning();
 

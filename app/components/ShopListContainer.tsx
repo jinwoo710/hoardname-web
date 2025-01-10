@@ -49,7 +49,7 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                     <div className="flex-grow p-5 flex flex-col">
                         <div className="flex flex-col md:flex-row md:items-start justify-between">
                             <div>
-                                <h3 className="font-bold text-xl text-gray-800  line-clamp-1">
+                                <h3 className="font-bold text-xl text-gray-800">
                                     {item.name}
                                 </h3>
                                   {item.memo && (
@@ -57,21 +57,24 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                                         메모: {item.memo}
                                     </div>
                                 )}
-                                <div className="text-sm  mt-2">
-                                    판매자: {item.ownerNickname}
+                                <div className="text-sm mt-1 lg:mt-2 font-bold ">
+                                    판매자 : {item.ownerNickname}
+                                </div>
+                                 <div className="text-sm mt-1 lg:mt-2 font-bold ">
+                                    상태 : <span className={`${item.isOnSale ? 'text-green-700' : 'text-red-600'}`}>{item.isOnSale ? '판매 중':'예약 중'}</span> 
                                 </div>
                                 
                               
                             </div>
                             
                             <div className="flex flex-row md:flex-col justify-between md:items-end gap-4 mt-2 md:mt-0 lg:pl-9 lg:h-full lg:py-4 lg:justify-center">
-                                <div className="text-xl font-bold shrink-0 whitespace-nowrap">
+                                <div className="text-xl font-bold shrink-0 whitespace-nowrap leading-10">
                                     {handleCheckSharing(item.price)}
                                 </div>
                                 <button
                                     onClick={() => window.open(item.openKakaoUrl, '_blank')}
                                     disabled={!item.openKakaoUrl}
-                                    className="px-4 py-2 whitespace-nowrap bg-yellow-400 text-black rounded-xl disabled:bg-gray-300 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-yellow-400 font-medium"
+                                    className="px-4 py-2 whitespace-nowrap bg-[#FEE500] font-bold text-black rounded-xl disabled:bg-gray-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-[#FEE500]"
                                 >
                                     카톡
                                 </button>

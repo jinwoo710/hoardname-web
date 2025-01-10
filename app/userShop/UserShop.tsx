@@ -1,6 +1,6 @@
 'use client';
 
-import { useState} from 'react';
+import { useState } from 'react';
 import { ShopItem } from '@/types/boardgame';
 import InfiniteScroll from '../components/InfiniteScroll';
 import AddShopModal from '../components/AddShopModal';
@@ -20,6 +20,7 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
 
    const { data: session } = useSession();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState<{show: boolean; gameId?: string; gameName?: string}>({ show: false });
 
     const {
         items: shopItems,
@@ -97,31 +98,54 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
         }
     };
 
+  const handleToggleOnSale = async (gameId: string, gameName: string, currentState: boolean) => {
+ 
+        try {
+          const response = await fetch('/api/shop', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: parseInt(gameId, 10),
+              isOnSale: !currentState,
+            }),
+          });
 
+          if (!response.ok) throw new Error('Failed to update game status');
+          
+          toast.success(`${gameName}의 상태가 변경되었습니다.`);
+          await reset();
+        } catch (error) {
+          console.error('Error updating game status:', error);
+          toast.error('상태 변경에 실패했습니다.');
+        }
+      };
 
-  const handleToggleImported = async (gameId: string, gameName: string, currentState: boolean) => {
-    try {
-      const response = await fetch('/api/shop', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: parseInt(gameId, 10),
-          isDeleted: !currentState,
-        }),
-      });
+      const handleDelete = async (gameId: string, gameName: string) => {
+        try {
+          const response = await fetch('/api/shop', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: parseInt(gameId, 10),
+              isDeleted: true,
+            }),
+          });
 
-      if (!response.ok) throw new Error('게임 상태 변경에 실패했습니다.');
-      toast.success(`${gameName} 상태 변경 완료`);
-      await reset();
-    } catch (error) {
-      toast.error(`${gameName} 상태 변경 실패`);
-    console.error('게임 상태 변경 실패:', error);
-  }
-};
-
-
+          if (!response.ok) throw new Error('Failed to delete game');
+          console.log(response)
+          
+          toast.success(`${gameName}이(가) 삭제되었습니다.`);
+          await reset();
+          setShowDeleteConfirm({ show: false });
+        } catch (error) {
+          console.error('Error deleting game:', error);
+          toast.error('삭제에 실패했습니다.');
+        }
+      };
 
   return (
  <div className="container mx-auto px-4 py-8">
@@ -184,18 +208,23 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
      
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleToggleImported(game.id.toString(), game.name, game.isDeleted ?? false)}
+                <div className="flex items-center lg:space-x-3 flex-col lg:flex-row lg:space-y-0 space-y-3">
+                      <button
+                    onClick={() => handleToggleOnSale(game.id.toString(), game.name, game.isOnSale )}
                     className={`w-[60px] h-[40px] flex justify-center items-center py-1 ml-2 rounded shrink-0 ${
-                      game.isDeleted 
-                        ? 'bg-red-100 text-red-800' 
-                        :  'bg-green-100 text-green-800' 
+                      game.isOnSale 
+                      ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800' 
                     }`}
                   >
-                    <span className="text-[12px] font-bold mx-auto shrink-0">{game.isDeleted ? '판매 완료' : '판매 중'}</span>
+                    <span className="text-[12px] font-bold mx-auto shrink-0">{game.isOnSale ? '판매 중' : '예약 중'}</span>
                   </button>
-
+                  <button
+                    onClick={() => setShowDeleteConfirm({ show: true, gameId: game.id.toString(), gameName: game.name })}
+                    className="w-[60px] h-[40px] flex text-[12px] font-bold justify-center items-center py-1 ml-2 rounded text-gray-600 shrink-0 bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    삭제
+                  </button>
                 </div>
               </div>
             ))
@@ -210,8 +239,28 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
                 onClose={() => setIsModalOpen(false)}
                 onGameAdded={handleGameAdded}
       />
-       
-    
+      {showDeleteConfirm.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">삭제 확인</h3>
+            <p className="mb-6">{showDeleteConfirm.gameName}을(를) 정말 삭제하시겠습니까?</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm({ show: false })}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => showDeleteConfirm.gameId && handleDelete(showDeleteConfirm.gameId, showDeleteConfirm.gameName || '')}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

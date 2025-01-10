@@ -32,6 +32,7 @@ export type ShopItem = {
   openKakaoUrl?: string;
   memo: string;
   isDeleted: boolean;
+  isOnSale: boolean;
 };
 
 export interface CreateShopItem {

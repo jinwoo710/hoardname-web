@@ -22,6 +22,7 @@ export default async function Shop() {
         createdAt: shop.createdAt,
         memo: shop.memo,
         isDeleted: shop.isDeleted,
+        isOnSale: shop.isOnSale
       })
       .from(shop)
     .leftJoin(users, eq(shop.ownerId, users.id))
