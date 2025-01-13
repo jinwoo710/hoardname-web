@@ -19,7 +19,6 @@ const PatchCard = ({ version, list }: PatchCardProps) => {
 export default function PatchNotes() {
   return (
     <div className="flex flex-col gap-2 px-4 py-4">
-      <PatchCard version="v 1.2.0" list={['카카오톡 웹뷰 접근 시 외부 브라우저로 연결']}/>
       <PatchCard version="v 1.1.2" list={['My 장터 예약 및 삭제 추가','헤더 사이드바 스티키 변경']}/>
       <PatchCard version="v 1.1.1" list={['중고 장터 필터 추가', '중고장터 나눔 처리 추가', '공지사항 내용 업데이트']}/>
       <PatchCard version="v 1.1.0" list={['패치노트 추가', '버그/문의 기능 추가']}/>
