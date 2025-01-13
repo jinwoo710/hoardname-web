@@ -8,9 +8,9 @@ import { signIn, signOut, useSession } from "next-auth/react";
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: session, status } = useSession();
-
-  const signInWithGoogle = async () =>
+ const signInWithGoogle = async () => {
     await signIn("google", { callbackUrl: "/game" });
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
