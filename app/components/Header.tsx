@@ -13,7 +13,7 @@ export default function Header() {
     await signIn("google", { callbackUrl: "/game" });
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
       <div className=" mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="text-xl font-bold">
           HoardName
