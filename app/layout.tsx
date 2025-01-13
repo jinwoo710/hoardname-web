@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import SideBar from "./components/Sidebar";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
+import KakaoWebViewRedirect from "./components/KakaoWebViewRedirect";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className="antialiased mx-auto w-full max-w-screen-md lg:max-w-screen-xl text-dark bg-white min-h-screen">
         <Providers>
+          <KakaoWebViewRedirect />
           <Header />
           <Toaster position="top-center" />
           <div className="flex flex-col lg:flex-row w-full">

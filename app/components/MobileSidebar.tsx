@@ -27,8 +27,9 @@ export default function MobileSidebar({
   }, [onClose]);
 
   const { data: session, status } = useSession();
-  const signInWithGoogle = () => signIn("google");
-
+ const signInWithGoogle = async () => {
+    await signIn("google", { callbackUrl: "/game" });
+  };
   return (
     <div className="block lg:hidden">
       <div
