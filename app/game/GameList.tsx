@@ -102,7 +102,7 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
                 </div>
                 <div className="flex space-x-2 mb-2 lg:mb-0">
                  <select 
-                    className="border border-gray-200  rounded-xl px-5 py-2 w-full lg:w-auto"
+                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full  lg:w-auto appearance-none"
                     value={weightSort}
                     onChange={(e) => handleFilterChange("weightSort", e.target.value)}
                 >
@@ -112,7 +112,7 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
                 </select>
 
                 <select 
-                    className="border border-gray-200  rounded-xl px-5 py-2 w-full lg:w-auto"
+                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full lg:w-auto"
                     value={bestWith}
                     onChange={(e) => handleFilterChange("bestWith", e.target.value)}
                 >
