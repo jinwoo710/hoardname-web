@@ -26,6 +26,7 @@ export default async function UserProfile() {
   return (
     <UserProfileClient
       user={{
+        id: dbUser.id,
         email: session.user.email,
         nickname: dbUser?.nickname || null,
         openKakaotalkUrl: dbUser?.openKakaotalkUrl || null,

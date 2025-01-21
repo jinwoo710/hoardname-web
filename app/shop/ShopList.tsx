@@ -5,6 +5,7 @@ import {  ShopItem } from '@/types/boardgame';
 import ShopListContainer from '../components/ShopListContainer';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import InfiniteScroll from '../components/InfiniteScroll';
+import { fetchShopItems } from '../actions/shop';
 
 interface ShopListProps {
     initialShopItems: ShopItem[];
@@ -35,21 +36,16 @@ const [priceSort, setPriceSort] = useState<string>("");
             if (searchTerm) searchParams.set("search", searchTerm);
             if (filters?.priceSort) searchParams.set("priceSort", filters.priceSort);
 
-            const response = await fetch(
-                `/api/shop?${searchParams.toString()}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            if (!response.ok) throw new Error('Failed to fetch shop items');
-            const data = await response.json() as { items: ShopItem[], hasMore: boolean, total: number };
+            const response = await fetchShopItems({
+                page: page,
+                limit: limit,
+                search: searchTerm,
+                priceSort: filters?.priceSort
+            })
             return {
-                items: data.items,
-                hasMore: data.hasMore,
-                total: data.total
+                items: response.items as ShopItem[],
+                hasMore: response.hasMore,
+                total: response.total
             };
         },
     });
@@ -85,7 +81,7 @@ const [priceSort, setPriceSort] = useState<string>("");
                         className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                        <select 
-                    className="border border-gray-200  rounded-xl px-5 py-2 w-fit lg:w-auto"
+                    className="border border-gray-200  rounded-xl px-5 py-2 w-fit lg:w-auto appearance-none text-center"
                     value={priceSort}
                     onChange={(e) => handleFilterChange( e.target.value)}
                 >

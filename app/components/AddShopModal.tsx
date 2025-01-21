@@ -6,6 +6,7 @@ import Image from "next/image";
 import { BggGame, CreateShopItem, BggGameResponse, ShopItem } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
 import toast from 'react-hot-toast';
+import { CreateShopItem as createShopItem } from '../actions/userShop';
 
 interface AddShopModalProps {
   isOpen: boolean;
@@ -84,23 +85,17 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
     };
 
     try {
-      const response = await fetch('/api/shop', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submitData),
-      });
-
-      if (!response.ok) {
+      const response = await createShopItem(submitData);
+      
+      if (!response.success) {
         throw new Error('Failed to add shop item');
       }
 
-      const result = await response.json() as { result: ShopItem };
       if (onGameAdded) {
-        onGameAdded(result.result);
+        onGameAdded(submitData as ShopItem);
       }
       handleClose();
+      toast.success('상품이 추가되었습니다.');
     } catch (error) {
       console.error('Error saving shop item:', error);
       toast.error('상품을 추가하는 중 오류가 발생했습니다.');

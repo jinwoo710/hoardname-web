@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import UserShop from "./UserShop";
 import { db } from "@/db";
-import { desc, eq, and } from "drizzle-orm";
-import { users, shop } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { users } from "@/db/schema";
 import { ShopItem } from "@/types/boardgame";
+import { fetchUserShop } from "../actions/userShop";
 export const runtime = "edge";
 
 const LIMIT = 20;
@@ -26,33 +27,14 @@ export default async function UserShopPage() {
     redirect("/");
   }
 
- const results = await db
-    .select({
-      id: shop.id,
-      name: shop.name,
-      originalName: shop.originalName,
-      ownerId: shop.ownerId,
-      ownerNickname: users.nickname,
-      openKakaoUrl: users.openKakaotalkUrl,
-      price: shop.price,
-      thumbnailUrl: shop.thumbnailUrl,
-      createdAt: shop.createdAt,
-      memo: shop.memo,
-      isDeleted: shop.isDeleted,
-      isOnSale: shop.isOnSale
-    })
-   .from(shop)
-    .leftJoin(users, eq(shop.ownerId, users.id))
-    .where(and(
-        eq(shop.ownerId, dbUser.id),
-        eq(shop.isDeleted, false)
-      ))
-    .orderBy(desc(shop.createdAt))
-    .limit(LIMIT) as ShopItem[];
-
+  const { items } = await fetchUserShop({
+    page: 1,
+    limit: LIMIT,
+    userId: dbUser.id
+  });
   return (
     <UserShop
-      initialShopItems={results as ShopItem[]}
+      initialShopItems={items as ShopItem[]}
       userId={dbUser.id}
       limit={LIMIT}
     />

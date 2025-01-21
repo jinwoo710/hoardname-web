@@ -9,6 +9,7 @@ import { UserCheckResponse } from '../shop/ShopList';
 import toast from 'react-hot-toast';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import Image from 'next/image'
+import { fetchUserShop, UpdateShopItem } from '../actions/userShop';
 
 interface UserShopProps {
   initialShopItems: ShopItem[];
@@ -32,26 +33,17 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
     } = useInfinityScroll({
         initialData: initialShopItems,
         fetchData: async (page: number, searchTerm: string) => {
-            const searchParams = new URLSearchParams();
-            searchParams.set("page", page.toString());
-            searchParams.set("limit", limit.toString());
-            if (searchTerm) searchParams.set("search", searchTerm);
 
-            const response = await fetch(
-                `/api/shop?${searchParams.toString()}&ownerId=${userId}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            if (!response.ok) throw new Error('Failed to fetch shop items');
-            const data = await response.json() as { items: ShopItem[], hasMore: boolean, total: number };
+          const response = await fetchUserShop({
+                page: page,
+                limit: limit,
+            userId: userId,
+            search: searchTerm
+            });
             return {
-                items: data.items,
-                hasMore: data.hasMore,
-                total: data.total
+                items: response.items,
+                hasMore: response.hasMore,
+                total: response.total
             };
         },
     });
@@ -101,18 +93,12 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
   const handleToggleOnSale = async (gameId: string, gameName: string, currentState: boolean) => {
  
         try {
-          const response = await fetch('/api/shop', {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              id: parseInt(gameId, 10),
-              isOnSale: !currentState,
-            }),
+          const response = await UpdateShopItem({
+            id: parseInt(gameId, 10),
+            isOnSale: !currentState,
           });
 
-          if (!response.ok) throw new Error('Failed to update game status');
+          if (!response.success) throw new Error('Failed to update game status');
           
           toast.success(`${gameName}의 상태가 변경되었습니다.`);
           await reset();
@@ -124,19 +110,12 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
 
       const handleDelete = async (gameId: string, gameName: string) => {
         try {
-          const response = await fetch('/api/shop', {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              id: parseInt(gameId, 10),
-              isDeleted: true,
-            }),
+          const response = await UpdateShopItem({
+            id: parseInt(gameId, 10),
+            isDeleted: true,
           });
 
-          if (!response.ok) throw new Error('Failed to delete game');
-          console.log(response)
+          if (!response.success) throw new Error('Failed to delete game');
           
           toast.success(`${gameName}이(가) 삭제되었습니다.`);
           await reset();
