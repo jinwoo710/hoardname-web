@@ -71,7 +71,7 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
             searchInput.value = "";
         }
         
-        updateFilters({}, searchTerm);  
+        updateFilters({}, "");  
     };
 
     const handleFilterChange = (type: "weightSort" | "bestWith" | "inStorage" | "playerCount" | "recommendedWith", value: string) => {
