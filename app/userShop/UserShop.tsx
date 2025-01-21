@@ -5,7 +5,6 @@ import { ShopItem } from '@/types/boardgame';
 import InfiniteScroll from '../components/InfiniteScroll';
 import AddShopModal from '../components/AddShopModal';
 import { useSession } from 'next-auth/react';
-import { UserCheckResponse } from '../shop/ShopList';
 import toast from 'react-hot-toast';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import Image from 'next/image'
