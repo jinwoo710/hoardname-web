@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ShopItem } from '@/types/boardgame';
 import InfiniteScroll from '../components/InfiniteScroll';
 import AddShopModal from '../components/AddShopModal';
@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import Image from 'next/image'
 import { fetchUserShop, UpdateShopItem } from '../actions/userShop';
+import { checkUser } from '../actions/users';
 
 interface UserShopProps {
   initialShopItems: ShopItem[];
@@ -52,43 +53,28 @@ export default function UserShop({ initialShopItems, userId, limit }: UserShopPr
         await reset();
     };
 
-    const handleAddClick = async () => {
-        if (!session) {
-            toast.error("로그인 후 등록 가능합니다.");
+    const handleAddClick = useCallback(async () => {
+        if (!session?.user?.id) {
+            toast.error('로그인이 필요합니다.');
             return;
         }
 
         try {
-            const response = await fetch(`/api/user/check`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('사용자 정보를 확인하는데 실패했습니다.');
-            }
-
-            const data = (await response.json()) as UserCheckResponse;
-            if (!data.hasNickname) {
-                toast.error("회원 정보 - 닉네임 등록 후 사용가능합니다");
+            const result = await checkUser(session.user.id);
+            if (!result.user?.nickname) {
+                toast.error('닉네임 설정이 필요합니다.');
                 return;
             }
-
-            if(!data.openKakaotalkUrl) {
-                toast.error("회원 정보 - 카카오톡 오픈채팅 링크 등록 후 사용가능합니다");
+            if (!result.user?.openKakaotalkUrl) {
+                toast.error('카카오톡 오픈채팅 링크 설정이 필요합니다.');
                 return;
             }
-
-            
-
             setIsModalOpen(true);
         } catch (error) {
-            console.error('Error:', error);
-            toast.error("사용자 정보를 확인하는데 실패했습니다");
+            console.error('Error checking user:', error);
+            toast.error('사용자 정보를 확인하는 중 오류가 발생했습니다.');
         }
-    };
+    }, [session]);
 
   const handleToggleOnSale = async (gameId: string, gameName: string, currentState: boolean) => {
  
