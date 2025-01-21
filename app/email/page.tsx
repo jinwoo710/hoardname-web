@@ -3,6 +3,8 @@
 import { useSession } from 'next-auth/react'
 import { FormEvent, useState, useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
+import { checkUser } from '../actions/users'
+export const runtime = "edge";
 
 export default function Email() {
   const [loading, setLoading] = useState(false)
@@ -13,17 +15,16 @@ export default function Email() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (session) {
+      if (session?.user?.id) {
         if (emailRef.current && session.user?.email) {
           emailRef.current.value = session.user.email
         }
         
         try {
-          const response = await fetch('/api/user/check') 
-          const data = await response.json() as { hasNickname: boolean, nickname: string }
+          const result = await checkUser(session.user.id)
           
           if (nameRef.current) {
-            nameRef.current.value = data.nickname || ''
+            nameRef.current.value = result.user?.nickname || ''
           }
         } catch (error) {
           console.error('Error fetching user data:', error)

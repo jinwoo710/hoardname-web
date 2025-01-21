@@ -2,12 +2,14 @@
 
 import { useState} from 'react';
 import toast from 'react-hot-toast';
+import { updateProfile } from '../actions/users';
 
 interface UserProfileClientProps {
   user: {
     email: string;
     nickname: string | null;
     openKakaotalkUrl: string | null;
+    id: string;
   };
 }
 
@@ -30,25 +32,23 @@ export default function UserProfileClient({ user }: UserProfileClientProps) {
     }
 
     try {
-      const response = await fetch('/api/auth/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nickname,
-          openKakaotalkUrl,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
+      if (!user.id) {
+        throw new Error('User ID is missing');
       }
 
-      window.location.reload();
-    
+      const response = await updateProfile(user.id, {
+        nickname,
+        openKakaotalkUrl: openKakaotalkUrl || '',
+      });
+
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      toast.success('프로필이 업데이트되었습니다.');
     } catch (error) {
-      setError(error+'프로필 업데이트에 실패했습니다.');
+      setError(`프로필 업데이트에 실패했습니다: ${error}`);
+      toast.error('프로필 업데이트에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }

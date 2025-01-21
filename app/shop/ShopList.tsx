@@ -81,7 +81,7 @@ const [priceSort, setPriceSort] = useState<string>("");
                         className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                        <select 
-                    className="border border-gray-200  rounded-xl px-5 py-2 w-fit lg:w-auto"
+                    className="border border-gray-200  rounded-xl px-5 py-2 w-fit lg:w-auto appearance-none text-center"
                     value={priceSort}
                     onChange={(e) => handleFilterChange( e.target.value)}
                 >

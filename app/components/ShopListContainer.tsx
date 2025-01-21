@@ -35,10 +35,10 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                         {item.thumbnailUrl ? (
                             <Image 
                                 width={100} 
-                                height={100} 
+                                height={0} 
                                 src={item.thumbnailUrl} 
                                 alt={item.name}
-                                className="object-contain w-full h-full"
+                                className="object-contain w-[100px] h-[100px]"
                             />
                         ) : (
                             <div className="w-full h-full bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
@@ -72,7 +72,7 @@ export default function ShopListContainer({ boardgames }: ShopListContainerProps
                                     {handleCheckSharing(item.price)}
                                 </div>
                                 <button
-                                    onClick={() => window.open(item.openKakaoUrl, '_blank')}
+                                    onClick={() =>{ if(item.openKakaoUrl) window.open(item.openKakaoUrl, '_blank')}}
                                     disabled={!item.openKakaoUrl}
                                     className="px-4 py-2 whitespace-nowrap bg-[#FEE500] font-bold text-black rounded-xl disabled:bg-gray-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 shrink-0 focus:ring-[#FEE500]"
                                 >
