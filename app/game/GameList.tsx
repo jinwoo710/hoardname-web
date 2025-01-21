@@ -65,47 +65,51 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
         setPlayerCount("");
         setRecommendedWith("");
         setSearchTerm("");
-        updateFilters({});
-        handleSearch("");
+        
+        const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+        if (searchInput) {
+            searchInput.value = "";
+        }
+        
+        updateFilters({}, searchTerm);  
     };
 
     const handleFilterChange = (type: "weightSort" | "bestWith" | "inStorage" | "playerCount" | "recommendedWith", value: string) => {
+        let newWeightSort = weightSort;
+        let newBestWith = bestWith;
+        let newInStorage = inStorage;
+        let newPlayerCount = playerCount;
+        let newRecommendedWith = recommendedWith;
+
+        switch(type) {
+            case "weightSort":
+                newWeightSort = value;
+                setWeightSort(value);
+                break;
+            case "bestWith":
+                newBestWith = value;
+                setBestWith(value);
+                break;
+            case "inStorage":
+                newInStorage = value;
+                setInStorage(value);
+                break;
+            case "playerCount":
+                newPlayerCount = value;
+                setPlayerCount(value);
+                break;
+            case "recommendedWith":
+                newRecommendedWith = value;
+                setRecommendedWith(value);
+                break;
+        }
+
         const newFilters: Record<string, string> = {};
-        
-        if (type === "weightSort") {
-            setWeightSort(value);
-            if (value) newFilters.weightSort = value;
-        } else {
-            if (weightSort) newFilters.weightSort = weightSort;
-        }
-        
-        if (type === "bestWith") {
-            setBestWith(value);
-            if (value) newFilters.bestWith = value;
-        } else {
-            if (bestWith) newFilters.bestWith = bestWith;
-        }
-
-        if (type === "inStorage") {
-            setInStorage(value);
-            if (value) newFilters.inStorage = value;
-        } else {
-            if (inStorage) newFilters.inStorage = inStorage;
-        }
-
-        if (type === "playerCount") {
-            setPlayerCount(value);
-            if (value) newFilters.playerCount = value;
-        } else {
-            if (playerCount) newFilters.playerCount = playerCount;
-        }
-
-        if (type === "recommendedWith") {
-            setRecommendedWith(value);
-            if (value) newFilters.recommendedWith = value;
-        } else {
-            if (recommendedWith) newFilters.recommendedWith = recommendedWith;
-        }
+        if (newWeightSort) newFilters.weightSort = newWeightSort;
+        if (newBestWith) newFilters.bestWith = newBestWith;
+        if (newInStorage) newFilters.inStorage = newInStorage;
+        if (newPlayerCount) newFilters.playerCount = newPlayerCount;
+        if (newRecommendedWith) newFilters.recommendedWith = newRecommendedWith;
         
         updateFilters(newFilters);
     };

@@ -11,11 +11,6 @@ interface ShopListProps {
     initialShopItems: ShopItem[];
     limit: number;
 }
-export interface UserCheckResponse {
-  hasNickname: boolean;
-    nickname: string | null;
-    openKakaotalkUrl: string | null;
-}
 
 export default function ShopList({ initialShopItems, limit }: ShopListProps) {
 const [priceSort, setPriceSort] = useState<string>("");
