@@ -103,24 +103,31 @@ export function useInfinityScroll<T>({
     setLoading(false);
   }, [fetchAndSetData, searchTerm]);
 
-  const updateFilters = useCallback(async (newFilters: Record<string, string>) => {
-    setFilters(newFilters);
-    setPage(1);
-    setLoading(true);
-    setError(null);
-
-    try {
-      const data = await fetchData(1, searchTerm, newFilters);
-      setItems(data.items);
-      setHasMore(data.hasMore);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "데이터를 불러오는데 실패했습니다"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchData, searchTerm]);
+  const updateFilters = useCallback(
+    async (newFilters: Record<string, string>, newSearchTerm?: string) => {
+      setLoading(true);
+      setFilters(newFilters);
+      
+      try {
+        const term = newSearchTerm !== undefined ? newSearchTerm : searchTerm;
+        if (newSearchTerm !== undefined) {
+          setSearchTerm(newSearchTerm);
+        }
+        
+        const data = await fetchData(1, term, newFilters);
+        setItems(data.items);
+        setHasMore(data.hasMore);
+        setPage(1);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "데이터를 불러오는데 실패했습니다"
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchData, searchTerm]
+  );
 
   return {
     items,
