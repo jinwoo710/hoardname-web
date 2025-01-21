@@ -1,6 +1,7 @@
 'use client';
 
 import { BoardGame, UpdateBoardGame } from "@/types/boardgame";
+import Image from 'next/image';
 
 interface UserGameListContainerProps {
   boardgames: BoardGame[];
@@ -34,11 +35,16 @@ export default function UserGameListContainer({
           >
             <div className="flex items-center space-x-4">
               {game.thumbnailUrl && (
-                <img 
+                <div className="flex justify-center items-center w-16 h-16">
+                <Image
+                  width={64}
+                  height={64}
                   src={game.thumbnailUrl} 
                   alt={game.name} 
-                  className="w-16 h-16 object-cover rounded" 
+                  className="object-contain rounded" 
+                  style={{ maxWidth: '64px', maxHeight: '64px', width: 'auto', height: 'auto' }}
                 />
+                  </div>
               )}
               <div>
                 <h3 className="font-medium">{game.name}</h3>

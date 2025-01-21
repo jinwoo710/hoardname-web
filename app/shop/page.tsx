@@ -1,7 +1,5 @@
+import { fetchShopItems } from "../actions/shop";
 import ShopList from "./ShopList";
-import { db } from "@/db";
-import { shop, users } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
 import { ShopItem } from "@/types/boardgame";
 
 export const runtime = "edge";
@@ -9,30 +7,13 @@ export const runtime = "edge";
 const LIMIT = 20;
 
 export default async function Shop() {
-  const results = await db
-      .select({
-        id: shop.id,
-        name: shop.name,
-        originalName: shop.originalName,
-        ownerId: shop.ownerId,
-        ownerNickname: users.nickname,
-        openKakaoUrl: users.openKakaotalkUrl,
-        price: shop.price,
-        thumbnailUrl: shop.thumbnailUrl,
-        createdAt: shop.createdAt,
-        memo: shop.memo,
-        isDeleted: shop.isDeleted,
-        isOnSale: shop.isOnSale
-      })
-      .from(shop)
-    .leftJoin(users, eq(shop.ownerId, users.id))
-    .where(eq(shop.isDeleted, false))
-      .orderBy(desc(shop.createdAt))
-    .limit(LIMIT)
-    .offset(0) as ShopItem[]
-   
-
+  const { items } = await fetchShopItems({
+    page: 1,
+    limit: LIMIT,
+    search: '',
+  });
+     const initialShopItems = items as ShopItem[]
   return (
-    <ShopList initialShopItems={results} limit={LIMIT} />
-  );
+    <ShopList initialShopItems={initialShopItems} limit={LIMIT} />
+  )
 }
