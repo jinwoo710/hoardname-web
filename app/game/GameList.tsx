@@ -5,6 +5,7 @@ import { BoardGame } from '@/types/boardgame';
 import { useInfinityScroll,  } from '../hooks/useInfinityScroll';
 import InfiniteScroll from '../components/InfiniteScroll';
 import { useState } from "react";
+import { fetchBoardgames } from "../actions/boardgames";
 
 interface GameListProps {
     initialBoardgames: BoardGame[];
@@ -29,39 +30,81 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
             if (searchTerm) searchParams.set("search", searchTerm);
             if (filters?.weightSort) searchParams.set("weightSort", filters.weightSort);
             if (filters?.bestWith) searchParams.set("bestWith", filters.bestWith);
+            if (filters?.recommendedWith) searchParams.set("recommendedWith", filters.recommendedWith);
+                   if (filters?.playerCount) searchParams.set("playerCount", filters.playerCount);
 
-            const response = await fetch(
-                `/api/boardgames?${searchParams.toString()}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            if (!response.ok) throw new Error('Failed to fetch games');
-            const data = await response.json() as { items: BoardGame[], hasMore: boolean, total: number };
-            return data;
+            const result = await fetchBoardgames({
+                page: page,
+                limit: limit,
+                search: searchTerm,
+                weightSort: filters?.weightSort,
+                bestWith: filters?.bestWith,
+                playerCount: filters?.playerCount,
+                recommendedWith: filters?.recommendedWith,
+                inStorage: filters?.inStorage,
+            });
+            return {
+                items: result.items,
+                hasMore: result.hasMore,
+                total: result.total
+            };
         },
     });
 
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [weightSort, setWeightSort] = useState<string>("");
     const [bestWith, setBestWith] = useState<string>("");
+    const [inStorage, setInStorage] = useState<string>("");
+    const [playerCount, setPlayerCount] = useState<string>("");
+    const [recommendedWith, setRecommendedWith] = useState<string>("");
 
-    const handleFilterChange = (type: "weightSort" | "bestWith", value: string) => {
+    const resetFilters = () => {
+        setWeightSort("");
+        setBestWith("");
+        setInStorage("");
+        setPlayerCount("");
+        setRecommendedWith("");
+        setSearchTerm("");
+        updateFilters({});
+        handleSearch("");
+    };
+
+    const handleFilterChange = (type: "weightSort" | "bestWith" | "inStorage" | "playerCount" | "recommendedWith", value: string) => {
+        const newFilters: Record<string, string> = {};
+        
         if (type === "weightSort") {
             setWeightSort(value);
-        } else {
-            setBestWith(value);
-        }
-        
-        const newFilters: Record<string, string> = {};
-        if (type === "weightSort") {
             if (value) newFilters.weightSort = value;
-            if (bestWith) newFilters.bestWith = bestWith;
         } else {
             if (weightSort) newFilters.weightSort = weightSort;
+        }
+        
+        if (type === "bestWith") {
+            setBestWith(value);
             if (value) newFilters.bestWith = value;
+        } else {
+            if (bestWith) newFilters.bestWith = bestWith;
+        }
+
+        if (type === "inStorage") {
+            setInStorage(value);
+            if (value) newFilters.inStorage = value;
+        } else {
+            if (inStorage) newFilters.inStorage = inStorage;
+        }
+
+        if (type === "playerCount") {
+            setPlayerCount(value);
+            if (value) newFilters.playerCount = value;
+        } else {
+            if (playerCount) newFilters.playerCount = playerCount;
+        }
+
+        if (type === "recommendedWith") {
+            setRecommendedWith(value);
+            if (value) newFilters.recommendedWith = value;
+        } else {
+            if (recommendedWith) newFilters.recommendedWith = recommendedWith;
         }
         
         updateFilters(newFilters);
@@ -82,16 +125,86 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
                 </ul>
                 </div>
 
-            <div className="flex gap-4 mb-4">
-               
-            </div>
 
-            <div className="mb-6 flex lg:space-x-2 lg:flex-row flex-col-reverse">
-                <div className="relative flex-1">
+            <div className="mb-4 flex flex-col space-y-2">
+                <div className="flex lg:space-x-2  flex-col lg:flex-row">
+              
+                <div className="flex space-x-2 mb-2 lg:mb-0">
+             
+ <select 
+                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full lg:w-auto appearance-none text-center"
+                    value={playerCount}
+                    onChange={(e) => handleFilterChange("playerCount", e.target.value)}
+                >
+                    <option value="">플레이어수</option>
+                    <option value="1">1인</option>
+                    <option value="2">2인</option>
+                    <option value="3">3인</option>
+                    <option value="4">4인</option>
+                    <option value="5">5인</option>
+                    <option value="6">6인</option>
+                    <option value="7">7인</option>
+                    <option value="8">8인</option>
+                    <option value="9">9인 이상</option>
+                    </select>
+                    <select 
+                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full lg:w-auto appearance-none text-center"
+                    value={recommendedWith}
+                    onChange={(e) => handleFilterChange("recommendedWith", e.target.value)}
+                >
+                    <option value="">추천 인원</option>
+                    <option value="1">1인</option>
+                    <option value="2">2인</option>
+                    <option value="3">3인</option>
+                    <option value="4">4인</option>
+                    <option value="5">5인 이상</option>
+                    </select>
+                <select 
+                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full lg:w-auto appearance-none text-center"
+                    value={bestWith}
+                    onChange={(e) => handleFilterChange("bestWith", e.target.value)}
+                >
+                    <option value="">최적 인원</option>
+                    <option value="1">1인</option>
+                    <option value="2">2인</option>
+                    <option value="3">3인</option>
+                    <option value="4">4인</option>
+                    <option value="5">5인 이상</option>
+                </select>
+                    </div>
+                          <div className="flex space-x-2 mb-2 lg:mb-0">
+                   
+                     <select 
+                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full lg:w-auto appearance-none text-center"
+                    value={inStorage}
+                    onChange={(e) => handleFilterChange("inStorage", e.target.value)}
+                >
+                    <option value="">모두</option>
+                    <option value="true">아지트</option>
+                    <option value="false">외부</option>
+                    </select>
+                        <select 
+                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full  lg:w-auto appearance-none text-center"
+                    value={weightSort}
+                    onChange={(e) => handleFilterChange("weightSort", e.target.value)}
+                >
+                    <option value="">난이도 정렬</option>
+                    <option value="asc">쉬운순</option>
+                    <option value="desc">어려운순</option>
+                </select>
+                    <button className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full lg:w-auto bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200 font-bold" onClick={resetFilters}>필터 리셋</button>
+                </div>
+           </div>
+                     <div className="relative flex-1">
                     <input
                         type="text"
                         placeholder="게임 이름으로 검색..."
-                        onChange={(e) => handleSearch(e.target.value)}
+                        value={searchTerm}
+                        onChange={(e) => {
+                            handleSearch(e.target.value)
+                            setSearchTerm(e.target.value);
+                        }
+                        }
                         className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {loading && (
@@ -100,30 +213,6 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
                         </div>
                     )}
                 </div>
-                <div className="flex space-x-2 mb-2 lg:mb-0">
-                 <select 
-                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full  lg:w-auto appearance-none"
-                    value={weightSort}
-                    onChange={(e) => handleFilterChange("weightSort", e.target.value)}
-                >
-                    <option value="">난이도 정렬</option>
-                    <option value="asc">쉬운순</option>
-                    <option value="desc">어려운순</option>
-                </select>
-
-                <select 
-                    className="border border-gray-200 h-[42px] rounded-xl px-5 py-2 w-full lg:w-auto"
-                    value={bestWith}
-                    onChange={(e) => handleFilterChange("bestWith", e.target.value)}
-                >
-                    <option value="">최적 인원수</option>
-                    <option value="1">1인</option>
-                    <option value="2">2인</option>
-                    <option value="3">3인</option>
-                    <option value="4">4인</option>
-                    <option value="5">5인 이상</option>
-                </select>
-               </div>
             </div>
 
             <InfiniteScroll

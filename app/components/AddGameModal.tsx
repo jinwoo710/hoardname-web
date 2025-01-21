@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { BggGame, BoardGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
+import { BggGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
 import toast from 'react-hot-toast'; 
 
@@ -11,12 +11,12 @@ import toast from 'react-hot-toast';
 interface AddGameModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onGameAdded?: (game: BoardGame) => void;
+  handleCreateBoardGame: (gameData: CreateBoardGame) => Promise<void>;
 }
 
 
 
-export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameModalProps) {
+export default function AddGameModal({ isOpen, onClose, handleCreateBoardGame }: AddGameModalProps) {
   const { data: session } = useSession();
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
   const [gameId, setGameId] = useState<string>("");
@@ -53,43 +53,27 @@ export default function AddGameModal({ isOpen, onClose, onGameAdded }: AddGameMo
 
     if (!selectedGame || !session?.user?.id) return;
 
-    const submitData: CreateBoardGame = {
-      name: selectedGame.name,
-      originalName: selectedGame.originalName,
-      ownerId: session.user.id,
-      bggId: gameId,
-      weight: selectedGame.weight,
-      bestWith: selectedGame.bestWith?.toString() || '',
-      recommendedWith: selectedGame.recommendedWith || '',
-      minPlayers: selectedGame.minPlayers,
-      maxPlayers: selectedGame.maxPlayers,
-      thumbnailUrl: selectedGame.thumbnailUrl,
-      imageUrl: selectedGame.imageUrl,
-    };
-
     try {
-      const response = await fetch('/api/boardgames', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submitData),
-      });
+      const submitData: CreateBoardGame = {
+        name: selectedGame.name,
+        originalName: selectedGame.originalName,
+        ownerId: session.user.id,
+        bggId: gameId,
+        weight: selectedGame.weight,
+        bestWith: selectedGame.bestWith?.toString() || '',
+        recommendedWith: selectedGame.recommendedWith || '',
+        minPlayers: selectedGame.minPlayers,
+        maxPlayers: selectedGame.maxPlayers,
+        thumbnailUrl: selectedGame.thumbnailUrl,
+        imageUrl: selectedGame.imageUrl,
+        inStorage: true
+      };
 
-      if (!response.ok) {
-        const errorData = await response.json() as { error: string };
-        toast.error(errorData.error || '게임 추가에 실패했습니다.');
-        return;
-      }
-
-      const result = await response.json() as { boardgame: BoardGame };
-      if (onGameAdded) {
-        onGameAdded(result.boardgame);
-      }
+      await handleCreateBoardGame(submitData);
       handleClose();
-      toast.success('게임이 추가되었습니다.');
-    } catch  {
-      toast.error('이미 등록된 게임입니다.');
+    } catch (error) {
+      console.error('Error creating game:', error);
+      toast.error('게임 추가에 실패했습니다.');
     }
   };
 
