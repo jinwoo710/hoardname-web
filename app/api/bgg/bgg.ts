@@ -1,5 +1,6 @@
 import extractAttribute from "@/app/components/extractAttribute";
 import extractFromXml from "@/app/components/extractFromXml";
+import htmlSpecialCharConverter from "@/app/components/htmlSpecialCharConverter";
 
 interface Game {
   id: string;
@@ -37,7 +38,7 @@ export const searchGamesFromBgg = async (name: string): Promise<Game[]> => {
 
 export const searchGames = async (name: string): Promise<Game[]> => {
   const res = await fetch(
-    `https://boardgamegeek.com/xmlapi2/search?query=${name}`
+    `https://boardgamegeek.com/xmlapi2/search?type=boardgame&query=${name}`
   );
   const xml = await res.text();
 
@@ -93,8 +94,8 @@ export const getGameDetail = async (id: string): Promise<GameDetail> => {
       ?.replace(/[–\s]/g, ",") || "";
   return {
     id,
-    primaryName,
-    koreanName,
+    primaryName: htmlSpecialCharConverter(primaryName),
+    koreanName: htmlSpecialCharConverter(koreanName),
     thumbnail: extractFromXml(xml, "thumbnail")[0] || "",
     description: extractFromXml(xml, "description")[0] || "",
     yearPublished: extractAttribute(xml, "yearpublished", "value")[0] || "",

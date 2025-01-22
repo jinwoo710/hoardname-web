@@ -2,6 +2,7 @@
 import { useRef, useState } from "react"
 import Image from 'next/image'
 import { useSearchGamesWithFallback } from "../hooks/useBggQuery"
+import htmlSpecialCharConverter from "./htmlSpecialCharConverter";
 
 interface SearchBggGamesProps {
     onGameSelect: (gameId: string) => void;
@@ -79,8 +80,13 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
                             검색중...
                         </div>
                     ) : isError ? (
-                             <div className="py-4 text-center text-red-500 text-sm">
-                            검색 중 오류가 발생했습니다.
+                            <div className="py-4 text-center text-red-500 text-sm flex flex-col">
+                                <span>
+                                    검색 중 오류가 발생했습니다.
+                                </span>
+                                <span>
+                                    잠시 후 다시 시도해주세요.
+                                </span>
                         </div>
                     ): games.length > 0 ? (
                         <ul className="py-1 max-h-[180px] overflow-y-auto">
@@ -91,7 +97,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
                                     className="px-4 mx-1 rounded py-2.5 hover:bg-gray-100 cursor-pointer text-sm flex space-x-2"
                                     onClick={handleSelectGame}
                                 >
-                                    <div className="font-bold">{game.name}</div>
+                                    <div className="font-bold">{htmlSpecialCharConverter(game.name)}</div>
                                     <div className="text-sm text-gray-600">({game.yearPublished})</div>
                                 </li>
                             ))}

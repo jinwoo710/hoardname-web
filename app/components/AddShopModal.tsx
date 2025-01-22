@@ -103,6 +103,7 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
 
   const handleClose = () => {
     setSelectedGame(null);
+    setGameId('');
     setPrice('');
     setMemo('');
     onClose();

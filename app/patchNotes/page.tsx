@@ -19,6 +19,7 @@ const PatchCard = ({ version, list }: PatchCardProps) => {
 export default function PatchNotes() {
   return (
     <div className="flex flex-col gap-2 px-4 py-4">
+      <PatchCard version="v 1.2.1" list={['게임 검색 기능 향상', '보드게임 이름 특수 문자 처리 추가']}/>
       <PatchCard version="v 1.2.0" list={['DB 내 검색 기능 향상']}/>
       <PatchCard version="v 1.1.3" list={['게임 목록 필터 추가']}/>
       <PatchCard version="v 1.1.2" list={['My 장터 예약 및 삭제 추가','헤더 사이드바 스티키 변경']}/>

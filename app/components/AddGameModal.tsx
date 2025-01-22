@@ -64,13 +64,17 @@ export default function AddGameModal({ isOpen, onClose, handleCreateBoardGame }:
       };
 
       await handleCreateBoardGame(submitData);
-      onClose();
+      handleClose();
     } catch (error) {
       console.error('Error creating board game:', error);
       toast.error('게임 생성 중 오류가 발생했습니다.');
     }
   };
-
+ const handleClose = () => {
+   setSelectedGame(null);
+   setGameId('');
+    onClose();
+  };
   if (!isOpen) return null;
 
   return (
@@ -84,7 +88,7 @@ export default function AddGameModal({ isOpen, onClose, handleCreateBoardGame }:
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
                 aria-label="닫기"
               >

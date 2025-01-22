@@ -2,6 +2,18 @@ import { NextResponse } from "next/server";
 
 export const runtime = "edge";
 
+interface BggSearchItem {
+  objectid: string;
+  name: string;
+  yearpublished: string;
+  objecttype: string;
+}
+
+interface BggSearchResponse {
+  items: BggSearchItem[];
+  total: number;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -31,10 +43,9 @@ export async function GET(request: Request) {
       throw new Error(`BGG API responded with status: ${res.status}`);
     }
 
-    const data = (await res.json()) as { items: any[] };
-    console.log(data);
+    const data = (await res.json()) as BggSearchResponse;
 
-    const games = data.items.map((item: any) => ({
+    const games = data.items.map((item) => ({
       id: item.objectid,
       name: item.name,
       yearPublished: item.yearpublished,
