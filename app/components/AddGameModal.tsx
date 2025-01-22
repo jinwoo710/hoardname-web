@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { BggGame, CreateBoardGame, BggGameResponse } from '@/types/boardgame';
+import { BggGame, CreateBoardGame } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
 import toast from 'react-hot-toast'; 
-
+import { useGameDetail } from "../hooks/useBggQuery";
 
 interface AddGameModalProps {
   isOpen: boolean;
@@ -14,38 +14,32 @@ interface AddGameModalProps {
   handleCreateBoardGame: (gameData: CreateBoardGame) => Promise<void>;
 }
 
-
-
 export default function AddGameModal({ isOpen, onClose, handleCreateBoardGame }: AddGameModalProps) {
   const { data: session } = useSession();
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
   const [gameId, setGameId] = useState<string>("");
 
-  const handleGameSelect = async (gameId: string) => {
-    try {
-      setGameId(gameId);
-      const response = await fetch(`../api/bgg?id=${gameId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch game data');
-      }
-      const gameData = await response.json() as BggGameResponse;
+  const { data: gameDetail, isLoading } = useGameDetail(gameId);
 
-      const processedGameData: BggGame = {
+  useEffect(() => {
+    if (gameDetail && !isLoading) {
+      setSelectedGame({
         id: gameId,
-        ...gameData,
-        thumbnailUrl: gameData.thumbnailUrl || '',
-        imageUrl: gameData.imageUrl || '',
-        minPlayers: gameData.minPlayers || 0,
-        maxPlayers: gameData.maxPlayers || 0,
-        weight: gameData.weight || 0,
-        bestWith: gameData.bestWith || '',
-        recommendedWith: gameData.recommendedWith || '',
-      };
-      setSelectedGame(processedGameData);
-    } catch (error) {
-      console.error('Error fetching game data:', error);
-      setSelectedGame(null);
+        name: gameDetail.koreanName || gameDetail.primaryName,
+        originalName: gameDetail.primaryName,
+        weight: parseFloat(gameDetail.weight),
+        minPlayers: parseInt(gameDetail.minPlayers),
+        maxPlayers: parseInt(gameDetail.maxPlayers),
+        thumbnailUrl: gameDetail.thumbnail,
+        imageUrl: gameDetail.thumbnail,
+        bestWith: gameDetail.bestWith?.toString() || '',
+        recommendedWith: gameDetail.recommendedWith?.toString() || '',
+      });
     }
+  }, [gameDetail, isLoading, gameId]);
+
+  const handleGameSelect = (selectedGameId: string) => {
+    setGameId(selectedGameId);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -70,17 +64,11 @@ export default function AddGameModal({ isOpen, onClose, handleCreateBoardGame }:
       };
 
       await handleCreateBoardGame(submitData);
-      handleClose();
+      onClose();
     } catch (error) {
-      console.error('Error creating game:', error);
-      toast.error('게임 추가에 실패했습니다.');
+      console.error('Error creating board game:', error);
+      toast.error('게임 생성 중 오류가 발생했습니다.');
     }
-  };
-
-  const handleClose = () => {
-    setSelectedGame(null);
-    setGameId("");
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -96,7 +84,7 @@ export default function AddGameModal({ isOpen, onClose, handleCreateBoardGame }:
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
               <button
                 type="button"
-                onClick={handleClose}
+                onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
                 aria-label="닫기"
               >
@@ -120,7 +108,7 @@ export default function AddGameModal({ isOpen, onClose, handleCreateBoardGame }:
           <form onSubmit={handleSubmit} className="px-4 py-6">
             <div className="space-y-2">
               <SearchBggGames onGameSelect={handleGameSelect} />
-              {selectedGame ? (
+              {selectedGame && !isLoading  ? (
                 <div className="flex border rounded-xl  mx-auto max-w-[480px] min-h-[130px] p-2 items-center space-x-3">
                   <div className="w-[100px] h-[100px] relative">
                     <Image

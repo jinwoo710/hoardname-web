@@ -20,6 +20,8 @@ interface GameDetail {
   minAge: string;
   rating: string;
   weight: string;
+  bestWith: number | null;
+  recommendedWith: number[] | null;
 }
 
 export const searchGames = async (name: string): Promise<Game[]> => {
@@ -52,7 +54,8 @@ export const getGameDetail = async (id: string): Promise<GameDetail> => {
 
   const itemContent = itemMatch[1];
   const names: { type: string; value: string }[] = [];
-  const nameRegex = /<name\s+type="([^"]+)"\s+sortindex="\d+"\s+value="([^"]+)"/g;
+  const nameRegex =
+    /<name\s+type="([^"]+)"\s+sortindex="\d+"\s+value="([^"]+)"/g;
   let nameMatch;
 
   while ((nameMatch = nameRegex.exec(itemContent)) !== null) {
@@ -62,23 +65,37 @@ export const getGameDetail = async (id: string): Promise<GameDetail> => {
     });
   }
 
-  const primaryName = names.find((name) => name.type === "primary")?.value || "";
-  const koreanName = names.find(
-    (name) => name.type === "alternate" && /[가-힣]/.test(name.value)
-  )?.value || "";
-
+  const primaryName =
+    names.find((name) => name.type === "primary")?.value || "";
+  const koreanName =
+    names.find(
+      (name) => name.type === "alternate" && /[가-힣]/.test(name.value)
+    )?.value || "";
+  const bestWithRegex = /<result name="bestwith" value="Best with (\d+)[^"]*"/;
+  const recommendedWithRegex =
+    /<result name="recommmendedwith" value="Recommended with ([^"]+)"/;
+  const bestWith = xml.match(bestWithRegex)?.[1] || "";
+  const recommendedWith =
+    xml
+      .match(recommendedWithRegex)?.[1]
+      ?.match(/\d[\d,–\s]*\d/)?.[0]
+      ?.replace(/[–\s]/g, ",") || "";
   return {
     id,
     primaryName,
     koreanName,
     thumbnail: extractFromXml(xml, "thumbnail")[0] || "",
     description: extractFromXml(xml, "description")[0] || "",
-    yearPublished: extractFromXml(xml, "yearpublished", "value")[0] || "",
-    minPlayers: extractFromXml(xml, "minplayers", "value")[0] || "",
-    maxPlayers: extractFromXml(xml, "maxplayers", "value")[0] || "",
-    playingTime: extractFromXml(xml, "playingtime", "value")[0] || "",
-    minAge: extractFromXml(xml, "minage", "value")[0] || "",
-    rating: extractFromXml(xml, "average", "value")[0] || "",
-    weight: extractFromXml(xml, "averageweight", "value")[0] || "",
+    yearPublished: extractAttribute(xml, "yearpublished", "value")[0] || "",
+    minPlayers: extractAttribute(xml, "minplayers", "value")[0] || "",
+    maxPlayers: extractAttribute(xml, "maxplayers", "value")[0] || "",
+    playingTime: extractAttribute(xml, "playingtime", "value")[0] || "",
+    minAge: extractAttribute(xml, "minage", "value")[0] || "",
+    rating: extractAttribute(xml, "average", "value")[0] || "",
+    weight: extractAttribute(xml, "averageweight", "value")[0] || "",
+    bestWith: bestWith ? parseInt(bestWith) : null,
+    recommendedWith: recommendedWith
+      ? recommendedWith.split(",").map((n) => parseInt(n.trim()))
+      : [],
   };
 };

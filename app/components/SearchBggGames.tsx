@@ -1,12 +1,7 @@
 'use client'
-import { useRef, useState, useCallback } from "react"
+import { useRef, useState } from "react"
 import Image from 'next/image'
-
-interface Game {
-    id: string;
-    name: string;
-    yearPublished: string;
-}
+import { useSearchGames } from "../hooks/useBggQuery"
 
 interface SearchBggGamesProps {
     onGameSelect: (gameId: string) => void;
@@ -15,34 +10,19 @@ interface SearchBggGamesProps {
 export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [name, setName] = useState("");
+    const [debouncedName, setDebouncedName] = useState<string | null>(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [games, setGames] = useState<Game[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const searchTimeoutRef = useRef<number | undefined>(undefined);
 
-    const searchGames = useCallback(async (query: string) => {
-        setIsLoading(true);
-        setIsVisible(true);
-        try {
-            const response = await fetch(`/api/bgg/search?name=${query}`);
-            const result = await response.json() as { data: Game[]};
-            setGames(result.data);
-        } catch (error) {
-            console.error('Failed to fetch games:', error);
-            setGames([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [setGames, setIsLoading, setIsVisible]);
+    const { data: games = [], isLoading  } = useSearchGames(debouncedName);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setName(value);
         
         if (!value.trim()) {
-            setGames([]);
             setIsVisible(false);
-            setIsLoading(false);
+            setDebouncedName(null);
             if (searchTimeoutRef.current) {
                 clearTimeout(searchTimeoutRef.current);
             }
@@ -54,7 +34,8 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
         }
 
         searchTimeoutRef.current = window.setTimeout(() => {
-            searchGames(value);
+            setIsVisible(true);
+            setDebouncedName(value.trim());
         }, 300);
     };
 
@@ -62,6 +43,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
         const selectedGameId = e.currentTarget.getAttribute("data-id");
         if (selectedGameId) {
             setName("");
+            setDebouncedName(null);
             setIsVisible(false);
             onGameSelect(selectedGameId);
         }
