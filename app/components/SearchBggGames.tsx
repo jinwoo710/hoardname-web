@@ -1,12 +1,8 @@
 'use client'
-import { useRef, useState, useCallback } from "react"
+import { useRef, useState } from "react"
 import Image from 'next/image'
-
-interface Game {
-    id: string;
-    name: string;
-    yearPublished: string;
-}
+import { useSearchGamesWithFallback } from "../hooks/useBggQuery"
+import htmlSpecialCharConverter from "./htmlSpecialCharConverter";
 
 interface SearchBggGamesProps {
     onGameSelect: (gameId: string) => void;
@@ -15,34 +11,19 @@ interface SearchBggGamesProps {
 export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [name, setName] = useState("");
+    const [debouncedName, setDebouncedName] = useState<string | null>(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [games, setGames] = useState<Game[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const searchTimeoutRef = useRef<number | undefined>(undefined);
 
-    const searchGames = useCallback(async (query: string) => {
-        setIsLoading(true);
-        setIsVisible(true);
-        try {
-            const response = await fetch(`/api/bgg/search?name=${query}`);
-            const result = await response.json() as { data: Game[]};
-            setGames(result.data);
-        } catch (error) {
-            console.error('Failed to fetch games:', error);
-            setGames([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [setGames, setIsLoading, setIsVisible]);
+    const { data: games = [], isLoading, isError  } = useSearchGamesWithFallback(debouncedName);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setName(value);
         
         if (!value.trim()) {
-            setGames([]);
             setIsVisible(false);
-            setIsLoading(false);
+            setDebouncedName(null);
             if (searchTimeoutRef.current) {
                 clearTimeout(searchTimeoutRef.current);
             }
@@ -54,7 +35,8 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
         }
 
         searchTimeoutRef.current = window.setTimeout(() => {
-            searchGames(value);
+            setIsVisible(true);
+            setDebouncedName(value.trim());
         }, 300);
     };
 
@@ -62,6 +44,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
         const selectedGameId = e.currentTarget.getAttribute("data-id");
         if (selectedGameId) {
             setName("");
+            setDebouncedName(null);
             setIsVisible(false);
             onGameSelect(selectedGameId);
         }
@@ -96,7 +79,16 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
                         <div className="py-4 text-center text-gray-500 text-sm">
                             검색중...
                         </div>
-                    ) : games.length > 0 ? (
+                    ) : isError ? (
+                            <div className="py-4 text-center text-red-500 text-sm flex flex-col">
+                                <span>
+                                    검색 중 오류가 발생했습니다.
+                                </span>
+                                <span>
+                                    잠시 후 다시 시도해주세요.
+                                </span>
+                        </div>
+                    ): games.length > 0 ? (
                         <ul className="py-1 max-h-[180px] overflow-y-auto">
                             {games.map((game, index) => (
                                 <li
@@ -105,7 +97,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
                                     className="px-4 mx-1 rounded py-2.5 hover:bg-gray-100 cursor-pointer text-sm flex space-x-2"
                                     onClick={handleSelectGame}
                                 >
-                                    <div className="font-bold">{game.name}</div>
+                                    <div className="font-bold">{htmlSpecialCharConverter(game.name)}</div>
                                     <div className="text-sm text-gray-600">({game.yearPublished})</div>
                                 </li>
                             ))}

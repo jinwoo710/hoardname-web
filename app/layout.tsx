@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/Header";
 import SideBar from "./components/Sidebar";
@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return(
     <html lang="ko">
       <body className="antialiased mx-auto w-full max-w-screen-md lg:max-w-screen-xl text-dark bg-white min-h-screen">

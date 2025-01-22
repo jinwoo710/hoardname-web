@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { BggGame, CreateShopItem, BggGameResponse, ShopItem } from '@/types/boardgame';
+import { BggGame, CreateShopItem, ShopItem } from '@/types/boardgame';
 import SearchBggGames from './SearchBggGames';
 import toast from 'react-hot-toast';
 import { CreateShopItem as createShopItem } from '../actions/userShop';
+import { useGameDetail } from "../hooks/useBggQuery";
 
 interface AddShopModalProps {
   isOpen: boolean;
@@ -19,31 +20,29 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
   const [selectedGame, setSelectedGame] = useState<BggGame | null>(null);
   const [price, setPrice] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
+    const [gameId, setGameId] = useState<string>("");
 
-  const handleGameSelect = async (gameId: string) => {
-    try {
-      const response = await fetch(`/api/bgg?id=${gameId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch game data');
-      }
-      const gameData = await response.json() as BggGameResponse;
+    const { data: gameDetail, isLoading } = useGameDetail(gameId);
 
-      const processedGameData: BggGame = {
+    useEffect(() => {
+    if (gameDetail && !isLoading) {
+      setSelectedGame({
         id: gameId,
-        ...gameData,
-        thumbnailUrl: gameData.thumbnailUrl || '',
-        imageUrl: gameData.imageUrl || '',
-        minPlayers: gameData.minPlayers || 0,
-        maxPlayers: gameData.maxPlayers || 0,
-        weight: gameData.weight || 0,
-        bestWith: gameData.bestWith || '',
-        recommendedWith: gameData.recommendedWith || '',
-      };
-      setSelectedGame(processedGameData);
-    } catch (error) {
-      console.error('Error fetching game data:', error);
-      setSelectedGame(null);
+        name: gameDetail.koreanName || gameDetail.primaryName,
+        originalName: gameDetail.primaryName,
+        weight: parseFloat(gameDetail.weight),
+        minPlayers: parseInt(gameDetail.minPlayers),
+        maxPlayers: parseInt(gameDetail.maxPlayers),
+        thumbnailUrl: gameDetail.thumbnail,
+        imageUrl: gameDetail.thumbnail,
+        bestWith: gameDetail.bestWith?.toString() || '',
+        recommendedWith: gameDetail.recommendedWith?.toString() || '',
+      });
     }
+  }, [gameDetail, isLoading, gameId]);
+
+  const handleGameSelect = (selectedGameId: string) => {
+    setGameId(selectedGameId);
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +103,7 @@ export default function AddShopModal({ isOpen, onClose, onGameAdded }: AddShopMo
 
   const handleClose = () => {
     setSelectedGame(null);
+    setGameId('');
     setPrice('');
     setMemo('');
     onClose();

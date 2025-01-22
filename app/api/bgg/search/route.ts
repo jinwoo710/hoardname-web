@@ -1,24 +1,62 @@
 import { NextResponse } from "next/server";
-import extractAttribute from "@/app/components/extractAttribute";
+
 export const runtime = "edge";
 
+interface BggSearchItem {
+  objectid: string;
+  name: string;
+  yearpublished: string;
+  objecttype: string;
+}
+
+interface BggSearchResponse {
+  items: BggSearchItem[];
+  total: number;
+}
+
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const name = searchParams.get("name");
-  const res = await fetch(
-    `https://boardgamegeek.com/xmlapi2/search?query=${name}`
-  );
-  const xml = await res.text();
+  try {
+    const { searchParams } = new URL(request.url);
+    const name = searchParams.get("name");
 
-  const ids = extractAttribute(xml, "item", "id");
-  const names = extractAttribute(xml, "name", "value");
-  const years = extractAttribute(xml, "yearpublished", "value");
+    if (!name) {
+      return NextResponse.json(
+        { error: "Search query is required" },
+        { status: 400 }
+      );
+    }
 
-  const games = ids.map((id, index) => ({
-    id,
-    name: names[index],
-    yearPublished: years[index],
-  }));
+    const res = await fetch(
+      `https://boardgamegeek.com/search/boardgame/ajax?q=${encodeURIComponent(
+        name
+      )}&showcount=50&nosession=1`,
+      {
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "BoardGameHoardName/1.0",
+        },
+        next: { revalidate: 300 },
+      }
+    );
 
-  return NextResponse.json({ data: games });
+    if (!res.ok) {
+      throw new Error(`BGG API responded with status: ${res.status}`);
+    }
+
+    const data = (await res.json()) as BggSearchResponse;
+
+    const games = data.items.map((item) => ({
+      id: item.objectid,
+      name: item.name,
+      yearPublished: item.yearpublished,
+    }));
+
+    return NextResponse.json({ games });
+  } catch (error) {
+    console.error("BGG search error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch games" },
+      { status: 500 }
+    );
+  }
 }

@@ -1,15 +1,3 @@
-export type BggGameResponse = {
-  name: string;
-  originalName: string;
-  thumbnailUrl: string | null;
-  imageUrl: string | null;
-  minPlayers: number | null;
-  maxPlayers: number | null;
-  weight: number | null;
-  bestWith: string | null;
-  recommendedWith: string | null;
-};
-
 export type BggGame = {
   id: string;
   name: string;
