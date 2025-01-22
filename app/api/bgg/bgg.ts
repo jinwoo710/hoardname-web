@@ -24,6 +24,17 @@ interface GameDetail {
   recommendedWith: number[] | null;
 }
 
+export const searchGamesFromBgg = async (name: string): Promise<Game[]> => {
+  const response = await fetch(
+    `/api/bgg/search?name=${encodeURIComponent(name)}`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch games");
+  }
+  const { games } = (await response.json()) as { games: Game[] };
+  return games;
+};
+
 export const searchGames = async (name: string): Promise<Game[]> => {
   const res = await fetch(
     `https://boardgamegeek.com/xmlapi2/search?query=${name}`

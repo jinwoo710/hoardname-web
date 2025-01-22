@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useState } from "react"
 import Image from 'next/image'
-import { useSearchGames } from "../hooks/useBggQuery"
+import { useSearchGamesWithFallback } from "../hooks/useBggQuery"
 
 interface SearchBggGamesProps {
     onGameSelect: (gameId: string) => void;
@@ -14,7 +14,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
     const [isVisible, setIsVisible] = useState(false);
     const searchTimeoutRef = useRef<number | undefined>(undefined);
 
-    const { data: games = [], isLoading  } = useSearchGames(debouncedName);
+    const { data: games = [], isLoading, isError  } = useSearchGamesWithFallback(debouncedName);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -78,7 +78,11 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
                         <div className="py-4 text-center text-gray-500 text-sm">
                             검색중...
                         </div>
-                    ) : games.length > 0 ? (
+                    ) : isError ? (
+                             <div className="py-4 text-center text-red-500 text-sm">
+                            검색 중 오류가 발생했습니다.
+                        </div>
+                    ): games.length > 0 ? (
                         <ul className="py-1 max-h-[180px] overflow-y-auto">
                             {games.map((game, index) => (
                                 <li
