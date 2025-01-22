@@ -1,0 +1,84 @@
+import extractAttribute from "@/app/components/extractAttribute";
+import extractFromXml from "@/app/components/extractFromXml";
+
+interface Game {
+  id: string;
+  name: string;
+  yearPublished: string;
+}
+
+interface GameDetail {
+  id: string;
+  primaryName: string;
+  koreanName: string;
+  thumbnail: string;
+  description: string;
+  yearPublished: string;
+  minPlayers: string;
+  maxPlayers: string;
+  playingTime: string;
+  minAge: string;
+  rating: string;
+  weight: string;
+}
+
+export const searchGames = async (name: string): Promise<Game[]> => {
+  const res = await fetch(
+    `https://boardgamegeek.com/xmlapi2/search?query=${name}`
+  );
+  const xml = await res.text();
+
+  const ids = extractAttribute(xml, "item", "id");
+  const names = extractAttribute(xml, "name", "value");
+  const years = extractAttribute(xml, "yearpublished", "value");
+
+  return ids.map((id, index) => ({
+    id,
+    name: names[index],
+    yearPublished: years[index],
+  }));
+};
+
+export const getGameDetail = async (id: string): Promise<GameDetail> => {
+  const response = await fetch(
+    `https://boardgamegeek.com/xmlapi2/thing?id=${id}&stats=1`
+  );
+  const xml = await response.text();
+
+  const itemMatch = xml.match(/<items.*?>[\s\S]*?<item.*?>([\s\S]*?)<\/item>/);
+  if (!itemMatch) {
+    throw new Error("Game not found");
+  }
+
+  const itemContent = itemMatch[1];
+  const names: { type: string; value: string }[] = [];
+  const nameRegex = /<name\s+type="([^"]+)"\s+sortindex="\d+"\s+value="([^"]+)"/g;
+  let nameMatch;
+
+  while ((nameMatch = nameRegex.exec(itemContent)) !== null) {
+    names.push({
+      type: nameMatch[1],
+      value: nameMatch[2],
+    });
+  }
+
+  const primaryName = names.find((name) => name.type === "primary")?.value || "";
+  const koreanName = names.find(
+    (name) => name.type === "alternate" && /[가-힣]/.test(name.value)
+  )?.value || "";
+
+  return {
+    id,
+    primaryName,
+    koreanName,
+    thumbnail: extractFromXml(xml, "thumbnail")[0] || "",
+    description: extractFromXml(xml, "description")[0] || "",
+    yearPublished: extractFromXml(xml, "yearpublished", "value")[0] || "",
+    minPlayers: extractFromXml(xml, "minplayers", "value")[0] || "",
+    maxPlayers: extractFromXml(xml, "maxplayers", "value")[0] || "",
+    playingTime: extractFromXml(xml, "playingtime", "value")[0] || "",
+    minAge: extractFromXml(xml, "minage", "value")[0] || "",
+    rating: extractFromXml(xml, "average", "value")[0] || "",
+    weight: extractFromXml(xml, "averageweight", "value")[0] || "",
+  };
+};

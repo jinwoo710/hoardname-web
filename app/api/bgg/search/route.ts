@@ -1,24 +1,25 @@
 import { NextResponse } from "next/server";
-import extractAttribute from "@/app/components/extractAttribute";
+import { searchGames } from "@/app/api/bgg/bgg";
 export const runtime = "edge";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const name = searchParams.get("name");
-  const res = await fetch(
-    `https://boardgamegeek.com/xmlapi2/search?query=${name}`
-  );
-  const xml = await res.text();
+  try {
+    const { searchParams } = new URL(request.url);
+    const name = searchParams.get("name");
 
-  const ids = extractAttribute(xml, "item", "id");
-  const names = extractAttribute(xml, "name", "value");
-  const years = extractAttribute(xml, "yearpublished", "value");
+    if (!name) {
+      return NextResponse.json(
+        { error: "Search query is required" },
+        { status: 400 }
+      );
+    }
 
-  const games = ids.map((id, index) => ({
-    id,
-    name: names[index],
-    yearPublished: years[index],
-  }));
-
-  return NextResponse.json({ data: games });
+    const games = await searchGames(name);
+    return NextResponse.json({ data: games });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to search games" },
+      { status: 500 }
+    );
+  }
 }
