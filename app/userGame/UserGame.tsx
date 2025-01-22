@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BoardGame, CreateBoardGame, UpdateBoardGame } from '@/types/boardgame';
 import toast from 'react-hot-toast';
 import AddGameModal from '../components/AddGameModal';
@@ -8,6 +8,8 @@ import InfiniteScroll from '../components/InfiniteScroll';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import UserGameListContainer from '../components/UserGameListContainer';
 import { createUserGame, deleteUserGame, updateUserGame, fetchUserGames } from '../actions/userGames';
+import { checkUser } from '../actions/users';
+import { useSession } from 'next-auth/react';
 
 interface UserGameProps {
   initialBoardgames: BoardGame[];
@@ -17,7 +19,7 @@ interface UserGameProps {
 
 export default function UserGame({ initialBoardgames, userId, limit }: UserGameProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { data: session } = useSession();
   const {
     items: boardgames,
     loading,
@@ -43,9 +45,24 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
     },
   });
 
-  const handleAddClick = () => {
-    setIsModalOpen(true);
-  };
+  const handleAddClick = useCallback(async () => {
+        if (!session?.user?.id) {
+            toast.error('로그인이 필요합니다.');
+            return;
+        }
+
+        try {
+            const result = await checkUser(session.user.id);
+            if (!result.user?.nickname) {
+                toast.error('닉네임 설정이 필요합니다.');
+                return;
+            }
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error checking user:', error);
+            toast.error('사용자 정보를 확인하는 중 오류가 발생했습니다.');
+        }
+    }, [session]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
