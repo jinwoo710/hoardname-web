@@ -1,8 +1,10 @@
-import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import { eq } from 'drizzle-orm';
+
+import { auth } from '@/auth';
 import { db } from '@/db';
 import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+
 import UserGame from './UserGame';
 import { fetchUserGames } from '../actions/userGames';
 export const runtime = 'edge';
@@ -20,13 +22,12 @@ export default async function UserGamePage() {
   if (!dbUser) {
     redirect('/');
   }
-  
 
   const result = await fetchUserGames({
     page: 1,
     limit: LIMIT,
     search: '',
-    ownerId: dbUser.id
+    ownerId: dbUser.id,
   });
 
   return (

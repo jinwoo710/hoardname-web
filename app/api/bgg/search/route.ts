@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-export const runtime = "edge";
+export const runtime = 'edge';
 
 interface BggSearchItem {
   objectid: string;
@@ -17,11 +17,11 @@ interface BggSearchResponse {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const name = searchParams.get("name");
+    const name = searchParams.get('name');
 
     if (!name) {
       return NextResponse.json(
-        { error: "Search query is required" },
+        { error: 'Search query is required' },
         { status: 400 }
       );
     }
@@ -32,8 +32,8 @@ export async function GET(request: Request) {
       )}&showcount=50&nosession=1`,
       {
         headers: {
-          Accept: "application/json",
-          "User-Agent": "BoardGameHoardName/1.0",
+          Accept: 'application/json',
+          'User-Agent': 'BoardGameHoardName/1.0',
         },
         next: { revalidate: 300 },
       }
@@ -53,9 +53,9 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ games });
   } catch (error) {
-    console.error("BGG search error:", error);
+    console.error('BGG search error:', error);
     return NextResponse.json(
-      { error: "Failed to fetch games" },
+      { error: 'Failed to fetch games' },
       { status: 500 }
     );
   }

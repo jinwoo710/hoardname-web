@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from 'react';
 
 interface FetchResponse<T> {
   items: T[];
@@ -8,7 +8,11 @@ interface FetchResponse<T> {
 
 interface UseInfinityScrollOptions<T> {
   initialData: T[];
-  fetchData: (page: number, searchTerm: string, filters?: Record<string, string>) => Promise<FetchResponse<T>>;
+  fetchData: (
+    _page: number,
+    _searchTerm: string,
+    _filters?: Record<string, string>
+  ) => Promise<FetchResponse<T>>;
 }
 
 export function useInfinityScroll<T>({
@@ -19,7 +23,7 @@ export function useInfinityScroll<T>({
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const searchTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -34,7 +38,7 @@ export function useInfinityScroll<T>({
         setError(
           err instanceof Error
             ? err.message
-            : "데이터를 불러오는데 실패했습니다"
+            : '데이터를 불러오는데 실패했습니다'
         );
       }
     },
@@ -58,12 +62,12 @@ export function useInfinityScroll<T>({
           setError(
             err instanceof Error
               ? err.message
-              : "데이터를 불러오는데 실패했습니다"
+              : '데이터를 불러오는데 실패했습니다'
           );
         } finally {
           setLoading(false);
         }
-      }, 300); 
+      }, 300);
     },
     [fetchAndSetData]
   );
@@ -88,7 +92,7 @@ export function useInfinityScroll<T>({
       setPage(nextPage);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "데이터를 불러오는데 실패했습니다"
+        err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다'
       );
       setHasMore(false);
     } finally {
@@ -107,20 +111,22 @@ export function useInfinityScroll<T>({
     async (newFilters: Record<string, string>, newSearchTerm?: string) => {
       setLoading(true);
       setFilters(newFilters);
-      
+
       try {
         const term = newSearchTerm !== undefined ? newSearchTerm : searchTerm;
         if (newSearchTerm !== undefined) {
           setSearchTerm(newSearchTerm);
         }
-        
+
         const data = await fetchData(1, term, newFilters);
         setItems(data.items);
         setHasMore(data.hasMore);
         setPage(1);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "데이터를 불러오는데 실패했습니다"
+          err instanceof Error
+            ? err.message
+            : '데이터를 불러오는데 실패했습니다'
         );
       } finally {
         setLoading(false);

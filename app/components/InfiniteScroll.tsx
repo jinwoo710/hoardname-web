@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from 'react';
 
 interface InfiniteScrollProps {
   children: ReactNode;
@@ -21,7 +21,7 @@ export default function InfiniteScroll({
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => {
+      (entries) => {
         if (entries[0].isIntersecting && hasMore && !loading) {
           onLoadMore();
         }

@@ -1,8 +1,9 @@
-import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-export const runtime = "edge";
-import { db } from "@/db";
+import NextAuth from 'next-auth';
+import Google from 'next-auth/providers/google';
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
+
+export const runtime = 'edge';
+import { db } from '@/db';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -13,7 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
     async session({ session, token }) {
@@ -23,7 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     async signIn({ account, profile }) {
-      if (account?.provider === "google") {
+      if (account?.provider === 'google') {
         return !!profile?.email_verified;
       }
       return true;

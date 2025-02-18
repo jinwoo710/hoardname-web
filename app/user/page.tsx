@@ -1,16 +1,18 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/app/api/auth/[...nextauth]/auth";
-import UserProfileClient from "./UserProfileClient";
-import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import { users } from "@/db/schema";
-export const runtime = "edge";
+import { redirect } from 'next/navigation';
+import { eq } from 'drizzle-orm';
+
+import { auth } from '@/app/api/auth/[...nextauth]/auth';
+import { db } from '@/db';
+import { users } from '@/db/schema';
+
+import UserProfileClient from './UserProfileClient';
+export const runtime = 'edge';
 
 export default async function UserProfile() {
   const session = await auth();
 
   if (!session?.user?.email) {
-    redirect("/");
+    redirect('/');
   }
 
   const dbUser = await db
@@ -20,7 +22,7 @@ export default async function UserProfile() {
     .get();
 
   if (!dbUser) {
-    redirect("/");
+    redirect('/');
   }
 
   return (

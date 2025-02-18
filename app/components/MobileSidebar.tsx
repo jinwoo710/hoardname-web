@@ -1,8 +1,9 @@
 'use client';
 
-import {  useEffect } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
-import SideBar from "./Sidebar";
+import { useEffect } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
+
+import SideBar from './Sidebar';
 
 interface MobileSidebarProps {
   isMobileMenuOpen: boolean;
@@ -15,31 +16,31 @@ export default function MobileSidebar({
 }: MobileSidebarProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         onClose();
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
 
   const { data: session, status } = useSession();
-  const signInWithGoogle = () => signIn("google");
+  const signInWithGoogle = () => signIn('google');
 
   return (
     <div className="block lg:hidden">
       <div
         className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
-          isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
       <aside
         className={`fixed top-0 right-0 w-64 h-full bg-white z-50 transform transition-transform ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="h-16 flex items-center justify-between px-4 border-b">
@@ -63,16 +64,18 @@ export default function MobileSidebar({
             </svg>
           </button>
         </div>
-          <SideBar onClose={onClose} />
+        <SideBar onClose={onClose} />
         <div className="absolute bottom-0 left-0 right-0 border-t p-4">
-          {status === "loading" ? (
+          {status === 'loading' ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : session ? (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">{session.user?.name}</span>
+                <span className="text-sm text-gray-700">
+                  {session.user?.name}
+                </span>
                 <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={() => signOut({ callbackUrl: '/' })}
                   className="text-sm text-gray-700 hover:text-gray-900"
                 >
                   로그아웃

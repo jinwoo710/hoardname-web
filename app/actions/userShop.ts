@@ -1,11 +1,12 @@
-"use server";
+'use server';
 
-import { db } from "@/db";
-import { shop, users } from "@/db/schema";
-import { eq, desc, and, sql } from "drizzle-orm";
-import type { SQL } from "drizzle-orm";
-import type { CreateShopItem, ShopItem } from "@/types/boardgame";
-import { revalidatePath } from "next/cache";
+import { eq, desc, and, sql } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+
+import { db } from '@/db';
+import { shop, users } from '@/db/schema';
+import type { CreateShopItem, ShopItem } from '@/types/boardgame';
 
 interface FetchUserShopParams {
   page: number;
@@ -78,7 +79,7 @@ export async function fetchUserShop({
 export async function CreateShopItem(item: CreateShopItem) {
   try {
     await db.insert(shop).values(item);
-    revalidatePath("/shop");
+    revalidatePath('/shop');
     return { success: true };
   } catch (error) {
     return { success: false, error };
@@ -88,7 +89,7 @@ export async function CreateShopItem(item: CreateShopItem) {
 export async function UpdateShopItem(item: Partial<ShopItem> & { id: number }) {
   try {
     await db.update(shop).set(item).where(eq(shop.id, item.id));
-    revalidatePath("/shop");
+    revalidatePath('/shop');
     return { success: true };
   } catch (error) {
     return { success: false, error };

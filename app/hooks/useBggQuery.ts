@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
+
 import {
   searchGames,
   getGameDetail,
   searchGamesFromBgg,
-} from "@/app/api/bgg/bgg";
+} from '@/app/api/bgg/bgg';
 
 interface Game {
   id: string;
@@ -13,7 +14,7 @@ interface Game {
 
 export function useSearchGamesWithFallback(name: string | null) {
   const primaryQuery = useQuery<Game[]>({
-    queryKey: ["bggSearch", name],
+    queryKey: ['bggSearch', name],
     queryFn: () => (name ? searchGamesFromBgg(name) : []),
     enabled: !!name,
     retry: 1,
@@ -22,7 +23,7 @@ export function useSearchGamesWithFallback(name: string | null) {
   });
 
   const fallbackQuery = useQuery<Game[]>({
-    queryKey: ["bggSearchFallback", name],
+    queryKey: ['bggSearchFallback', name],
     queryFn: () => (name ? searchGames(name) : []),
     enabled: !!name && primaryQuery.isError,
     retry: 1,
@@ -41,8 +42,8 @@ export function useSearchGamesWithFallback(name: string | null) {
 
 export function useGameDetail(id: string | null) {
   return useQuery({
-    queryKey: ["bggGame", id],
-    queryFn: () => getGameDetail(id || ""),
+    queryKey: ['bggGame', id],
+    queryFn: () => getGameDetail(id || ''),
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,

@@ -1,15 +1,22 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { BoardGame, CreateBoardGame, UpdateBoardGame } from '@/types/boardgame';
 import toast from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
+
+import { BoardGame, CreateBoardGame, UpdateBoardGame } from '@/types/boardgame';
+
 import AddGameModal from '../components/AddGameModal';
 import InfiniteScroll from '../components/InfiniteScroll';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import UserGameListContainer from '../components/UserGameListContainer';
-import { createUserGame, deleteUserGame, updateUserGame, fetchUserGames } from '../actions/userGames';
+import {
+  createUserGame,
+  deleteUserGame,
+  updateUserGame,
+  fetchUserGames,
+} from '../actions/userGames';
 import { checkUser } from '../actions/users';
-import { useSession } from 'next-auth/react';
 
 interface UserGameProps {
   initialBoardgames: BoardGame[];
@@ -17,7 +24,11 @@ interface UserGameProps {
   limit: number;
 }
 
-export default function UserGame({ initialBoardgames, userId, limit }: UserGameProps) {
+export default function UserGame({
+  initialBoardgames,
+  userId,
+  limit,
+}: UserGameProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: session } = useSession();
   const {
@@ -26,7 +37,7 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
     hasMore,
     loadMore,
     handleSearch,
-    reset
+    reset,
   } = useInfinityScroll({
     initialData: initialBoardgames,
     fetchData: async (page: number, searchTerm: string) => {
@@ -34,35 +45,35 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
         page,
         limit,
         search: searchTerm,
-        ownerId: userId
+        ownerId: userId,
       });
-      
+
       return {
         items: result.items,
         hasMore: result.hasMore,
-        total: result.total
+        total: result.total,
       };
     },
   });
 
   const handleAddClick = useCallback(async () => {
-        if (!session?.user?.id) {
-            toast.error('로그인이 필요합니다.');
-            return;
-        }
+    if (!session?.user?.id) {
+      toast.error('로그인이 필요합니다.');
+      return;
+    }
 
-        try {
-            const result = await checkUser(session.user.id);
-            if (!result.user?.nickname) {
-                toast.error('닉네임 설정이 필요합니다.');
-                return;
-            }
-            setIsModalOpen(true);
-        } catch (error) {
-            console.error('Error checking user:', error);
-            toast.error('사용자 정보를 확인하는 중 오류가 발생했습니다.');
-        }
-    }, [session]);
+    try {
+      const result = await checkUser(session.user.id);
+      if (!result.user?.nickname) {
+        toast.error('닉네임 설정이 필요합니다.');
+        return;
+      }
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error('Error checking user:', error);
+      toast.error('사용자 정보를 확인하는 중 오류가 발생했습니다.');
+    }
+  }, [session]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -71,9 +82,9 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
   const handleCreateBoardGame = async (gameData: CreateBoardGame) => {
     const result = await createUserGame({
       ...gameData,
-      ownerId: userId
+      ownerId: userId,
     });
-    
+
     if (result.success) {
       await reset();
       toast.success('게임이 추가되었습니다.');
@@ -85,7 +96,7 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
   const handleUpdateGame = async (gameData: UpdateBoardGame) => {
     const result = await updateUserGame({
       ...gameData,
-      ownerId: userId
+      ownerId: userId,
     });
     if (result.success) {
       await reset();
@@ -119,11 +130,21 @@ export default function UserGame({ initialBoardgames, userId, limit }: UserGameP
         </button>
       </div>
       <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-        <ul className='text-sm text-gray-600 space-y-1.5'>
-          <li>게임 등록은 <span className='font-bold text-blue-900'>닉네임</span> 설정 후 이용 할 수 있습니다.</li>
-          <li>게임을 외부로 가져갈 시, <span className='font-bold text-green-800'>아지트</span>를 클릭하여 게임 상태를 변경해주세요.</li>
+        <ul className="text-sm text-gray-600 space-y-1.5">
+          <li>
+            게임 등록은 <span className="font-bold text-blue-900">닉네임</span>{' '}
+            설정 후 이용 할 수 있습니다.
+          </li>
+          <li>
+            게임을 외부로 가져갈 시,{' '}
+            <span className="font-bold text-green-800">아지트</span>를 클릭하여
+            게임 상태를 변경해주세요.
+          </li>
           <li>국내만 출시된 게임은 검색되지 않습니다.</li>
-          <li>검색 가능한 게임 목록은 BoardGameGeek 기준입니다. 검색한 보드게임이 없을 경우 문의하기에 남겨주세요.</li>
+          <li>
+            검색 가능한 게임 목록은 BoardGameGeek 기준입니다. 검색한 보드게임이
+            없을 경우 문의하기에 남겨주세요.
+          </li>
         </ul>
       </div>
       <div className="relative w-full mb-2">

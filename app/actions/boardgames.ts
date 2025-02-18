@@ -1,10 +1,11 @@
-"use server";
+'use server';
 
-import { db } from "@/db";
-import { boardgames } from "@/db/schema";
-import { eq, and, sql, desc, asc } from "drizzle-orm";
-import type { SQL } from "drizzle-orm";
-import { users } from "@/db/schema";
+import { eq, and, sql, desc, asc } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { boardgames } from '@/db/schema';
+import { users } from '@/db/schema';
 
 export interface FetchBoardgamesParams {
   page: number;
@@ -42,7 +43,7 @@ export async function fetchBoardgames({
     }
     if (bestWith) {
       const bestWithCondition =
-        bestWith === "5"
+        bestWith === '5'
           ? sql`CAST(${boardgames.bestWith} AS INTEGER) >= 5`
           : sql`${boardgames.bestWith} = ${bestWith}`;
 
@@ -60,37 +61,37 @@ export async function fetchBoardgames({
     if (recommendedWith) {
       const count = parseInt(recommendedWith);
       conditions.push(
-        recommendedWith === "5"
+        recommendedWith === '5'
           ? sql`CAST(${boardgames.recommendedWith} AS INTEGER) >= 5 OR (
               ${boardgames.recommendedWith} LIKE '%-%' AND 
               CAST(SUBSTR(${boardgames.recommendedWith}, INSTR(${boardgames.recommendedWith}, '-') + 1) AS INTEGER) >= 5
             )`
           : sql`${boardgames.recommendedWith} LIKE ${
-              "%" + recommendedWith + "%"
+              '%' + recommendedWith + '%'
             } OR (
               ${boardgames.recommendedWith} LIKE '%-%' AND 
               CAST(SUBSTR(${boardgames.recommendedWith}, 1, INSTR(${
-              boardgames.recommendedWith
-            }, '-') - 1) AS INTEGER) <= ${count} AND
+                boardgames.recommendedWith
+              }, '-') - 1) AS INTEGER) <= ${count} AND
               CAST(SUBSTR(${boardgames.recommendedWith}, INSTR(${
-              boardgames.recommendedWith
-            }, '-') + 1) AS INTEGER) >= ${count}
+                boardgames.recommendedWith
+              }, '-') + 1) AS INTEGER) >= ${count}
             )`
       );
     }
 
     if (weightSort) {
-      if (weightSort === "asc") {
+      if (weightSort === 'asc') {
         orderByClause = [asc(boardgames.weight), ...orderByClause];
-      } else if (weightSort === "desc") {
+      } else if (weightSort === 'desc') {
         orderByClause = [desc(boardgames.weight), ...orderByClause];
       }
     }
 
     if (inStorage) {
-      if (inStorage === "true") {
+      if (inStorage === 'true') {
         conditions.push(sql`${boardgames.inStorage} = true`);
-      } else if (inStorage === "false") {
+      } else if (inStorage === 'false') {
         conditions.push(sql`${boardgames.inStorage} = false`);
       }
     }
