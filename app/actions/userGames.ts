@@ -1,11 +1,12 @@
-"use server";
+'use server';
 
-import { db } from "@/db";
-import { boardgames, users } from "@/db/schema";
-import { eq, and, sql, desc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import type { CreateBoardGame, UpdateBoardGame } from "@/types/boardgame";
-import type { SQL } from "drizzle-orm";
+import { eq, and, sql, desc } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import type { SQL } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { boardgames, users } from '@/db/schema';
+import type { CreateBoardGame, UpdateBoardGame } from '@/types/boardgame';
 
 interface FetchUserGamesParams {
   page: number;
@@ -91,18 +92,18 @@ export async function createUserGame(data: CreateBoardGame) {
       .limit(1);
 
     if (existingGame.length > 0) {
-      return { success: false, error: "이미 등록된 게임입니다." };
+      return { success: false, error: '이미 등록된 게임입니다.' };
     }
 
     const [newGame] = await db
       .insert(boardgames)
       .values({
         ...data,
-        originalName: data.originalName || "",
+        originalName: data.originalName || '',
       })
       .returning();
 
-    revalidatePath("/userGame");
+    revalidatePath('/userGame');
     return { success: true, game: newGame };
   } catch (error) {
     return { success: false, error: `게임 추가에 실패했습니다: ${error}` };
@@ -116,7 +117,7 @@ export async function updateUserGame(data: UpdateBoardGame) {
       .set(data)
       .where(eq(boardgames.id, Number(data.id)))
       .returning();
-    revalidatePath("/userGame");
+    revalidatePath('/userGame');
     return { success: true, game: updatedGame };
   } catch (error) {
     return { success: false, error: `Failed to update game: ${error}` };
@@ -126,7 +127,7 @@ export async function updateUserGame(data: UpdateBoardGame) {
 export async function deleteUserGame(id: string) {
   try {
     await db.delete(boardgames).where(eq(boardgames.id, Number(id)));
-    revalidatePath("/userGame");
+    revalidatePath('/userGame');
     return { success: true };
   } catch (error) {
     return { success: false, error: `Failed to delete game: ${error}` };

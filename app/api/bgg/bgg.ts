@@ -1,6 +1,6 @@
-import extractAttribute from "@/app/components/extractAttribute";
-import extractFromXml from "@/app/components/extractFromXml";
-import htmlSpecialCharConverter from "@/app/components/htmlSpecialCharConverter";
+import extractAttribute from '@/app/components/extractAttribute';
+import extractFromXml from '@/app/components/extractFromXml';
+import htmlSpecialCharConverter from '@/app/components/htmlSpecialCharConverter';
 
 interface Game {
   id: string;
@@ -30,7 +30,7 @@ export const searchGamesFromBgg = async (name: string): Promise<Game[]> => {
     `/api/bgg/search?name=${encodeURIComponent(name)}`
   );
   if (!response.ok) {
-    throw new Error("Failed to fetch games");
+    throw new Error('Failed to fetch games');
   }
   const { games } = (await response.json()) as { games: Game[] };
   return games;
@@ -42,9 +42,9 @@ export const searchGames = async (name: string): Promise<Game[]> => {
   );
   const xml = await res.text();
 
-  const ids = extractAttribute(xml, "item", "id");
-  const names = extractAttribute(xml, "name", "value");
-  const years = extractAttribute(xml, "yearpublished", "value");
+  const ids = extractAttribute(xml, 'item', 'id');
+  const names = extractAttribute(xml, 'name', 'value');
+  const years = extractAttribute(xml, 'yearpublished', 'value');
 
   return ids.map((id, index) => ({
     id,
@@ -61,7 +61,7 @@ export const getGameDetail = async (id: string): Promise<GameDetail> => {
 
   const itemMatch = xml.match(/<items.*?>[\s\S]*?<item.*?>([\s\S]*?)<\/item>/);
   if (!itemMatch) {
-    throw new Error("Game not found");
+    throw new Error('Game not found');
   }
 
   const itemContent = itemMatch[1];
@@ -78,36 +78,36 @@ export const getGameDetail = async (id: string): Promise<GameDetail> => {
   }
 
   const primaryName =
-    names.find((name) => name.type === "primary")?.value || "";
+    names.find((name) => name.type === 'primary')?.value || '';
   const koreanName =
     names.find(
-      (name) => name.type === "alternate" && /[가-힣]/.test(name.value)
-    )?.value || "";
+      (name) => name.type === 'alternate' && /[가-힣]/.test(name.value)
+    )?.value || '';
   const bestWithRegex = /<result name="bestwith" value="Best with (\d+)[^"]*"/;
   const recommendedWithRegex =
     /<result name="recommmendedwith" value="Recommended with ([^"]+)"/;
-  const bestWith = xml.match(bestWithRegex)?.[1] || "";
+  const bestWith = xml.match(bestWithRegex)?.[1] || '';
   const recommendedWith =
     xml
       .match(recommendedWithRegex)?.[1]
       ?.match(/\d[\d,–\s]*\d/)?.[0]
-      ?.replace(/[–\s]/g, ",") || "";
+      ?.replace(/[–\s]/g, ',') || '';
   return {
     id,
     primaryName: htmlSpecialCharConverter(primaryName),
     koreanName: htmlSpecialCharConverter(koreanName),
-    thumbnail: extractFromXml(xml, "thumbnail")[0] || "",
-    description: extractFromXml(xml, "description")[0] || "",
-    yearPublished: extractAttribute(xml, "yearpublished", "value")[0] || "",
-    minPlayers: extractAttribute(xml, "minplayers", "value")[0] || "",
-    maxPlayers: extractAttribute(xml, "maxplayers", "value")[0] || "",
-    playingTime: extractAttribute(xml, "playingtime", "value")[0] || "",
-    minAge: extractAttribute(xml, "minage", "value")[0] || "",
-    rating: extractAttribute(xml, "average", "value")[0] || "",
-    weight: extractAttribute(xml, "averageweight", "value")[0] || "",
+    thumbnail: extractFromXml(xml, 'thumbnail')[0] || '',
+    description: extractFromXml(xml, 'description')[0] || '',
+    yearPublished: extractAttribute(xml, 'yearpublished', 'value')[0] || '',
+    minPlayers: extractAttribute(xml, 'minplayers', 'value')[0] || '',
+    maxPlayers: extractAttribute(xml, 'maxplayers', 'value')[0] || '',
+    playingTime: extractAttribute(xml, 'playingtime', 'value')[0] || '',
+    minAge: extractAttribute(xml, 'minage', 'value')[0] || '',
+    rating: extractAttribute(xml, 'average', 'value')[0] || '',
+    weight: extractAttribute(xml, 'averageweight', 'value')[0] || '',
     bestWith: bestWith ? parseInt(bestWith) : null,
     recommendedWith: recommendedWith
-      ? recommendedWith.split(",").map((n) => parseInt(n.trim()))
+      ? recommendedWith.split(',').map((n) => parseInt(n.trim()))
       : [],
   };
 };

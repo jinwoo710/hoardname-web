@@ -1,6 +1,6 @@
-import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-export const runtime = "edge";
+import NextAuth from 'next-auth';
+import Google from 'next-auth/providers/google';
+export const runtime = 'edge';
 
 export const {
   handlers,
@@ -15,17 +15,17 @@ export const {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          prompt: "consent", 
+          prompt: 'consent',
         },
       },
     }),
   ],
   session: {
-    strategy: "jwt", 
+    strategy: 'jwt',
   },
   callbacks: {
     signIn: async ({ account, profile }) => {
-      if (account?.provider === "google") {
+      if (account?.provider === 'google') {
         return !!profile?.email_verified;
       }
       return true;

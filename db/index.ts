@@ -1,11 +1,12 @@
-import { drizzle } from "drizzle-orm/d1";
-import * as schema from "./schema";
-import { getRequestContext } from "@cloudflare/next-on-pages";
+import { drizzle } from 'drizzle-orm/d1';
+import { getRequestContext } from '@cloudflare/next-on-pages';
 
-export const runtime = "edge";
+import * as schema from './schema';
+
+export const runtime = 'edge';
 
 function initDbConnection() {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     const { env } = getRequestContext();
 
     return drizzle(env.DB, { schema });

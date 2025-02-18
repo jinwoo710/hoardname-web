@@ -1,12 +1,14 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/app/api/auth/[...nextauth]/auth";
-import UserShop from "./UserShop";
-import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import { users } from "@/db/schema";
-import { ShopItem } from "@/types/boardgame";
-import { fetchUserShop } from "../actions/userShop";
-export const runtime = "edge";
+import { redirect } from 'next/navigation';
+import { eq } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { auth } from '@/app/api/auth/[...nextauth]/auth';
+import { users } from '@/db/schema';
+import { ShopItem } from '@/types/boardgame';
+
+import UserShop from './UserShop';
+import { fetchUserShop } from '../actions/userShop';
+export const runtime = 'edge';
 
 const LIMIT = 20;
 
@@ -14,7 +16,7 @@ export default async function UserShopPage() {
   const session = await auth();
 
   if (!session?.user?.email) {
-    redirect("/");
+    redirect('/');
   }
 
   const dbUser = await db
@@ -24,13 +26,13 @@ export default async function UserShopPage() {
     .get();
 
   if (!dbUser) {
-    redirect("/");
+    redirect('/');
   }
 
   const { items } = await fetchUserShop({
     page: 1,
     limit: LIMIT,
-    userId: dbUser.id
+    userId: dbUser.id,
   });
   return (
     <UserShop

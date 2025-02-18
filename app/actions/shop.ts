@@ -1,9 +1,10 @@
-"use server";
+'use server';
 
-import { db } from "@/db";
-import { shop, users } from "@/db/schema";
-import { eq, desc, and, sql, asc } from "drizzle-orm";
-import type { SQL } from "drizzle-orm";
+import { eq, desc, and, sql, asc } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { shop, users } from '@/db/schema';
 
 interface FetchShopItemsParams {
   page: number;
@@ -32,9 +33,9 @@ export async function fetchShopItems({
     }
 
     if (priceSort) {
-      if (priceSort === "asc")
+      if (priceSort === 'asc')
         orderByClause = [asc(shop.price), ...orderByClause];
-      if (priceSort === "desc")
+      if (priceSort === 'desc')
         orderByClause = [desc(shop.price), ...orderByClause];
     }
 

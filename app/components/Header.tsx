@@ -1,16 +1,17 @@
 'use client';
 
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
+import { signIn, signOut, useSession } from 'next-auth/react';
+
 import MobileSidebar from './MobileSidebar';
-import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: session, status } = useSession();
 
   const signInWithGoogle = async () =>
-    await signIn("google", { callbackUrl: "/game" });
+    await signIn('google', { callbackUrl: '/game' });
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
@@ -20,14 +21,15 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-4">
-          {status === "loading" ? (
-            <div className="hidden lg:flex h-[42px] justify-center items-center font-bold">Loading...</div>
+          {status === 'loading' ? (
+            <div className="hidden lg:flex h-[42px] justify-center items-center font-bold">
+              Loading...
+            </div>
           ) : session ? (
             <div className="hidden lg:flex items-center gap-4">
-      
               <span>{session.user?.name}</span>
               <button
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={() => signOut({ callbackUrl: '/' })}
                 className="text-sm text-gray-700 hover:text-gray-900"
               >
                 로그아웃
@@ -79,9 +81,9 @@ export default function Header() {
           </button>
         </div>
       </div>
-      <MobileSidebar 
-        isMobileMenuOpen={isMobileMenuOpen} 
-        onClose={() => setIsMobileMenuOpen(false)} 
+      <MobileSidebar
+        isMobileMenuOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
       />
     </header>
   );

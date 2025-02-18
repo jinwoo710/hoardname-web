@@ -1,7 +1,8 @@
 'use client';
 
-import { BoardGame, UpdateBoardGame } from "@/types/boardgame";
 import Image from 'next/image';
+
+import { BoardGame, UpdateBoardGame } from '@/types/boardgame';
 
 interface UserGameListContainerProps {
   boardgames: BoardGame[];
@@ -9,15 +10,15 @@ interface UserGameListContainerProps {
   handleDeleteGame: (id: string) => Promise<void>;
 }
 
-export default function UserGameListContainer({ 
-  boardgames, 
-  handleUpdateGame, 
-  handleDeleteGame 
+export default function UserGameListContainer({
+  boardgames,
+  handleUpdateGame,
+  handleDeleteGame,
 }: UserGameListContainerProps) {
   const handleToggleInStorage = async (game: BoardGame) => {
     await handleUpdateGame({
       id: game.id,
-      inStorage: !game.inStorage
+      inStorage: !game.inStorage,
     });
   };
 
@@ -36,15 +37,20 @@ export default function UserGameListContainer({
             <div className="flex items-center space-x-4">
               {game.thumbnailUrl && (
                 <div className="flex justify-center items-center w-16 h-16">
-                <Image
-                  width={64}
-                  height={64}
-                  src={game.thumbnailUrl} 
-                  alt={game.name} 
-                  className="object-contain rounded" 
-                  style={{ maxWidth: '64px', maxHeight: '64px', width: 'auto', height: 'auto' }}
-                />
-                  </div>
+                  <Image
+                    width={64}
+                    height={64}
+                    src={game.thumbnailUrl}
+                    alt={game.name}
+                    className="object-contain rounded"
+                    style={{
+                      maxWidth: '64px',
+                      maxHeight: '64px',
+                      width: 'auto',
+                      height: 'auto',
+                    }}
+                  />
+                </div>
               )}
               <div>
                 <h3 className="font-medium">{game.name}</h3>
@@ -57,8 +63,8 @@ export default function UserGameListContainer({
               <button
                 onClick={() => handleToggleInStorage(game)}
                 className={`w-[40px] h-[40px] md:w-[60px] flex justify-center items-center py-1 rounded ${
-                  game.inStorage 
-                    ? 'bg-green-100 text-green-800' 
+                  game.inStorage
+                    ? 'bg-green-100 text-green-800'
                     : 'bg-gray-100 text-gray-800'
                 }`}
               >
@@ -70,8 +76,18 @@ export default function UserGameListContainer({
                 onClick={() => handleDeleteGame(game.id.toString())}
                 className="w-[40px] h-[40px] px-3 py-1 rounded bg-red-100 text-red-800"
               >
-                <svg className="w-4 h-4 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg
+                  className="w-4 h-4 mx-auto"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
               </button>
             </div>

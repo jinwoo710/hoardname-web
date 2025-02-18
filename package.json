@@ -13,7 +13,8 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "db:generate": "drizzle-kit generate",
     "db:midrate:local": "wrangler d1 migrations apply hoardname_db --local",
-    "db:midrate:prod": "wrangler d1 migrations apply hoardname_db --remote"
+    "db:midrate:prod": "wrangler d1 migrations apply hoardname_db --remote",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",
@@ -25,7 +26,8 @@
     "next-auth": "^5.0.0-beta.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hot-toast": "^2.4.1"
+    "react-hot-toast": "^2.4.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.7",
@@ -34,12 +36,26 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "@typescript-eslint/parser": "^8.24.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.4.3",
     "postcss": "^8",
+    "prettier": "^3.5.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "vercel": "^39.2.2",
     "wrangler": "^3.99.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }

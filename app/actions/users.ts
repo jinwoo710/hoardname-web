@@ -1,9 +1,10 @@
-"use server";
+'use server';
 
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+
+import { db } from '@/db';
+import { users } from '@/db/schema';
 
 interface UpdateProfileParams {
   nickname: string;
@@ -23,7 +24,7 @@ export async function checkUser(userId: string) {
       .limit(1);
 
     if (result.length === 0) {
-      return { error: "User not found" };
+      return { error: 'User not found' };
     }
 
     return { user: result[0] };
@@ -38,21 +39,21 @@ export async function updateProfile(
 ) {
   try {
     if (!userId) {
-      throw new Error("User ID is required");
+      throw new Error('User ID is required');
     }
 
     await db
       .update(users)
       .set({
         nickname,
-        openKakaotalkUrl: openKakaotalkUrl === "" ? null : openKakaotalkUrl,
+        openKakaotalkUrl: openKakaotalkUrl === '' ? null : openKakaotalkUrl,
       })
       .where(eq(users.id, userId));
 
-    revalidatePath("/user");
+    revalidatePath('/user');
     return { success: true };
   } catch (error) {
-    console.error("Error in updateProfile:", error);
+    console.error('Error in updateProfile:', error);
     return { success: false, error: `Failed to update profile: ${error}` };
   }
 }

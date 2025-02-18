@@ -1,8 +1,9 @@
-import { fetchShopItems } from "../actions/shop";
-import ShopList from "./ShopList";
-import { ShopItem } from "@/types/boardgame";
+import { ShopItem } from '@/types/boardgame';
 
-export const runtime = "edge";
+import { fetchShopItems } from '../actions/shop';
+import ShopList from './ShopList';
+
+export const runtime = 'edge';
 
 const LIMIT = 20;
 
@@ -12,8 +13,6 @@ export default async function Shop() {
     limit: LIMIT,
     search: '',
   });
-     const initialShopItems = items as ShopItem[]
-  return (
-    <ShopList initialShopItems={initialShopItems} limit={LIMIT} />
-  )
+  const initialShopItems = items as ShopItem[];
+  return <ShopList initialShopItems={initialShopItems} limit={LIMIT} />;
 }
