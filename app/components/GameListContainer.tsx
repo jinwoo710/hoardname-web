@@ -25,10 +25,11 @@ export default function GameListContainer({ boardgames }: GameListContainerProps
     return (
         <div className="space-y-4">
             {boardgames.length === 0 ? (
-                <div className="text-center pt-[50px] lg:pt-[200px] text-lg text-gray-500">보드게임이 없습니다</div>
+                <div data-testid="empty-list" className="text-center pt-[50px] lg:pt-[200px] text-lg text-gray-500">보드게임이 없습니다</div>
             ) : (
                 boardgames.map((item, index) => (
                     <div
+                    data-testid={`game-card`}
                         key={`${item.id}-${index}`}
                         className="flex border border-gray-100 rounded-2xl w-full bg-white hover:shadow-lg hover:border-blue-100 transition-all duration-200"
                     >
