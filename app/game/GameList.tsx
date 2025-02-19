@@ -202,6 +202,7 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
                      <div className="relative flex-1">
                     <input
                         type="text"
+                        data-testid="search-input" 
                         placeholder="게임 이름으로 검색..."
                         value={searchTerm}
                         onChange={(e) => {
