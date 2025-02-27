@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     }
 
     const res = await fetch(
-      `https://boardgamegeek.com/search/boardgame/ajax?q=${encodeURIComponent(
+      `${process.env.NEXT_PUBLIC_BGG_LINK}${encodeURIComponent(
         name
       )}&showcount=50&nosession=1`,
       {
