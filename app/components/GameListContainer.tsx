@@ -14,11 +14,12 @@ export default function GameListContainer({
   const formatRecommendedWith = (recommendedWith: string | null) => {
     if (!recommendedWith) return null;
     try {
-      const parsed = JSON.parse(recommendedWith);
-
-      if (!Array.isArray(parsed) || parsed.length === 0) return null;
-      if (parsed.length === 1) return parsed[0];
-      return parsed[0] + '-' + parsed[parsed.length - 1];
+      const numbers = recommendedWith
+        .split(',')
+        .map((num) => parseInt(num.trim()));
+      if (numbers.length === 0) return null;
+      if (numbers.length === 1) return numbers[0];
+      return `${numbers[0]}-${numbers[numbers.length - 1]}`;
     } catch {
       return null;
     }
