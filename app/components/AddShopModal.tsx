@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { BggGame, CreateShopItem, ShopItem } from '@/types/boardgame';
-import SearchBggGames from './SearchBggGames';
+import SearchBggGames from './searchBggGames/SearchBggGames';
 import toast from 'react-hot-toast';
 import { CreateShopItem as createShopItem } from '../actions/userShop';
 import { useGameDetail } from "../hooks/useBggQuery";
