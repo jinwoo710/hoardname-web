@@ -38,7 +38,7 @@ export const searchGamesFromBgg = async (name: string): Promise<Game[]> => {
 
 export const searchGames = async (name: string): Promise<Game[]> => {
   const res = await fetch(
-    `https://boardgamegeek.com/xmlapi2/search?type=boardgame&query=${name}`
+    `${process.env.BGG_API}/search?type=boardgame&query=${name}`
   );
   const xml = await res.text();
 
@@ -55,7 +55,7 @@ export const searchGames = async (name: string): Promise<Game[]> => {
 
 export const getGameDetail = async (id: string): Promise<GameDetail> => {
   const response = await fetch(
-    `https://boardgamegeek.com/xmlapi2/thing?id=${id}&stats=1`
+    `${process.env.BGG_API}/thing?id=${id}&stats=1`
   );
   const xml = await response.text();
 
