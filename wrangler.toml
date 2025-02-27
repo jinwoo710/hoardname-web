@@ -87,7 +87,7 @@ pages_build_output_dir = ".vercel/output/static"
 # id = "<PRODUCTION_NAMESPACE_ID>"
 
 [vars]
-D1_DATABASE_ID = "set_d1"
+D1_DATABASE_ID = ""
 
 [[d1_databases]]
 binding = "DB"
