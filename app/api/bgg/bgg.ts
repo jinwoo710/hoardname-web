@@ -86,12 +86,14 @@ export const getGameDetail = async (id: string): Promise<GameDetail> => {
   const bestWithRegex = /<result name="bestwith" value="Best with (\d+)[^"]*"/;
   const recommendedWithRegex =
     /<result name="recommmendedwith" value="Recommended with ([^"]+)"/;
+
   const bestWith = xml.match(bestWithRegex)?.[1] || '';
   const recommendedWith =
     xml
       .match(recommendedWithRegex)?.[1]
       ?.match(/\d[\d,–\s]*\d/)?.[0]
       ?.replace(/[–\s]/g, ',') || '';
+
   return {
     id,
     primaryName: htmlSpecialCharConverter(primaryName),
