@@ -1,69 +1,24 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`c3`](https://developers.cloudflare.com/pages/get-started/c3).
+# Hoardname Web
 
-## Getting Started
+## 프로젝트 소개
+보드게임 모임 "호드네임"의 보유 보드게임 검색 및 정보 확인, 중고 거래를 위한 웹 애플리케이션입니다.
 
-First, run the development server:
+## 개발 동기 및 과정
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+모임의 규모가 커지면서 보유한 보드게임도 100개 이상으로 증가했고, 기존 엑셀 방식의 관리 시스템으로는 한계가 있었습니다. 보드게임의 상세 정보 확인을 위해서는 외부 사이트에서 검색해야 했으며, 회원들간의 중고 거래 시에도 카카오톡 오픈채팅방에서 반복적인 판매 홍보가 필요했습니다.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+이러한 문제점들을 해결하고자 다음 세 가지 목표를 가지고 웹 애플리케이션을 개발하게 되었습니다:
+1. 효율적인 보드게임 컬렉션 관리
+2. 즉각적인 게임 정보 조회
+3. 간편한 중고 거래 시스템 구축
+<p align="center">
+  <img src="public/readme/gameList.png" width="200" alt="게임 목록 엑셀">
+  <img src="public/readme/kakaotalkTrade.jpeg" width="200" alt="카카오톡을 통한 중고 거래">
+   <img src="public/readme/personalTrade.png" width="200" alt="카카오톡을 통한 중고 거래2">
+</p>
 
-## Cloudflare integration
+## 핵심 기능 소개
 
-Besides the `dev` script mentioned above `c3` has added a few extra scripts that allow you to integrate the application with the [Cloudflare Pages](https://pages.cloudflare.com/) environment, these are:
-  - `pages:build` to build the application for Pages using the [`@cloudflare/next-on-pages`](https://github.com/cloudflare/next-on-pages) CLI
-  - `preview` to locally preview your Pages application using the [Wrangler](https://developers.cloudflare.com/workers/wrangler/) CLI
-  - `deploy` to deploy your Pages application using the [Wrangler](https://developers.cloudflare.com/workers/wrangler/) CLI
-
-> __Note:__ while the `dev` script is optimal for local development you should preview your Pages application as well (periodically or before deployments) in order to make sure that it can properly work in the Pages environment (for more details see the [`@cloudflare/next-on-pages` recommended workflow](https://github.com/cloudflare/next-on-pages/blob/main/internal-packages/next-dev/README.md#recommended-development-workflow))
-
-### Bindings
-
-Cloudflare [Bindings](https://developers.cloudflare.com/pages/functions/bindings/) are what allows you to interact with resources available in the Cloudflare Platform.
-
-You can use bindings during development, when previewing locally your application and of course in the deployed application:
-
-- To use bindings in dev mode you need to define them in the `next.config.js` file under `setupDevBindings`, this mode uses the `next-dev` `@cloudflare/next-on-pages` submodule. For more details see its [documentation](https://github.com/cloudflare/next-on-pages/blob/05b6256/internal-packages/next-dev/README.md).
-
-- To use bindings in the preview mode you need to add them to the `pages:preview` script accordingly to the `wrangler pages dev` command. For more details see its [documentation](https://developers.cloudflare.com/workers/wrangler/commands/#dev-1) or the [Pages Bindings documentation](https://developers.cloudflare.com/pages/functions/bindings/).
-
-- To use bindings in the deployed application you will need to configure them in the Cloudflare [dashboard](https://dash.cloudflare.com/). For more details see the  [Pages Bindings documentation](https://developers.cloudflare.com/pages/functions/bindings/).
-
-#### KV Example
-
-`c3` has added for you an example showing how you can use a KV binding.
-
-In order to enable the example:
-- Search for javascript/typescript lines containing the following comment:
-  ```ts
-  // KV Example:
-  ```
-  and uncomment the commented lines below it (also uncomment the relevant imports).
-- Do the same in the `wrangler.toml` file, where
-  the comment is:
-  ```
-  # KV Example:
-  ```
-- If you're using TypeScript run the `cf-typegen` script to update the `env.d.ts` file:
-  ```bash
-  npm run cf-typegen
-  # or
-  yarn cf-typegen
-  # or
-  pnpm cf-typegen
-  # or
-  bun cf-typegen
-  ```
-
-After doing this you can run the `dev` or `preview` script and visit the `/api/hello` route to see the example in action.
-
-Finally, if you also want to see the example work in the deployed application make sure to add a `MY_KV_NAMESPACE` binding to your Pages application in its [dashboard kv bindings settings section](https://dash.cloudflare.com/?to=/:account/pages/view/:pages-project/settings/functions#kv_namespace_bindings_section). After having configured it make sure to re-deploy your application.
-# hoardname-web
+### 1. 보드게임 검색 및 상세 정보
+- BoardGameGeek API를 통한 보드게임 검색
+- 최적의 플레이어, 웨이트 등의 상세 정보 제공
