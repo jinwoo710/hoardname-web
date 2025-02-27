@@ -86,12 +86,9 @@ pages_build_output_dir = ".vercel/output/static"
 # binding = "MY_KV_NAMESPACE"
 # id = "<PRODUCTION_NAMESPACE_ID>"
 
-[vars]
-D1_DATABASE_ID = ""
-
 [[d1_databases]]
 binding = "DB"
 database_name = "hoardname_db"
-database_id = "${D1_DATABASE_ID}"
+database_id = "c7c9c1b4-582d-4c53-a511-c982efbd5331"
 migrations_dir = 'drizzle'
 
