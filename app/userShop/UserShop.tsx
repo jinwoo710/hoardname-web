@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { ShopItem } from '@/types/boardgame';
 
 import InfiniteScroll from '../components/InfiniteScroll';
-import AddShopModal from '../components/AddShopModal';
+import AddShopModal from '../components/addShopModal/AddShopModal';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import { fetchUserShop, UpdateShopItem } from '../actions/userShop';
 import { checkUser } from '../actions/users';

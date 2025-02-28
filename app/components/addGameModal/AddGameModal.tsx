@@ -7,8 +7,8 @@ import toast from 'react-hot-toast';
 
 import { BggGame, CreateBoardGame } from '@/types/boardgame';
 
-import SearchBggGames from './SearchBggGames';
-import { useGameDetail } from '../hooks/useBggQuery';
+import SearchBggGames from '../searchBggGames/SearchBggGames';
+import { useGameDetail } from '../../hooks/useBggQuery';
 
 interface AddGameModalProps {
   isOpen: boolean;
@@ -84,7 +84,10 @@ export default function AddGameModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div
+      data-testid="add-game-modal"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
       <div
         className="bg-white rounded-xl w-full max-w-2xl md:w-[480px] sm:w-full h-auto md:h-auto max-h-[90vh] overflow-y-auto"
         suppressHydrationWarning
@@ -99,6 +102,7 @@ export default function AddGameModal({
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
               <button
                 type="button"
+                data-testid="modal-close-button"
                 onClick={handleClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
                 aria-label="닫기"
@@ -142,6 +146,7 @@ export default function AddGameModal({
                       <div className="flex space-x-2">
                         <div className="flex flex-col">
                           <span
+                            data-testid="weight"
                             className={`text-sm
                                                 ${
                                                   selectedGame.weight >= 4.0
@@ -181,6 +186,7 @@ export default function AddGameModal({
             <div className="flex items-center">
               <button
                 type="submit"
+                data-testid="modal-submit"
                 disabled={!selectedGame}
                 className="mt-10 px-4 h-14 py-2 w-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 rounded-xl focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >

@@ -39,6 +39,7 @@ https://hoardname-web.pages.dev
 
 ### frontend
 - Next.js 
+- React
 - TypeScript
 - Tailwind CSS
 - Tanstack
@@ -54,7 +55,6 @@ https://hoardname-web.pages.dev
 
 ### 테스트
 - Jest
-- Cypress
 
 ### 코드 품질
 - ESLint

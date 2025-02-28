@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 
 import { BoardGame, CreateBoardGame, UpdateBoardGame } from '@/types/boardgame';
 
-import AddGameModal from '../components/AddGameModal';
+import AddGameModal from '../components/addGameModal/AddGameModal';
 import InfiniteScroll from '../components/InfiniteScroll';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import UserGameListContainer from '../components/UserGameListContainer';

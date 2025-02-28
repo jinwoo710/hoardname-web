@@ -2,8 +2,8 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 
-import { useSearchGamesWithFallback } from '../hooks/useBggQuery';
-import htmlSpecialCharConverter from './htmlSpecialCharConverter';
+import { useSearchGamesWithFallback } from '../../hooks/useBggQuery';
+import htmlSpecialCharConverter from '../../components/htmlSpecialCharConverter';
 
 interface SearchBggGamesProps {
   onGameSelect: (gameId: string) => void;
@@ -73,6 +73,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
             ref={inputRef}
             className="w-full outline-none border-none pl-2 text-base leading-5"
             placeholder="게임 이름을 검색해주세요"
+            data-testid="search-input"
             value={name}
             onChange={handleInputChange}
           />
@@ -94,6 +95,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
               {games.map((game, index) => (
                 <li
                   key={`${index}-${game.id}`}
+                  data-testid={game.id}
                   data-id={game.id}
                   className="px-4 mx-1 rounded py-2.5 hover:bg-gray-100 cursor-pointer text-sm flex space-x-2"
                   onClick={handleSelectGame}
