@@ -61,7 +61,9 @@ export default function AddGameModal({
         bggId: gameId,
         weight: selectedGame.weight,
         bestWith: selectedGame.bestWith?.toString() || '',
-        recommendedWith: selectedGame.recommendedWith || '',
+        recommendedWith: JSON.stringify(
+          selectedGame.recommendedWith?.split(',').map(Number) || ''
+        ),
         minPlayers: selectedGame.minPlayers,
         maxPlayers: selectedGame.maxPlayers,
         thumbnailUrl: selectedGame.thumbnailUrl,
