@@ -19,18 +19,38 @@
 
 ## 핵심 기능 소개
 
-### 1. 보드게임 검색 및 상세 정보
+### 1. 모바일 및 pc에서 사용 가능한 반응형 웹 애플리케이션
+
+<p align="center">
+  <img src="public/readme/pc-view.png" height="200" alt="pc 화면">
+  <img src="public/readme/mobile-view.jpeg" height="200" alt="모바일 화면">
+</p>
+
+### 2. 보드게임 검색 및 상세 정보
 - BoardGameGeek API를 통한 보드게임 검색
 - 최적 인원, 추천 인원, 플레이 가능 인원, 웨이트, 아지트 내 입고 여부 등의 상세 정보 제공
 - 한글, 영어 검색 지원
 
-### 2. 개인 컬렉션 관리
+  <video autoplay loop muted playsinline style="max-width: 200px; width: 100%;">
+    <source src="https://github.com/user-attachments/assets/454d5c1c-45e8-4e6d-8c10-9f87f9c6ae49" type="video/mp4">
+  </video>
+
+### 3. 개인 컬렉션 관리
 - 보유 중인 게임 목록 관리
 - 개임 대여 상태 추적
 
-### 3. 중고 거래 시스템
+<video autoplay loop muted playsinline style="max-width: 200px; width: 100%;">
+    <source src="https://github.com/user-attachments/assets/925eba3d-02c6-4776-a375-05b33a83bbea" type="video/mp4">
+  </video>
+
+### 4. 중고 거래 시스템
 - 회원간의 판매 목록 관리
 - 오픈카카오톡 링크 연결
+
+<video autoplay loop muted playsinline style="max-width: 200px; width: 100%;">
+    <source src="https://github.com/user-attachments/assets/429f99c1-a48f-407b-b28e-fdbafe97fb2b" type="video/mp4">
+  </video>
+
 
 ## 서비스
 https://hoardname-web.pages.dev
