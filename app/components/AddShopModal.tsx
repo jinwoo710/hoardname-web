@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 import { BggGame, CreateShopItem, ShopItem } from '@/types/boardgame';
 
-import SearchBggGames from './SearchBggGames';
+import SearchBggGames from './searchBggGames/SearchBggGames';
 import { CreateShopItem as createShopItem } from '../actions/userShop';
 import { useGameDetail } from '../hooks/useBggQuery';
 

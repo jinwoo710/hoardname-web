@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 import { BggGame, CreateBoardGame } from '@/types/boardgame';
 
-import SearchBggGames from './SearchBggGames';
+import SearchBggGames from './searchBggGames/SearchBggGames';
 import { useGameDetail } from '../hooks/useBggQuery';
 
 interface AddGameModalProps {

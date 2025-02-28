@@ -39,6 +39,7 @@ https://hoardname-web.pages.dev
 
 ### frontend
 - Next.js 
+- React
 - TypeScript
 - Tailwind CSS
 - Tanstack
