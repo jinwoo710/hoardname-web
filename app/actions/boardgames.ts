@@ -62,21 +62,15 @@ export async function fetchBoardgames({
       const count = parseInt(recommendedWith);
       conditions.push(
         recommendedWith === '5'
-          ? sql`(CAST(${boardgames.recommendedWith} AS INTEGER) >= 5 OR (
-              ${boardgames.recommendedWith} LIKE '%-%' AND 
-              CAST(SUBSTR(${boardgames.recommendedWith}, INSTR(${boardgames.recommendedWith}, '-') + 1) AS INTEGER) >= 5
-            ))`
-          : sql`(${boardgames.recommendedWith} LIKE ${
-              '%' + recommendedWith + '%'
-            } OR (
-              ${boardgames.recommendedWith} LIKE '%-%' AND 
-              CAST(SUBSTR(${boardgames.recommendedWith}, 1, INSTR(${
-                boardgames.recommendedWith
-              }, '-') - 1) AS INTEGER) <= ${count} AND
-              CAST(SUBSTR(${boardgames.recommendedWith}, INSTR(${
-                boardgames.recommendedWith
-              }, '-') + 1) AS INTEGER) >= ${count}
-            ))`
+          ? sql`(
+              JSON_VALID(${boardgames.recommendedWith}) AND 
+              CAST(JSON_EXTRACT(${boardgames.recommendedWith}, '$[1]') AS INTEGER) >= 5
+            )`
+          : sql`(
+              JSON_VALID(${boardgames.recommendedWith}) AND 
+              CAST(JSON_EXTRACT(${boardgames.recommendedWith}, '$[0]') AS INTEGER) <= ${count} AND
+              CAST(JSON_EXTRACT(${boardgames.recommendedWith}, '$[1]') AS INTEGER) >= ${count}
+            )`
       );
     }
 
