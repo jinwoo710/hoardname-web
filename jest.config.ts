@@ -10,6 +10,9 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(next-auth|@next-auth)/).+\\.js$',
+  ],
 };
 
 export default createJestConfig(customJestConfig);

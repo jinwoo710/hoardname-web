@@ -16,11 +16,7 @@
     "db:midrate:prod": "wrangler d1 migrations apply hoardname_db --remote",
     "prepare": "husky install",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
-    "test:e2e": "start-server-and-test dev http://localhost:3000 cypress:open",
-    "test:e2e:headless": "start-server-and-test dev http://localhost:3000 cypress:run"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",
@@ -47,7 +43,6 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.24.1",
     "@typescript-eslint/parser": "^8.24.1",
-    "cypress": "^14.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
     "eslint-config-prettier": "^10.0.1",
@@ -59,7 +54,6 @@
     "lint-staged": "^15.4.3",
     "postcss": "^8",
     "prettier": "^3.5.2",
-    "start-server-and-test": "^2.0.10",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "vercel": "^39.2.2",
