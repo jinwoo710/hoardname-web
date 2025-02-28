@@ -32,7 +32,7 @@
 - 한글, 영어 검색 지원
 
   <video autoplay loop muted playsinline style="max-width: 200px; width: 100%;">
-    <source src="public/readme/addGame.mp4" type="video/mp4">
+    <source src="https://github.com/user-attachments/assets/454d5c1c-45e8-4e6d-8c10-9f87f9c6ae49" type="video/mp4">
   </video>
 
 ### 3. 개인 컬렉션 관리
@@ -40,7 +40,7 @@
 - 개임 대여 상태 추적
 
 <video autoplay loop muted playsinline style="max-width: 200px; width: 100%;">
-    <source src="public/readme/myGame.mp4" type="video/mp4">
+    <source src="https://github.com/user-attachments/assets/925eba3d-02c6-4776-a375-05b33a83bbea" type="video/mp4">
   </video>
 
 ### 4. 중고 거래 시스템
@@ -48,7 +48,7 @@
 - 오픈카카오톡 링크 연결
 
 <video autoplay loop muted playsinline style="max-width: 200px; width: 100%;">
-    <source src="public/readme/myMarket.mp4" type="video/mp4">
+    <source src="https://github.com/user-attachments/assets/429f99c1-a48f-407b-b28e-fdbafe97fb2b" type="video/mp4">
   </video>
 
 
