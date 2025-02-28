@@ -95,6 +95,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
               {games.map((game, index) => (
                 <li
                   key={`${index}-${game.id}`}
+                  data-testid={game.id}
                   data-id={game.id}
                   className="px-4 mx-1 rounded py-2.5 hover:bg-gray-100 cursor-pointer text-sm flex space-x-2"
                   onClick={handleSelectGame}

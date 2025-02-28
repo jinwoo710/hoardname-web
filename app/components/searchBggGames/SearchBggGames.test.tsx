@@ -116,4 +116,20 @@ describe('SearchBggGames Component 테스트', () => {
       { timeout: 500 }
     );
   });
+  it('게임 선택시 동작 확인', async () => {
+    mockUseSearchGamesWithFallback.mockReturnValue({
+      data: [{ id: '1', name: '가이아 프로젝트', yearPublished: '2023' }],
+      isLoading: false,
+      isError: false,
+    });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: '가이아 프로젝트' } });
+      jest.runAllTimers();
+    });
+    const gameItem = screen.getByTestId('1');
+    fireEvent.click(gameItem);
+    expect(input).toHaveValue('');
+    expect(gameItem).not.toBeInTheDocument();
+    expect(mockOnGameSelect).toHaveBeenCalledWith('1');
+  });
 });
