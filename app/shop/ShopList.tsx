@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 
 import { ShopItem } from '@/types/boardgame';
 
@@ -59,6 +60,11 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
 
     updateFilters(newFilters);
   };
+  const virtualizer = useWindowVirtualizer({
+    count: shopItems.length,
+    estimateSize: () => 200,
+    overscan: 5,
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -107,7 +113,12 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
         onLoadMore={loadMore}
         className="space-y-4"
       >
-        <ShopListContainer boardgames={shopItems} />
+        <ShopListContainer
+          boardgames={shopItems}
+          virtualItems={virtualizer.getVirtualItems()}
+          totalHeight={virtualizer.getTotalSize()}
+          measureElement={virtualizer.measureElement}
+        />
       </InfiniteScroll>
     </div>
   );
