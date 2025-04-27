@@ -20,6 +20,10 @@ export default function PatchNotes() {
   return (
     <div className="flex flex-col gap-2 px-4 py-4">
       <PatchCard
+        version="v 1.2.2"
+        list={['게임 목록 최적화', '중고 판매 목록 최적화']}
+      />
+      <PatchCard
         version="v 1.2.1"
         list={['게임 검색 기능 향상', '보드게임 이름 특수 문자 처리 추가']}
       />
