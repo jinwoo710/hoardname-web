@@ -1,13 +1,18 @@
 import Image from 'next/image';
+import { VirtualItem } from '@tanstack/react-virtual';
 
 import { BoardGame } from '@/types/boardgame';
 
 interface GameListContainerProps {
   boardgames: BoardGame[];
+  virtualItems: VirtualItem[];
+  totalHeight: number;
 }
 
 export default function GameListContainer({
   boardgames,
+  virtualItems,
+  totalHeight,
 }: GameListContainerProps) {
   const formatRecommendedWith = (recommendedWith: string | null) => {
     if (!recommendedWith) return null;
@@ -22,17 +27,31 @@ export default function GameListContainer({
     }
   };
 
-  return (
-    <div className="space-y-4">
-      {boardgames.length === 0 ? (
+  if (boardgames.length === 0) {
+    return (
+      <div className="space-y-4">
         <div className="text-center pt-[50px] lg:pt-[200px] text-lg text-gray-500">
           보드게임이 없습니다
         </div>
-      ) : (
-        boardgames.map((item, index) => (
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ height: totalHeight, position: 'relative' }}>
+      {virtualItems.map((virtualItem) => {
+        const item = boardgames[virtualItem.index];
+        return (
           <div
-            key={`${item.id}-${index}`}
+            key={`${item.id}-${virtualItem.index}`}
             className="flex border border-gray-100 rounded-2xl w-full bg-white hover:shadow-lg hover:border-blue-100 transition-all duration-200"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
           >
             <div className="w-[120px] lg:w-[160px] h-[120px] lg:h-[160px] flex-shrink-0 p-4 pr-0 lg:pr-4 my-auto">
               {item.thumbnailUrl ? (
@@ -131,8 +150,8 @@ export default function GameListContainer({
               </div>
             </div>
           </div>
-        ))
-      )}
+        );
+      })}
     </div>
   );
 }
