@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 
 import { BoardGame } from '@/types/boardgame';
 
@@ -65,6 +66,12 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
   const [inStorage, setInStorage] = useState<string>('');
   const [playerCount, setPlayerCount] = useState<string>('');
   const [recommendedWith, setRecommendedWith] = useState<string>('');
+
+  const virtualizer = useWindowVirtualizer({
+    count: boardgames.length,
+    estimateSize: () => 174,
+    overscan: 5,
+  });
 
   const resetFilters = () => {
     setWeightSort('');
@@ -249,7 +256,11 @@ export default function GameList({ initialBoardgames, limit }: GameListProps) {
         onLoadMore={loadMore}
         className="space-y-4"
       >
-        <GameListContainer boardgames={boardgames} />
+        <GameListContainer
+          boardgames={boardgames}
+          virtualItems={virtualizer.getVirtualItems()}
+          totalHeight={virtualizer.getTotalSize()}
+        />
       </InfiniteScroll>
     </div>
   );
