@@ -4,7 +4,13 @@ import { useSession } from 'next-auth/react';
 import { FormEvent, useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+
 import { checkUser } from '../actions/users';
+import { Spinner } from '../components/common/Spinner';
 export const runtime = 'edge';
 
 export default function Email() {
@@ -75,11 +81,11 @@ export default function Email() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-2">
-        <h1 className="text-2xl font-bold text-gray-800">버그 및 문의하기</h1>
+      <div className="mb-2 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">버그 및 문의하기</h1>
       </div>
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-        <ul className="text-sm text-gray-600 space-y-1.5">
+      <div className="mb-4 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li>버그 및 페이지와 관련된 문의는 언제든 환영입니다.</li>
 
           <li>등록하고 싶은 게임이 검색이 안되는 케이스도 문의주세요.</li>
@@ -88,69 +94,54 @@ export default function Email() {
       <form
         onSubmit={handleSubmit}
         data-email="travachess@gmail.com"
-        className="bg-white relative shadow-md rounded-lg px-8 pt-6 pb-8 mb-4"
+        className="relative mb-4 rounded-xl border bg-card p-6 shadow-sm"
       >
         {loading && (
-          <div className="text-center py-4 absolute left-1/2 top-1/3">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto" />
+          <div className="absolute left-1/2 top-1/3 -translate-x-1/2 py-4">
+            <Spinner size="lg" />
           </div>
         )}
-        <fieldset>
-          <div className="mb-6">
-            <label
-              htmlFor="userName"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              닉네임 (<span className="text-red-500">*</span>)
-            </label>
-            <input
+        <fieldset className="space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="userName">
+              닉네임 (<span className="text-destructive">*</span>)
+            </Label>
+            <Input
               ref={nameRef}
               type="text"
               id="userName"
               name="name"
-              className="shadow-sm w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="h-11"
               placeholder="닉네임"
               required
             />
           </div>
-          <div className="mb-6">
-            <label
-              htmlFor="userEmail"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              이메일
-            </label>
-            <input
+          <div className="space-y-1.5">
+            <Label htmlFor="userEmail">이메일</Label>
+            <Input
               ref={emailRef}
               type="email"
               id="userEmail"
               name="email"
-              className="shadow-sm w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="h-11"
               placeholder="이메일"
             />
           </div>
-          <div className="mb-6">
-            <label
-              htmlFor="userMessage"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              내용 (<span className="text-red-500">*</span>)
-            </label>
-            <textarea
+          <div className="space-y-1.5">
+            <Label htmlFor="userMessage">
+              내용 (<span className="text-destructive">*</span>)
+            </Label>
+            <Textarea
               ref={messageRef}
               name="message"
               id="userMessage"
-              className="shadow-sm w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[150px] resize-none"
+              className="min-h-[150px] resize-none"
               required
-            ></textarea>
+            />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={loading}
-          >
+          <Button type="submit" disabled={loading} className="h-11 w-full">
             {loading ? '제출 중...' : '제출하기'}
-          </button>
+          </Button>
         </fieldset>
       </form>
     </div>

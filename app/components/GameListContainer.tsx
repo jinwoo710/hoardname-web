@@ -2,12 +2,26 @@ import Image from 'next/image';
 import { VirtualItem } from '@tanstack/react-virtual';
 
 import { BoardGame } from '@/types/boardgame';
+import { Badge } from '@/components/ui/badge';
+
+import { EmptyState } from './common/EmptyState';
 
 interface GameListContainerProps {
   boardgames: BoardGame[];
   virtualItems: VirtualItem[];
   totalHeight: number;
 }
+
+const weightColor = (weight: number) =>
+  weight >= 4.0
+    ? 'text-red-500'
+    : weight >= 3.0
+      ? 'text-orange-500'
+      : weight >= 2.0
+        ? 'text-green-500'
+        : weight >= 1.0
+          ? 'text-blue-500'
+          : 'text-purple-500';
 
 export default function GameListContainer({
   boardgames,
@@ -28,13 +42,7 @@ export default function GameListContainer({
   };
 
   if (boardgames.length === 0) {
-    return (
-      <div className="space-y-4">
-        <div className="text-center pt-[50px] lg:pt-[200px] text-lg text-gray-500">
-          보드게임이 없습니다
-        </div>
-      </div>
-    );
+    return <EmptyState title="보드게임이 없습니다" />;
   }
 
   return (
@@ -44,7 +52,7 @@ export default function GameListContainer({
         return (
           <div
             key={`${item.id}-${virtualItem.index}`}
-            className="flex border border-gray-100 rounded-2xl w-full bg-white hover:shadow-lg hover:border-blue-100 transition-all duration-200"
+            className="flex w-full rounded-2xl border bg-card transition-all duration-200 hover:border-foreground/20 hover:shadow-sm"
             style={{
               position: 'absolute',
               top: 0,
@@ -53,98 +61,69 @@ export default function GameListContainer({
               transform: `translateY(${virtualItem.start}px)`,
             }}
           >
-            <div className="w-[120px] lg:w-[160px] h-[120px] lg:h-[160px] flex-shrink-0 p-4 pr-0 lg:pr-4 my-auto">
+            <div className="my-auto h-[120px] w-[120px] shrink-0 p-4 pr-0 lg:h-[160px] lg:w-[160px] lg:pr-4">
               {item.thumbnailUrl ? (
                 <Image
                   width={140}
                   height={0}
                   src={item.thumbnailUrl}
                   alt="thumbnail"
-                  className="object-contain w-full h-full"
+                  className="h-full w-full object-contain"
                 />
               ) : (
-                <div className="w-full h-full bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
+                <div className="flex h-full w-full items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   No Image
                 </div>
               )}
             </div>
-            <div className="flex-grow p-5 flex flex-col">
-              <div className="flex items-start justify-between mb-3">
+            <div className="flex flex-grow flex-col p-5">
+              <div className="mb-3 flex items-start justify-between">
                 <div>
-                  <h3 className="font-bold lg:text-xl text-gray-800 mb-1 line-clamp-1">
+                  <h3 className="mb-1 line-clamp-1 font-bold text-foreground lg:text-xl">
                     {item.name}
                   </h3>
-                  <div className="flex flex-wrap gap-3 text-sm text-gray-500">
-                    <div className="flex items-center">
-                      <span className="inline-block w-1 h-1 bg-gray-300 rounded-full mx-2"></span>
-                      <span>
-                        {item.minPlayers === item.maxPlayers
-                          ? `${item.minPlayers}인`
-                          : `${item.minPlayers}-${item.maxPlayers}인`}
-                      </span>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                    <span>
+                      {item.minPlayers === item.maxPlayers
+                        ? `${item.minPlayers}인`
+                        : `${item.minPlayers}-${item.maxPlayers}인`}
+                    </span>
                     {item.weight !== null ? (
-                      <div className="flex items-center">
-                        <span className="inline-block w-1 h-1 bg-gray-300 rounded-full mx-2"></span>
-                        <span
-                          className={`
-                                                ${
-                                                  item.weight >= 4.0
-                                                    ? 'text-red-500'
-                                                    : item.weight >= 3.0
-                                                      ? 'text-orange-500'
-                                                      : item.weight >= 2.0
-                                                        ? 'text-green-500'
-                                                        : item.weight >= 1.0
-                                                          ? 'text-blue-500'
-                                                          : 'text-purple-500'
-                                                }
-                                            `}
-                        >
-                          난이도 {item.weight.toFixed(1)}
-                        </span>
-                      </div>
+                      <span className={weightColor(item.weight)}>
+                        난이도 {item.weight.toFixed(1)}
+                      </span>
                     ) : (
-                      <div className="flex items-center">
-                        <span className="inline-block w-1 h-1 bg-gray-300 rounded-full mx-2"></span>
-                        난이도 없음
-                      </div>
+                      <span>난이도 없음</span>
                     )}
                   </div>
                 </div>
-                <span
-                  className={`shrink-0 px-4 ml-1 py-1 rounded-full  font-bold ${
+                <Badge
+                  variant="outline"
+                  className={
                     item.inStorage
-                      ? 'bg-blue-50 text-blue-600 ring-1 ring-blue-500/20'
-                      : 'bg-red-50 text-red-600 ring-1 ring-red-500/20'
-                  }`}
+                      ? 'ml-1 shrink-0 border-transparent bg-primary/10 text-primary'
+                      : 'ml-1 shrink-0 border-transparent bg-muted text-muted-foreground'
+                  }
                 >
                   {item.inStorage ? '아지트' : '외부'}
-                </span>
+                </Badge>
               </div>
 
               <div className="flex-grow">
-                <div className="flex flex-wrap gap-2 text-sm">
-                  <div className="flex items-center bg-green-50 rounded-lg px-3 py-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 mr-2"></span>
-                    <span className="text-green-700">
-                      최적 {item.bestWith ? item.bestWith + '인' : '없음'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center bg-yellow-50 rounded-lg px-3 py-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2"></span>
-                    <span className="text-yellow-700">
-                      추천{' '}
-                      {formatRecommendedWith(item.recommendedWith) !== null
-                        ? formatRecommendedWith(item.recommendedWith) + '인'
-                        : '없음'}
-                    </span>
-                  </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <span>
+                    최적 {item.bestWith ? item.bestWith + '인' : '없음'}
+                  </span>
+                  <span>
+                    추천{' '}
+                    {formatRecommendedWith(item.recommendedWith) !== null
+                      ? formatRecommendedWith(item.recommendedWith) + '인'
+                      : '없음'}
+                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end text-sm text-gray-500 mt-3">
+              <div className="mt-3 flex items-center justify-end text-sm text-muted-foreground">
                 <span className="font-medium">제공:</span>
                 <span className="ml-2">{item.ownerNickname}</span>
               </div>

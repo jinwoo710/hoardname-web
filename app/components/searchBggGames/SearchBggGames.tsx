@@ -1,6 +1,9 @@
 'use client';
 import { useRef, useState } from 'react';
-import Image from 'next/image';
+import { Search } from 'lucide-react';
+
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/app/components/common/Spinner';
 
 import { useSearchGames } from '../../hooks/useBggQuery';
 import htmlSpecialCharConverter from '../../components/htmlSpecialCharConverter';
@@ -56,61 +59,51 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
   };
 
   return (
-    <div className="relative w-full space-y-1 ">
-      <div
-        className="flex items-center border rounded-xl px-[18px] py-4 bg-white cursor-text"
-        onClick={() => inputRef.current?.focus()}
-      >
-        <div className="flex items-center flex-1 cursor-text">
-          <Image
-            src="/search.svg"
-            width={18}
-            height={18}
-            className="cursor-text"
-            alt=""
-          />
-          <input
-            ref={inputRef}
-            className="w-full outline-none border-none pl-2 text-base leading-5"
-            placeholder="게임 이름을 검색해주세요"
-            data-testid="search-input"
-            value={name}
-            onChange={handleInputChange}
-          />
-        </div>
+    <div className="relative w-full space-y-1">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          ref={inputRef}
+          className="h-11 pl-9"
+          placeholder="게임 이름을 검색해주세요"
+          data-testid="search-input"
+          value={name}
+          onChange={handleInputChange}
+        />
       </div>
       {isVisible && (
-        <div className="absolute left-0 bg-white shadow-lg w-full border-[1px] rounded-xl overflow-hidden z-10">
+        <div className="absolute left-0 z-10 w-full overflow-hidden rounded-lg border bg-popover shadow-lg">
           {isLoading ? (
-            <div className="py-4 text-center text-gray-500 text-sm">
+            <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+              <Spinner size="sm" />
               검색중...
             </div>
           ) : isError ? (
-            <div className="py-4 text-center text-red-500 text-sm flex flex-col">
+            <div className="flex flex-col py-4 text-center text-sm text-destructive">
               <span>검색 중 오류가 발생했습니다.</span>
               <span>잠시 후 다시 시도해주세요.</span>
             </div>
           ) : games.length > 0 ? (
-            <ul className="py-1 max-h-[180px] overflow-y-auto">
+            <ul className="max-h-[180px] overflow-y-auto py-1">
               {games.map((game, index) => (
                 <li
                   key={`${index}-${game.id}`}
                   data-testid={game.id}
                   data-id={game.id}
-                  className="px-4 mx-1 rounded py-2.5 hover:bg-gray-100 cursor-pointer text-sm flex space-x-2"
+                  className="mx-1 flex cursor-pointer space-x-2 rounded-md px-3 py-2.5 text-sm hover:bg-muted"
                   onClick={handleSelectGame}
                 >
                   <div className="font-bold">
                     {htmlSpecialCharConverter(game.name)}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     ({game.yearPublished})
                   </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="py-4 text-center text-gray-500 text-sm">
+            <div className="py-4 text-center text-sm text-muted-foreground">
               찾으시는 게임이 없습니다
             </div>
           )}

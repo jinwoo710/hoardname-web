@@ -2,13 +2,20 @@
 
 import { useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { Search } from 'lucide-react';
 
 import { ShopItem } from '@/types/boardgame';
+import { Input } from '@/components/ui/input';
 
 import ShopListContainer from '../components/ShopListContainer';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import InfiniteScroll from '../components/InfiniteScroll';
+import { ErrorState } from '../components/common/ErrorState';
+import { Spinner } from '../components/common/Spinner';
 import { fetchShopItems } from '../actions/shop';
+
+const selectClass =
+  'h-11 w-fit shrink-0 appearance-none rounded-lg border border-input bg-background px-4 text-center text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 lg:w-auto';
 
 interface ShopListProps {
   initialShopItems: ShopItem[];
@@ -24,6 +31,7 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
     loadMore,
     updateFilters,
     handleSearch,
+    error,
   } = useInfinityScroll({
     initialData: initialShopItems,
     fetchData: async (
@@ -68,15 +76,15 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-2">
-        <h1 className="text-2xl font-bold text-gray-800">중고 장터 목록</h1>
+      <div className="mb-2 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">중고 장터 목록</h1>
       </div>
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-        <ul className="text-sm text-gray-600 space-y-1.5">
+      <div className="mb-4 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li>
             중고 장터 등록은{' '}
-            <span className="font-bold text-blue-900">로그인</span> 후{' '}
-            <span className="font-bold text-blue-900">My 장터</span> 페이지에서
+            <span className="font-bold text-primary">로그인</span> 후{' '}
+            <span className="font-bold text-primary">My 장터</span> 페이지에서
             가능합니다.
           </li>
           <li>전문 업자, 되팔이등의 행위 발각시 사용이 불가능합니다.</li>
@@ -84,15 +92,18 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
         </ul>
       </div>
       <div className="mb-6">
-        <div className="relative flex space-x-2">
-          <input
-            type="text"
-            placeholder="게임 이름으로 검색..."
-            onChange={(e) => handleSearch(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="relative flex gap-2">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="게임 이름으로 검색..."
+              onChange={(e) => handleSearch(e.target.value)}
+              className="h-11 pl-9"
+            />
+          </div>
           <select
-            className="border border-gray-200  rounded-xl px-5 py-2 w-fit lg:w-auto appearance-none text-center"
+            className={selectClass}
             value={priceSort}
             onChange={(e) => handleFilterChange(e.target.value)}
           >
@@ -101,25 +112,29 @@ export default function ShopList({ initialShopItems, limit }: ShopListProps) {
             <option value="desc">높은 가격순</option>
           </select>
           {loading && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+            <div className="absolute right-28 top-1/2 -translate-y-1/2">
+              <Spinner size="sm" />
             </div>
           )}
         </div>
       </div>
-      <InfiniteScroll
-        hasMore={hasMore}
-        loading={loading}
-        onLoadMore={loadMore}
-        className="space-y-4"
-      >
-        <ShopListContainer
-          boardgames={shopItems}
-          virtualItems={virtualizer.getVirtualItems()}
-          totalHeight={virtualizer.getTotalSize()}
-          measureElement={virtualizer.measureElement}
-        />
-      </InfiniteScroll>
+      {error ? (
+        <ErrorState message={error} onRetry={() => updateFilters({})} />
+      ) : (
+        <InfiniteScroll
+          hasMore={hasMore}
+          loading={loading}
+          onLoadMore={loadMore}
+          className="space-y-4"
+        >
+          <ShopListContainer
+            boardgames={shopItems}
+            virtualItems={virtualizer.getVirtualItems()}
+            totalHeight={virtualizer.getTotalSize()}
+            measureElement={virtualizer.measureElement}
+          />
+        </InfiniteScroll>
+      )}
     </div>
   );
 }
