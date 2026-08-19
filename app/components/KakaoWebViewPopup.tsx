@@ -5,6 +5,8 @@ import { signIn } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 
+import { openInExternalBrowser } from '../lib/webview';
+import { KAKAO_LOGIN_ENABLED } from '../lib/featureFlags';
 import { KakaoIcon } from './common/KakaoIcon';
 
 const COOKIE_NAME = 'kakao-webview-popup-closed';
@@ -51,18 +53,33 @@ export const KakaoWebViewPopup = () => {
         <div className="mt-2 text-center text-sm text-muted-foreground">
           카카오톡 브라우저에서는{' '}
           <span className="font-bold text-destructive">구글 로그인이 제한</span>
-          돼요. 카카오 로그인을 이용해주세요.
+          돼요.{' '}
+          {KAKAO_LOGIN_ENABLED
+            ? '카카오 로그인을 이용해주세요.'
+            : '외부 브라우저로 열어서 이용해주세요.'}
         </div>
-        <Button
-          className="mt-4 h-11 w-full gap-2 bg-[#FEE500] text-black hover:bg-[#FADA00]"
-          onClick={() => {
-            handleClose();
-            signIn('kakao', { callbackUrl: '/game' });
-          }}
-        >
-          <KakaoIcon className="size-4" />
-          카카오로 로그인
-        </Button>
+        {KAKAO_LOGIN_ENABLED ? (
+          <Button
+            className="mt-4 h-11 w-full gap-2 bg-[#FEE500] text-black hover:bg-[#FADA00]"
+            onClick={() => {
+              handleClose();
+              signIn('kakao', { callbackUrl: '/game' });
+            }}
+          >
+            <KakaoIcon className="size-4" />
+            카카오로 로그인
+          </Button>
+        ) : (
+          <Button
+            className="mt-4 h-11 w-full"
+            onClick={() => {
+              handleClose();
+              openInExternalBrowser();
+            }}
+          >
+            외부 브라우저로 열기
+          </Button>
+        )}
         <button
           onClick={handleClose}
           className="mt-2 h-11 w-full rounded-lg text-sm text-muted-foreground hover:bg-muted"

@@ -5,6 +5,7 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter';
 
 export const runtime = 'edge';
 import { db } from '@/db';
+import { KAKAO_LOGIN_ENABLED } from '@/app/lib/featureFlags';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -13,10 +14,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    Kakao({
-      clientId: process.env.KAKAO_CLIENT_ID!,
-      clientSecret: process.env.KAKAO_CLIENT_SECRET!,
-    }),
+    ...(KAKAO_LOGIN_ENABLED
+      ? [
+          Kakao({
+            clientId: process.env.KAKAO_CLIENT_ID!,
+            clientSecret: process.env.KAKAO_CLIENT_SECRET!,
+          }),
+        ]
+      : []),
   ],
   session: {
     strategy: 'jwt',

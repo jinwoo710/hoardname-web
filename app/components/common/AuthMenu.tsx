@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import { isKakaoWebView, openInExternalBrowser } from '../../lib/webview';
+import { KAKAO_LOGIN_ENABLED } from '../../lib/featureFlags';
 import { GoogleIcon } from './GoogleIcon';
 import { KakaoIcon } from './KakaoIcon';
 
@@ -77,16 +78,18 @@ export function AuthMenu({ variant = 'inline', onNavigate }: AuthMenuProps) {
         <GoogleIcon className="size-4" />
         Google 로그인
       </Button>
-      <Button
-        className={cn(
-          'h-11 gap-2 bg-[#FEE500] text-black hover:bg-[#FADA00]',
-          variant === 'block' && 'w-full'
-        )}
-        onClick={signInWithKakao}
-      >
-        <KakaoIcon className="size-4" />
-        카카오 로그인
-      </Button>
+      {KAKAO_LOGIN_ENABLED && (
+        <Button
+          className={cn(
+            'h-11 gap-2 bg-[#FEE500] text-black hover:bg-[#FADA00]',
+            variant === 'block' && 'w-full'
+          )}
+          onClick={signInWithKakao}
+        >
+          <KakaoIcon className="size-4" />
+          카카오 로그인
+        </Button>
+      )}
     </div>
   );
 }
