@@ -88,6 +88,8 @@ https://hoardname-web.pages.dev
 ## env
 - GOOGLE_CLIENT_ID
 - GOOGLE_CLIENT_SECRET
+- KAKAO_CLIENT_ID (카카오 디벨로퍼스 REST API 키)
+- KAKAO_CLIENT_SECRET (카카오 로그인 > 보안에서 발급, 활성화 필요)
 - NEXTAUTH_URL
 - NEXTAUTH_SECRET
 - BGG_API_BASE (기본값 `https://boardgamegeek.com/xmlapi2`)

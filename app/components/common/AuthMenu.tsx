@@ -5,7 +5,9 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+import { isKakaoWebView, openInExternalBrowser } from '../../lib/webview';
 import { GoogleIcon } from './GoogleIcon';
+import { KakaoIcon } from './KakaoIcon';
 
 interface AuthMenuProps {
   variant?: 'inline' | 'block';
@@ -17,7 +19,18 @@ export function AuthMenu({ variant = 'inline', onNavigate }: AuthMenuProps) {
 
   const signInWithGoogle = () => {
     onNavigate?.();
+    // 구글은 카카오톡 인앱 웹뷰에서의 로그인을 정책적으로 차단하므로,
+    // 웹뷰 안이라면 카카오톡의 공식 스킴으로 외부 브라우저로 빠져나간 뒤 로그인하도록 유도한다.
+    if (isKakaoWebView()) {
+      openInExternalBrowser();
+      return;
+    }
     signIn('google', { callbackUrl: '/game' });
+  };
+
+  const signInWithKakao = () => {
+    onNavigate?.();
+    signIn('kakao', { callbackUrl: '/game' });
   };
 
   const handleSignOut = () => {
@@ -50,13 +63,30 @@ export function AuthMenu({ variant = 'inline', onNavigate }: AuthMenuProps) {
   }
 
   return (
-    <Button
-      variant="outline"
-      className={cn('h-11 gap-2', variant === 'block' && 'w-full')}
-      onClick={signInWithGoogle}
+    <div
+      className={cn(
+        'flex items-center gap-2',
+        variant === 'block' && 'w-full flex-col'
+      )}
     >
-      <GoogleIcon className="size-4" />
-      Google 로그인
-    </Button>
+      <Button
+        variant="outline"
+        className={cn('h-11 gap-2', variant === 'block' && 'w-full')}
+        onClick={signInWithGoogle}
+      >
+        <GoogleIcon className="size-4" />
+        Google 로그인
+      </Button>
+      <Button
+        className={cn(
+          'h-11 gap-2 bg-[#FEE500] text-black hover:bg-[#FADA00]',
+          variant === 'block' && 'w-full'
+        )}
+        onClick={signInWithKakao}
+      >
+        <KakaoIcon className="size-4" />
+        카카오 로그인
+      </Button>
+    </div>
   );
 }

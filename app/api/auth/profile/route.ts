@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/db';
 import { users } from '@/db/schema';
-import { auth } from '@/app/api/auth/[...nextauth]/auth';
+import { auth } from '@/auth';
 export const runtime = 'edge';
 
 interface UpdateProfileRequest {
@@ -14,7 +14,7 @@ interface UpdateProfileRequest {
 export async function POST(request: Request) {
   const session = await auth();
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         nickname,
         openKakaotalkUrl,
       })
-      .where(eq(users.email, session.user.email))
+      .where(eq(users.id, session.user.id))
       .run();
 
     return new NextResponse('Profile updated', { status: 200 });

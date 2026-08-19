@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { auth } from '@/app/api/auth/[...nextauth]/auth';
+import { auth } from '@/auth';
 import { users } from '@/db/schema';
 import { ShopItem } from '@/types/boardgame';
 
@@ -15,14 +15,14 @@ const LIMIT = 20;
 export default async function UserShopPage() {
   const session = await auth();
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     redirect('/');
   }
 
   const dbUser = await db
     .select()
     .from(users)
-    .where(eq(users.email, session.user.email))
+    .where(eq(users.id, session.user.id))
     .get();
 
   if (!dbUser) {

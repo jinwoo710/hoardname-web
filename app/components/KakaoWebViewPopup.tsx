@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { signIn } from 'next-auth/react';
+
+import { Button } from '@/components/ui/button';
+
+import { KakaoIcon } from './common/KakaoIcon';
 
 const COOKIE_NAME = 'kakao-webview-popup-closed';
 
@@ -24,10 +28,9 @@ export const KakaoWebViewPopup = () => {
   useEffect(() => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isKakaoWebView = /kakaotalk/i.test(userAgent);
-    const isAndroid = userAgent.includes('android');
     const hasSeenPopup = getCookie(COOKIE_NAME);
 
-    if ((isKakaoWebView || isAndroid) && !hasSeenPopup) {
+    if (isKakaoWebView && !hasSeenPopup) {
       setIsVisible(true);
     }
   }, []);
@@ -43,26 +46,26 @@ export const KakaoWebViewPopup = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="relative w-full max-w-md rounded-xl bg-card p-4 text-card-foreground">
         <div className="my-2 text-center text-xl font-bold">
-          카카오톡 웹뷰 공지
+          카카오톡 브라우저 안내
         </div>
-
-        <Image
-          src="/notice.png"
-          alt="카카오톡 브라우저로 열기 안내"
-          width={500}
-          height={300}
-          className="h-auto w-full rounded-lg border"
-        />
-        <div className="mt-2 text-center text-sm">
-          로그인 서비스 이용 시{' '}
-          <span className="font-bold text-destructive">
-            다른 브라우저로 열기
-          </span>{' '}
-          를 선택해주세요.
+        <div className="mt-2 text-center text-sm text-muted-foreground">
+          카카오톡 브라우저에서는{' '}
+          <span className="font-bold text-destructive">구글 로그인이 제한</span>
+          돼요. 카카오 로그인을 이용해주세요.
         </div>
+        <Button
+          className="mt-4 h-11 w-full gap-2 bg-[#FEE500] text-black hover:bg-[#FADA00]"
+          onClick={() => {
+            handleClose();
+            signIn('kakao', { callbackUrl: '/game' });
+          }}
+        >
+          <KakaoIcon className="size-4" />
+          카카오로 로그인
+        </Button>
         <button
           onClick={handleClose}
-          className="mt-4 h-11 w-full rounded-lg bg-primary font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="mt-2 h-11 w-full rounded-lg text-sm text-muted-foreground hover:bg-muted"
         >
           닫기
         </button>
