@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 
-import { useSearchGamesWithFallback } from '../../hooks/useBggQuery';
+import { useSearchGames } from '../../hooks/useBggQuery';
 import htmlSpecialCharConverter from '../../components/htmlSpecialCharConverter';
 
 interface SearchBggGamesProps {
@@ -20,7 +20,7 @@ export default function SearchBggGames({ onGameSelect }: SearchBggGamesProps) {
     data: games = [],
     isLoading,
     isError,
-  } = useSearchGamesWithFallback(debouncedName);
+  } = useSearchGames(debouncedName);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

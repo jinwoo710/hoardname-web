@@ -7,10 +7,10 @@ import { queryClient } from '@/jest.setup';
 import SearchBggGames from './SearchBggGames';
 
 const mockOnGameSelect = jest.fn();
-const mockUseSearchGamesWithFallback = jest.fn();
+const mockUseSearchGames = jest.fn();
 
 jest.mock('../../hooks/useBggQuery', () => ({
-  useSearchGamesWithFallback: () => mockUseSearchGamesWithFallback(),
+  useSearchGames: () => mockUseSearchGames(),
 }));
 
 const renderWithQueryClient = (children: React.ReactNode) => {
@@ -24,7 +24,7 @@ describe('SearchBggGames Component 테스트', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    mockUseSearchGamesWithFallback.mockReturnValue({
+    mockUseSearchGames.mockReturnValue({
       data: [],
       isLoading: false,
       isError: false,
@@ -37,7 +37,7 @@ describe('SearchBggGames Component 테스트', () => {
   });
 
   it('검색 결과 표기', async () => {
-    mockUseSearchGamesWithFallback.mockReturnValue({
+    mockUseSearchGames.mockReturnValue({
       data: [{ id: '1', name: '가이아 프로젝트', yearPublished: '2023' }],
       isLoading: false,
       isError: null,
@@ -57,7 +57,7 @@ describe('SearchBggGames Component 테스트', () => {
   });
 
   it('검색 결과가 없을 때', async () => {
-    mockUseSearchGamesWithFallback.mockReturnValue({
+    mockUseSearchGames.mockReturnValue({
       data: [],
       isLoading: false,
       isError: null,
@@ -77,7 +77,7 @@ describe('SearchBggGames Component 테스트', () => {
   });
 
   it('검색 로딩 중', async () => {
-    mockUseSearchGamesWithFallback.mockReturnValue({
+    mockUseSearchGames.mockReturnValue({
       data: [],
       isLoading: true,
       isError: null,
@@ -95,7 +95,7 @@ describe('SearchBggGames Component 테스트', () => {
   });
 
   it('검색 중 오류 발생', async () => {
-    mockUseSearchGamesWithFallback.mockReturnValue({
+    mockUseSearchGames.mockReturnValue({
       data: [],
       isLoading: false,
       isError: true,
@@ -117,7 +117,7 @@ describe('SearchBggGames Component 테스트', () => {
     );
   });
   it('게임 선택시 동작 확인', async () => {
-    mockUseSearchGamesWithFallback.mockReturnValue({
+    mockUseSearchGames.mockReturnValue({
       data: [{ id: '1', name: '가이아 프로젝트', yearPublished: '2023' }],
       isLoading: false,
       isError: false,

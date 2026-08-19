@@ -30,7 +30,7 @@ const GaiaProjectInfo = {
 
 jest.mock('../../hooks/useBggQuery', () => ({
   useGameDetail: () => mockUseGameDetail(),
-  useSearchGamesWithFallback: () => ({
+  useSearchGames: () => ({
     data: [{ id: '1', name: '가이아 프로젝트', yearPublished: '2023' }],
     isLoading: false,
     isError: false,
