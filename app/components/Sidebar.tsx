@@ -1,23 +1,45 @@
 'use client';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import {
+  Megaphone,
+  Dices,
+  ShoppingBag,
+  User,
+  LayoutGrid,
+  Lock,
+  Mail,
+  ScrollText,
+  type LucideIcon,
+} from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 
 interface SideBarItemProps {
-  imageUrl: string;
+  icon: LucideIcon;
   title: string;
   href: string;
   onClose?: () => void;
+  muted?: boolean;
 }
 
-function SideBarItem({ imageUrl, title, href, onClose }: SideBarItemProps) {
+function SideBarItem({
+  icon: Icon,
+  title,
+  href,
+  onClose,
+  muted,
+}: SideBarItemProps) {
   return (
     <Link
       href={href}
-      className="hover:bg-[#f8f8f8] w-full rounded-xl h-[48px] px-4 flex items-center space-x-2"
+      className={cn(
+        'flex h-11 w-full items-center space-x-2 rounded-lg px-4 hover:bg-muted',
+        muted && 'text-muted-foreground'
+      )}
       onClick={onClose}
     >
-      <Image width={24} height={24} src={imageUrl} alt={title} />
+      <Icon className="size-5" />
       <span>{title}</span>
     </Link>
   );
@@ -31,21 +53,21 @@ export default function SideBar({ onClose }: SideBarProps) {
   const { data: session } = useSession();
 
   return (
-    <div className="w-full shrink-0 flex flex-col items-center p-4 space-y-2 sticky  lg:h-[calc(100vh-60px)] overflow-y-auto">
+    <div className="sticky flex w-full shrink-0 flex-col items-center space-y-1 overflow-y-auto p-4 lg:h-[calc(100vh-60px)]">
       <SideBarItem
-        imageUrl="/notice.svg"
+        icon={Megaphone}
         title="공지사항"
         href="/notice"
         onClose={onClose}
       />
       <SideBarItem
-        imageUrl="/search.svg"
+        icon={Dices}
         title="게임 리스트"
         href="/game"
         onClose={onClose}
       />
       <SideBarItem
-        imageUrl="/delivery.svg"
+        icon={ShoppingBag}
         title="중고 장터"
         href="/shop"
         onClose={onClose}
@@ -53,19 +75,19 @@ export default function SideBar({ onClose }: SideBarProps) {
       {session && (
         <>
           <SideBarItem
-            imageUrl="/user.svg"
+            icon={User}
             title="회원 정보"
             href="/user"
             onClose={onClose}
           />
           <SideBarItem
-            imageUrl="/card.svg"
+            icon={LayoutGrid}
             title="My 게임"
             href="/userGame"
             onClose={onClose}
           />
           <SideBarItem
-            imageUrl="/lock.svg"
+            icon={Lock}
             title="My 장터"
             href="/userShop"
             onClose={onClose}
@@ -73,18 +95,18 @@ export default function SideBar({ onClose }: SideBarProps) {
         </>
       )}
       <SideBarItem
-        imageUrl="/email.svg"
+        icon={Mail}
         title="버그/문의"
         href="/email"
         onClose={onClose}
       />
-      <Link
-        href={'/patchNotes'}
-        className="hover:bg-[#f8f8f8] w-full rounded-xl h-[48px] px-4 text-gray-400 flex items-center"
-        onClick={onClose}
-      >
-        <span className="ml-[28px]">패치 노트</span>
-      </Link>
+      <SideBarItem
+        icon={ScrollText}
+        title="패치 노트"
+        href="/patchNotes"
+        onClose={onClose}
+        muted
+      />
     </div>
   );
 }

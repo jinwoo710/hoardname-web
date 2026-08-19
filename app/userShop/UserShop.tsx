@@ -4,14 +4,21 @@ import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
+import { Search, Trash2 } from 'lucide-react';
 
 import { ShopItem } from '@/types/boardgame';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 import InfiniteScroll from '../components/InfiniteScroll';
 import AddShopModal from '../components/addShopModal/AddShopModal';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import { fetchUserShop, UpdateShopItem } from '../actions/userShop';
 import { checkUser } from '../actions/users';
+import { EmptyState } from '../components/common/EmptyState';
+import { ErrorState } from '../components/common/ErrorState';
+import { Spinner } from '../components/common/Spinner';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 
 interface UserShopProps {
   initialShopItems: ShopItem[];
@@ -39,6 +46,7 @@ export default function UserShop({
     loadMore,
     reset,
     handleSearch,
+    error,
   } = useInfinityScroll({
     initialData: initialShopItems,
     fetchData: async (page: number, searchTerm: string) => {
@@ -124,156 +132,151 @@ export default function UserShop({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-2">
-        <h1 className="text-2xl font-bold text-gray-800">내 중고 장터 목록</h1>
-        <button
-          onClick={handleAddClick}
-          className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
+      <div className="mb-2 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">
+          내 중고 장터 목록
+        </h1>
+        <Button onClick={handleAddClick} className="h-11">
           중고 게임 추가
-        </button>
+        </Button>
       </div>
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-        <ul className="text-sm text-gray-600 space-y-1.5">
+      <div className="mb-4 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li>
             중고 게임 등록은{' '}
-            <span className="font-bold text-blue-900">닉네임</span>과{' '}
-            <span className="font-bold text-blue-900">
+            <span className="font-bold text-primary">닉네임</span>과{' '}
+            <span className="font-bold text-primary">
               카카오톡 오픈채팅 링크
             </span>{' '}
             설정 후 이용 할 수 있습니다.
           </li>
           <li>
             게임이 판매되면,{' '}
-            <span className="font-bold text-green-800">판매 중</span>을 클릭하여
+            <span className="font-bold text-primary">판매 중</span>을 클릭하여
             상태를 변경해주세요.
           </li>
         </ul>
       </div>
-      <div className="relative w-full mb-2">
+      <div className="relative mb-2 w-full">
         <div className="relative flex-1">
-          <input
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
             type="text"
             placeholder="게임 이름으로 검색..."
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="h-11 pl-9"
           />
           {loading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+              <Spinner size="sm" />
             </div>
           )}
         </div>
       </div>
-      <div className="space-y-4">
-        <InfiniteScroll
-          hasMore={hasMore}
-          loading={loading}
-          onLoadMore={loadMore}
-          className="space-y-4"
-        >
-          <div className="space-y-4">
-            {shopItems.length === 0 ? (
-              <div className="text-center pt-[50px] lg:pt-[200px] text-lg text-gray-500">
-                등록된 중고 게임이 없습니다
-              </div>
-            ) : (
-              shopItems.map((game) => (
-                <div
-                  key={game.id.toString()}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    {game.thumbnailUrl && (
-                      <Image
-                        width={64}
-                        height={64}
-                        src={game.thumbnailUrl}
-                        alt={game.name}
-                        className="object-cover rounded"
-                      />
-                    )}
-                    <div>
-                      <h3 className="font-medium">{game.name}</h3>
-                      <p className="text-sm text-gray-500">메모: {game.memo}</p>
-                      <p className="text-sm text-gray-500">
-                        가격: {game.price}원
-                      </p>
+      {error ? (
+        <ErrorState message={error} onRetry={reset} />
+      ) : (
+        <div className="space-y-4">
+          <InfiniteScroll
+            hasMore={hasMore}
+            loading={loading}
+            onLoadMore={loadMore}
+            className="space-y-4"
+          >
+            <div className="space-y-4">
+              {shopItems.length === 0 ? (
+                <EmptyState title="등록된 중고 게임이 없습니다" />
+              ) : (
+                shopItems.map((game) => (
+                  <div
+                    key={game.id.toString()}
+                    className="flex items-center justify-between rounded-2xl border bg-card p-4"
+                  >
+                    <div className="flex items-center space-x-4">
+                      {game.thumbnailUrl && (
+                        <Image
+                          width={64}
+                          height={64}
+                          src={game.thumbnailUrl}
+                          alt={game.name}
+                          className="rounded object-cover"
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-medium text-foreground">
+                          {game.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          메모: {game.memo}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          가격: {game.price}원
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center space-y-3 lg:flex-row lg:space-x-3 lg:space-y-0">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() =>
+                          handleToggleOnSale(
+                            game.id.toString(),
+                            game.name,
+                            game.isOnSale
+                          )
+                        }
+                        className={
+                          game.isOnSale
+                            ? 'h-11 shrink-0 border-transparent bg-primary/10 font-bold text-primary hover:bg-primary/15'
+                            : 'h-11 shrink-0 border-transparent bg-muted font-bold text-muted-foreground hover:bg-muted/70'
+                        }
+                      >
+                        {game.isOnSale ? '판매 중' : '예약 중'}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() =>
+                          setShowDeleteConfirm({
+                            show: true,
+                            gameId: game.id.toString(),
+                            gameName: game.name,
+                          })
+                        }
+                        className="size-11 shrink-0"
+                        aria-label="삭제"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center lg:space-x-3 flex-col lg:flex-row lg:space-y-0 space-y-3">
-                    <button
-                      onClick={() =>
-                        handleToggleOnSale(
-                          game.id.toString(),
-                          game.name,
-                          game.isOnSale
-                        )
-                      }
-                      className={`w-[60px] h-[40px] flex justify-center items-center py-1 ml-2 rounded shrink-0 ${
-                        game.isOnSale
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      <span className="text-[12px] font-bold mx-auto shrink-0">
-                        {game.isOnSale ? '판매 중' : '예약 중'}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() =>
-                        setShowDeleteConfirm({
-                          show: true,
-                          gameId: game.id.toString(),
-                          gameName: game.name,
-                        })
-                      }
-                      className="w-[60px] h-[40px] flex text-[12px] font-bold justify-center items-center py-1 ml-2 rounded text-gray-600 shrink-0 bg-gray-100 hover:bg-gray-200 transition-colors"
-                    >
-                      삭제
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </InfiniteScroll>
-      </div>
+                ))
+              )}
+            </div>
+          </InfiniteScroll>
+        </div>
+      )}
       <AddShopModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onGameAdded={handleGameAdded}
       />
-      {showDeleteConfirm.show && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">삭제 확인</h3>
-            <p className="mb-6">
-              {showDeleteConfirm.gameName}을(를) 정말 삭제하시겠습니까?
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteConfirm({ show: false })}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
-              >
-                취소
-              </button>
-              <button
-                onClick={() =>
-                  showDeleteConfirm.gameId &&
-                  handleDelete(
-                    showDeleteConfirm.gameId,
-                    showDeleteConfirm.gameName || ''
-                  )
-                }
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={showDeleteConfirm.show}
+        onOpenChange={(open) => !open && setShowDeleteConfirm({ show: false })}
+        title="삭제 확인"
+        description={`${showDeleteConfirm.gameName ?? ''}을(를) 정말 삭제하시겠습니까?`}
+        confirmLabel="삭제"
+        variant="destructive"
+        onConfirm={() =>
+          showDeleteConfirm.gameId &&
+          handleDelete(
+            showDeleteConfirm.gameId,
+            showDeleteConfirm.gameName || ''
+          )
+        }
+      />
     </div>
   );
 }

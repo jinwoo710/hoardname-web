@@ -40,9 +40,9 @@ export const KakaoWebViewPopup = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="relative w-[80%] max-w-md bg-white rounded-lg p-4">
-        <div className="text-center text-2xl font-bold text-gray-600 my-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="relative w-full max-w-md rounded-xl bg-card p-4 text-card-foreground">
+        <div className="my-2 text-center text-xl font-bold">
           카카오톡 웹뷰 공지
         </div>
 
@@ -51,16 +51,18 @@ export const KakaoWebViewPopup = () => {
           alt="카카오톡 브라우저로 열기 안내"
           width={500}
           height={300}
-          className="w-full h-auto border border-gray-200 rounded-lg"
+          className="h-auto w-full rounded-lg border"
         />
-        <div className="text-center mt-2">
+        <div className="mt-2 text-center text-sm">
           로그인 서비스 이용 시{' '}
-          <span className="text-red-500 font-bold">다른 브라우저로 열기</span>{' '}
+          <span className="font-bold text-destructive">
+            다른 브라우저로 열기
+          </span>{' '}
           를 선택해주세요.
         </div>
         <button
           onClick={handleClose}
-          className="w-full mt-4 px-4 py-2 bg-yellow-400 text-black rounded-lg font-medium hover:bg-yellow-500 transition-colors"
+          className="mt-4 h-11 w-full rounded-lg bg-primary font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           닫기
         </button>

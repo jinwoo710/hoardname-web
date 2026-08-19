@@ -3,13 +3,18 @@
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
+import { Search } from 'lucide-react';
 
 import { BoardGame, CreateBoardGame, UpdateBoardGame } from '@/types/boardgame';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 import AddGameModal from '../components/addGameModal/AddGameModal';
 import InfiniteScroll from '../components/InfiniteScroll';
 import { useInfinityScroll } from '../hooks/useInfinityScroll';
 import UserGameListContainer from '../components/UserGameListContainer';
+import { ErrorState } from '../components/common/ErrorState';
+import { Spinner } from '../components/common/Spinner';
 import {
   createUserGame,
   deleteUserGame,
@@ -38,6 +43,7 @@ export default function UserGame({
     loadMore,
     handleSearch,
     reset,
+    error,
   } = useInfinityScroll({
     initialData: initialBoardgames,
     fetchData: async (page: number, searchTerm: string) => {
@@ -107,8 +113,6 @@ export default function UserGame({
   };
 
   const handleDeleteGame = async (gameId: string) => {
-    if (!confirm('정말 이 게임을 삭제하시겠습니까?')) return;
-
     const result = await deleteUserGame(gameId);
     if (result.success) {
       await reset();
@@ -120,24 +124,21 @@ export default function UserGame({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-2">
-        <h1 className="text-2xl font-bold text-gray-800">내 보드게임 목록</h1>
-        <button
-          onClick={handleAddClick}
-          className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
+      <div className="mb-2 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">내 보드게임 목록</h1>
+        <Button onClick={handleAddClick} className="h-11">
           보드게임 추가
-        </button>
+        </Button>
       </div>
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-        <ul className="text-sm text-gray-600 space-y-1.5">
+      <div className="mb-4 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li>
-            게임 등록은 <span className="font-bold text-blue-900">닉네임</span>{' '}
+            게임 등록은 <span className="font-bold text-primary">닉네임</span>{' '}
             설정 후 이용 할 수 있습니다.
           </li>
           <li>
             게임을 외부로 가져갈 시,{' '}
-            <span className="font-bold text-green-800">아지트</span>를 클릭하여
+            <span className="font-bold text-primary">아지트</span>를 클릭하여
             게임 상태를 변경해주세요.
           </li>
           <li>국내만 출시된 게임은 검색되지 않습니다.</li>
@@ -147,36 +148,41 @@ export default function UserGame({
           </li>
         </ul>
       </div>
-      <div className="relative w-full mb-2">
+      <div className="relative mb-2 w-full">
         <div className="relative flex-1">
-          <input
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
             type="text"
             placeholder="게임 이름으로 검색..."
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="h-11 pl-9"
           />
           {loading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+              <Spinner size="sm" />
             </div>
           )}
         </div>
       </div>
 
-      <div className="space-y-4">
-        <InfiniteScroll
-          loading={loading}
-          hasMore={hasMore}
-          onLoadMore={loadMore}
-          className="space-y-4"
-        >
-          <UserGameListContainer
-            boardgames={boardgames}
-            handleDeleteGame={handleDeleteGame}
-            handleUpdateGame={handleUpdateGame}
-          />
-        </InfiniteScroll>
-      </div>
+      {error ? (
+        <ErrorState message={error} onRetry={reset} />
+      ) : (
+        <div className="space-y-4">
+          <InfiniteScroll
+            loading={loading}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
+            className="space-y-4"
+          >
+            <UserGameListContainer
+              boardgames={boardgames}
+              handleDeleteGame={handleDeleteGame}
+              handleUpdateGame={handleUpdateGame}
+            />
+          </InfiniteScroll>
+        </div>
+      )}
       <AddGameModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
