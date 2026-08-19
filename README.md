@@ -90,5 +90,5 @@ https://hoardname-web.pages.dev
 - GOOGLE_CLIENT_SECRET
 - NEXTAUTH_URL
 - NEXTAUTH_SECRET
-- NEXT_PUBLIC_BGG_LINK
-- NEXT_PUBLIC_BGG_API
+- BGG_API_BASE (기본값 `https://boardgamegeek.com/xmlapi2`)
+- BGG_API_TOKEN (BGG 애플리케이션 등록 후 발급받은 토큰, https://boardgamegeek.com/applications)

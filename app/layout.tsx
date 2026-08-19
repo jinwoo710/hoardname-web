@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 
 import Header from './components/Header';
 import SideBar from './components/Sidebar';
+import Footer from './components/Footer';
 import { Providers } from './providers';
 import { KakaoWebViewPopup } from './components/KakaoWebViewPopup';
 
@@ -30,6 +31,7 @@ export default function RootLayout({
             </aside>
             <main className="flex-grow">{children}</main>
           </div>
+          <Footer />
         </Providers>
       </body>
     </html>

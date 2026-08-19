@@ -1,18 +1,9 @@
 import { NextResponse } from 'next/server';
 
+import extractAttribute from '@/app/components/extractAttribute';
+import { fetchBggXml } from '@/app/api/bgg/bggClient';
+
 export const runtime = 'edge';
-
-interface BggSearchItem {
-  objectid: string;
-  name: string;
-  yearpublished: string;
-  objecttype: string;
-}
-
-interface BggSearchResponse {
-  items: BggSearchItem[];
-  total: number;
-}
 
 export async function GET(request: Request) {
   try {
@@ -26,29 +17,20 @@ export async function GET(request: Request) {
       );
     }
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BGG_LINK}${encodeURIComponent(
-        name
-      )}&showcount=50&nosession=1`,
-      {
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'BoardGameHoardName/1.0',
-        },
-        next: { revalidate: 300 },
-      }
+    const xml = await fetchBggXml(
+      '/search',
+      { type: 'boardgame', query: name },
+      300
     );
 
-    if (!res.ok) {
-      throw new Error(`BGG API responded with status: ${res.status}`);
-    }
+    const ids = extractAttribute(xml, 'item', 'id');
+    const names = extractAttribute(xml, 'name', 'value');
+    const years = extractAttribute(xml, 'yearpublished', 'value');
 
-    const data = (await res.json()) as BggSearchResponse;
-
-    const games = data.items.map((item) => ({
-      id: item.objectid,
-      name: item.name,
-      yearPublished: item.yearpublished,
+    const games = ids.map((id, index) => ({
+      id,
+      name: names[index],
+      yearPublished: years[index],
     }));
 
     return NextResponse.json({ games });
