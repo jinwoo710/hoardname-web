@@ -5,7 +5,11 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { isKakaoWebView, openInExternalBrowser } from '../../lib/webview';
+import {
+  isKakaoWebView,
+  openInExternalBrowser,
+  buildGoogleAutoLoginUrl,
+} from '../../lib/webview';
 import { KAKAO_LOGIN_ENABLED } from '../../lib/featureFlags';
 import { GoogleIcon } from './GoogleIcon';
 import { KakaoIcon } from './KakaoIcon';
@@ -23,7 +27,7 @@ export function AuthMenu({ variant = 'inline', onNavigate }: AuthMenuProps) {
     // 구글은 카카오톡 인앱 웹뷰에서의 로그인을 정책적으로 차단하므로,
     // 웹뷰 안이라면 카카오톡의 공식 스킴으로 외부 브라우저로 빠져나간 뒤 로그인하도록 유도한다.
     if (isKakaoWebView()) {
-      openInExternalBrowser();
+      openInExternalBrowser(buildGoogleAutoLoginUrl());
       return;
     }
     signIn('google', { callbackUrl: '/game' });

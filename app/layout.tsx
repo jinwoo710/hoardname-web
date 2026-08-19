@@ -1,6 +1,7 @@
 import './globals.css';
 import { Metadata, Viewport } from 'next';
 import { Toaster } from 'react-hot-toast';
+import { Suspense } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -10,6 +11,7 @@ import Footer from './components/Footer';
 import { Providers } from './providers';
 import { KakaoWebViewPopup } from './components/KakaoWebViewPopup';
 import { BottomNav } from './components/common/BottomNav';
+import { AutoGoogleLogin } from './components/common/AutoGoogleLogin';
 import { pretendard } from './fonts';
 
 export const metadata: Metadata = {
@@ -34,6 +36,9 @@ export default function RootLayout({
     <html lang="ko" className={cn('font-sans', pretendard.variable)}>
       <body className="antialiased mx-auto w-full max-w-screen-md lg:max-w-screen-xl bg-background text-foreground min-h-screen">
         <Providers>
+          <Suspense fallback={null}>
+            <AutoGoogleLogin />
+          </Suspense>
           <KakaoWebViewPopup />
           <Header />
           <Toaster position="top-center" />

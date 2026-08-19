@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 
-import { openInExternalBrowser } from '../lib/webview';
+import { openInExternalBrowser, buildGoogleAutoLoginUrl } from '../lib/webview';
 import { KAKAO_LOGIN_ENABLED } from '../lib/featureFlags';
 import { KakaoIcon } from './common/KakaoIcon';
 
@@ -74,7 +74,7 @@ export const KakaoWebViewPopup = () => {
             className="mt-4 h-11 w-full"
             onClick={() => {
               handleClose();
-              openInExternalBrowser();
+              openInExternalBrowser(buildGoogleAutoLoginUrl());
             }}
           >
             외부 브라우저로 열기
